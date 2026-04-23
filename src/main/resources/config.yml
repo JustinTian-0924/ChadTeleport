@@ -1,0 +1,54 @@
+language:
+  default-locale: en_us
+features:
+  tpa:
+    enable: true
+    money: true
+    warmup: true
+quote:
+  max-move-distance: 8.0
+  expire-seconds: 30
+  cancel-on-target-move: true
+  target-max-move-distance: 64.0
+request:
+  expire-seconds: 30
+  cancel-on-target-move: true
+  target-max-move-distance: 64.0
+cross-world:
+  enable: true
+
+worlds:
+  default:
+    base_time: 3.0
+    base_price: 10.0
+    distance_time_1k: 1.0
+    distance_price_1k: 10.0
+  resources:
+    base_time: 3.0
+    base_price: 0.0
+    distance_time_1k: 1.0
+    distance_price_1k: 5.0
+  world_nether:
+    base_time: 5.0
+    base_price: 20.0
+    distance_time_1k: 1.5
+    distance_price_1k: 15.0
+  world_the_end:
+    base_time: 5.0
+    base_price: 30.0
+    distance_time_1k: 2.0
+    distance_price_1k: 20.0
+
+world-transfers:
+  default:
+    enter: 100.0
+    leave: 50.0
+  resources:
+    enter: 50.0
+    leave: 0.0
+  world_nether:
+    enter: 100.0
+    leave: 200.0
+  world_the_end:
+    enter: -1.0
+    leave: 500.0

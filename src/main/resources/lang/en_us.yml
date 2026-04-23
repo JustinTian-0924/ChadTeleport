@@ -1,0 +1,98 @@
+general:
+  player-only: "<red>Only players can use this command.</red>"
+  no-permission: "<red>You do not have permission to do this.</red>"
+  target-offline: "<red>The target player is not online.</red>"
+  requester-offline: "<red>The requesting player is not online.</red>"
+  unknown-error: "<red>An unknown error occurred while processing the command.</red>"
+  yes: "Yes"
+  no: "No"
+  usage:
+    tpa: "<yellow>Usage: <white>/tpa <player></white></yellow>"
+    teleport: "<yellow>Usage: <white>/teleport <confirm|cancel></white></yellow>"
+    tpaccept: "<yellow>Usage: <white>/tpaccept [player]</white></yellow>"
+    tpdeny: "<yellow>Usage: <white>/tpdeny [player]</white></yellow>"
+
+calculator:
+  world-null: "<red>World cannot be null.</red>"
+  cross-world-disabled: "<red>Cross-world teleport is disabled.</red>"
+  world-enter-denied: "<red>You cannot teleport into world: <white>{world}</white></red>"
+
+quote:
+  created: "<gold>Teleport quote created:</gold>"
+  target: "<yellow>Target: <white>{target}</white></yellow>"
+  distance: "<yellow>Distance: <white>{distance} blocks</white></yellow>"
+  fee: "<yellow>Fee: <white>{price} coins</white></yellow>"
+  warmup: "<yellow>Warmup: <white>{seconds} sec ({ticks} ticks)</white></yellow>"
+  cross-world: "<yellow>Cross-world: <white>{cross_world}</white></yellow>"
+  confirm-hover: "<green>Click to confirm this teleport</green>"
+  cancel-hover: "<red>Click to cancel this teleport</red>"
+  expired: "<red>Your teleport quote has expired.</red>"
+  expired-moved-self: "<red>Your teleport quote expired because you moved too far.</red>"
+  expired-changed-world-self: "<red>Your teleport quote expired because you changed world.</red>"
+  expired-target-moved: "<red>The teleport quote from <white>{requester}</white> to <white>{target}</white> expired because the target moved too far.</red>"
+  expired-target-world: "<red>The teleport quote from <white>{requester}</white> to <white>{target}</white> expired because the target changed world.</red>"
+  cancelled: "<red>Your pending teleport quote was cancelled.</red>"
+  none: "<red>You have no pending teleport quote.</red>"
+  calculate-failed: "<red>An error occurred while calculating teleport quote.</red>"
+  replaced: "<red>Your previous teleport warmup was replaced.</red>"
+
+request:
+  sent: "<green>Teleport request sent to <white>{target}</white><green>.</green>"
+  waiting: "<gray>Waiting for them to accept...</gray>"
+  received: "<gold>Teleport request received:</gold>"
+  requester: "<yellow>Requester: <white>{requester}</white></yellow>"
+  time-to-respond: "<yellow>Time to respond: <white>{seconds} seconds</white></yellow>"
+  accept-hover: "<green>Click to accept {requester}'s teleport request</green>"
+  deny-hover: "<red>Click to deny {requester}'s teleport request</red>"
+  multiple-hint-count: "<gray>You currently have <white>{count}</white><gray> pending teleport requests.</gray>"
+  multiple-hint-usage: "<gray>Use <white>/tpaccept <player></white><gray> or <white>/tpdeny <player></white><gray> to choose one.</gray>"
+  none-matching: "<red>You have no matching pending teleport request.</red>"
+  accepted-target: "<green>You accepted the teleport request from <white>{requester}</white><green>.</green>"
+  accepted-requester: "<green><white>{target}</white><green> accepted your teleport request.</green>"
+  denied-target: "<red>You denied the teleport request from <white>{requester}</white><red>.</red>"
+  denied-requester: "<red><white>{target}</white><red> denied your teleport request.</red>"
+  expired: "<red>The teleport request from <white>{requester}</white> to <white>{target}</white> has expired.</red>"
+  expired-target-moved: "<red>The teleport request from <white>{requester}</white> to <white>{target}</white> expired because the target moved too far.</red>"
+  expired-target-world: "<red>The teleport request from <white>{requester}</white> to <white>{target}</white> expired because the target changed world.</red>"
+  target-offline-cancelled: "<red>Teleport cancelled because the target player is offline.</red>"
+
+warmup:
+  started: "<yellow>Teleport warmup started: <white>{seconds} sec</white></yellow>"
+  dont-move: "<gray>Do not move or take damage.</gray>"
+  target-notified: "<gray><white>{requester}</white> is warming up to teleport to you.</gray>"
+  cancelled-self: "<red>Your teleport warmup was cancelled.</red>"
+  cancelled-move: "<red>Teleport cancelled because you moved.</red>"
+  cancelled-damage: "<red>Teleport cancelled because you took damage.</red>"
+  cancelled-left: "<red>Teleport cancelled because you left the server.</red>"
+  cancelled-target-left: "<red>Teleport cancelled because the target left the server.</red>"
+  cancel-command: "<red>Your teleport warmup was cancelled.</red>"
+  target-cancelled: "<red><white>{requester}</white><red>'s teleport was cancelled.</red>"
+
+economy:
+  unavailable: "<red>Economy system is currently unavailable.</red>"
+  unavailable-cancelled: "<red>Economy system is unavailable. Teleport cancelled.</red>"
+  insufficient: "<red>You do not have enough money for this teleport.</red>"
+  required: "<yellow>Required: <white>{price} coins</white></yellow>"
+  charged: "<yellow>Charged: <white>{price} coins</white></yellow>"
+  charge-failed-after-teleport: "<yellow>Teleport succeeded, but charging failed. Please contact an admin.</yellow>"
+
+teleport:
+  success: "<green>Teleported successfully.</green>"
+  failed: "<red>Teleport failed.</red>"
+  no-pending-or-warmup: "<red>You have no pending teleport quote or active warmup to cancel.</red>"
+
+feature:
+  tpa-disabled: "<red>TPA feature is disabled.</red>"
+  self-request: "<red>You cannot send a teleport request to yourself.</red>"
+
+buttons:
+  confirm: "[Confirm]"
+  cancel: "[Cancel]"
+  accept: "[Accept]"
+  deny: "[Deny]"
+
+admin:
+  usage: "<yellow>Usage: <white>/chadteleport reload</white></yellow>"
+  reloading: "<gray>Reloading config and language files...</gray>"
+  reload-success: "<green>Chadteleport config and language files have been reloaded successfully.</green>"
+  reload-failed: "<red>Reload failed. Please check the console log.</red>"

@@ -1,0 +1,98 @@
+general:
+  player-only: "<red>只有玩家可以使用这个命令。</red>"
+  no-permission: "<red>你没有权限执行这个操作。</red>"
+  target-offline: "<red>目标玩家当前不在线。</red>"
+  requester-offline: "<red>请求发起者当前不在线。</red>"
+  unknown-error: "<red>处理命令时发生未知错误。</red>"
+  yes: "是"
+  no: "否"
+  usage:
+    tpa: "<yellow>用法: <white>/tpa <玩家名></white></yellow>"
+    teleport: "<yellow>用法: <white>/teleport <confirm|cancel></white></yellow>"
+    tpaccept: "<yellow>用法: <white>/tpaccept [玩家名]</white></yellow>"
+    tpdeny: "<yellow>用法: <white>/tpdeny [玩家名]</white></yellow>"
+
+calculator:
+  world-null: "<red>世界不能为空。</red>"
+  cross-world-disabled: "<red>跨世界传送当前已禁用。</red>"
+  world-enter-denied: "<red>你不能传送进入世界: <white>{world}</white></red>"
+
+quote:
+  created: "<gold>传送报价已生成:</gold>"
+  target: "<yellow>目标: <white>{target}</white></yellow>"
+  distance: "<yellow>距离: <white>{distance} 格</white></yellow>"
+  fee: "<yellow>费用: <white>{price} 金币</white></yellow>"
+  warmup: "<yellow>预热: <white>{seconds} 秒 ({ticks} ticks)</white></yellow>"
+  cross-world: "<yellow>跨世界: <white>{cross_world}</white></yellow>"
+  confirm-hover: "<green>点击确认这次传送</green>"
+  cancel-hover: "<red>点击取消这次传送</red>"
+  expired: "<red>你的传送报价已过期。</red>"
+  expired-moved-self: "<red>你的传送报价已失效，因为你移动过远。</red>"
+  expired-changed-world-self: "<red>你的传送报价已失效，因为你切换了世界。</red>"
+  expired-target-moved: "<red>从 <white>{requester}</white> 到 <white>{target}</white> 的传送报价已失效，因为目标移动过远。</red>"
+  expired-target-world: "<red>从 <white>{requester}</white> 到 <white>{target}</white> 的传送报价已失效，因为目标切换了世界。</red>"
+  cancelled: "<red>你的待确认传送报价已取消。</red>"
+  none: "<red>你当前没有待确认的传送报价。</red>"
+  calculate-failed: "<red>计算传送报价时发生错误。</red>"
+  replaced: "<red>你之前的传送预热已被新的请求替换。</red>"
+
+request:
+  sent: "<green>传送请求已发送给 <white>{target}</white><green>。</green>"
+  waiting: "<gray>正在等待对方接受...</gray>"
+  received: "<gold>收到传送请求:</gold>"
+  requester: "<yellow>请求者: <white>{requester}</white></yellow>"
+  time-to-respond: "<yellow>响应时间: <white>{seconds} 秒</white></yellow>"
+  accept-hover: "<green>点击接受 {requester} 的传送请求</green>"
+  deny-hover: "<red>点击拒绝 {requester} 的传送请求</red>"
+  multiple-hint-count: "<gray>你当前有 <white>{count}</white><gray> 个待处理传送请求。</gray>"
+  multiple-hint-usage: "<gray>使用 <white>/tpaccept <玩家></white><gray> 或 <white>/tpdeny <玩家></white><gray> 来指定处理。</gray>"
+  none-matching: "<red>你当前没有匹配的待处理传送请求。</red>"
+  accepted-target: "<green>你接受了来自 <white>{requester}</white><green> 的传送请求。</green>"
+  accepted-requester: "<green><white>{target}</white><green> 接受了你的传送请求。</green>"
+  denied-target: "<red>你拒绝了来自 <white>{requester}</white><red> 的传送请求。</red>"
+  denied-requester: "<red><white>{target}</white><red> 拒绝了你的传送请求。</red>"
+  expired: "<red>从 <white>{requester}</white> 到 <white>{target}</white> 的传送请求已过期。</red>"
+  expired-target-moved: "<red>从 <white>{requester}</white> 到 <white>{target}</white> 的传送请求已失效，因为目标移动过远。</red>"
+  expired-target-world: "<red>从 <white>{requester}</white> 到 <white>{target}</white> 的传送请求已失效，因为目标切换了世界。</red>"
+  target-offline-cancelled: "<red>传送已取消，因为目标玩家不在线。</red>"
+
+warmup:
+  started: "<yellow>传送预热已开始: <white>{seconds} 秒</white></yellow>"
+  dont-move: "<gray>请不要移动或受到伤害。</gray>"
+  target-notified: "<gray><white>{requester}</white> 正在预热传送到你这里。</gray>"
+  cancelled-self: "<red>你的传送预热已取消。</red>"
+  cancelled-move: "<red>传送已取消，因为你移动了。</red>"
+  cancelled-damage: "<red>传送已取消，因为你受到了伤害。</red>"
+  cancelled-left: "<red>传送已取消，因为你离开了服务器。</red>"
+  cancelled-target-left: "<red>传送已取消，因为目标离开了服务器。</red>"
+  cancel-command: "<red>你的传送预热已取消。</red>"
+  target-cancelled: "<red><white>{requester}</white><red> 的传送已取消。</red>"
+
+economy:
+  unavailable: "<red>经济系统当前不可用。</red>"
+  unavailable-cancelled: "<red>经济系统不可用，传送已取消。</red>"
+  insufficient: "<red>你的金钱不足，无法进行这次传送。</red>"
+  required: "<yellow>需要: <white>{price} 金币</white></yellow>"
+  charged: "<yellow>已扣费: <white>{price} 金币</white></yellow>"
+  charge-failed-after-teleport: "<yellow>传送成功，但扣费失败，请联系管理员。</yellow>"
+
+teleport:
+  success: "<green>传送成功。</green>"
+  failed: "<red>传送失败。</red>"
+  no-pending-or-warmup: "<red>你当前没有待确认的传送报价或正在进行的预热可取消。</red>"
+
+feature:
+  tpa-disabled: "<red>TPA 功能当前已关闭。</red>"
+  self-request: "<red>你不能向自己发送传送请求。</red>"
+
+buttons:
+  confirm: "[确认]"
+  cancel: "[取消]"
+  accept: "[接受]"
+  deny: "[拒绝]"
+
+admin:
+  usage: "<yellow>用法: <white>/chadteleport reload</white></yellow>"
+  reloading: "<gray>正在重载配置与语言文件...</gray>"
+  reload-success: "<green>Chadteleport 配置与语言文件已成功重载。</green>"
+  reload-failed: "<red>重载失败，请查看控制台日志。</red>"

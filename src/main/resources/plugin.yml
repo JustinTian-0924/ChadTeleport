@@ -1,0 +1,51 @@
+name: Chadteleport
+version: 0.1.0
+main: basementhost.randomchad.ChadteleportPlugin
+api-version: '1.21'
+description: Teleportation Plugin with few tweak
+author: Random_Chad
+
+softdepend:
+  - Vault
+  - ChadCore
+
+commands:
+  chadteleport:
+    description: Chadteleport admin command
+    usage: /chadteleport reload
+    aliases: [ct]
+    permission: chadteleport.admin
+  tpa:
+    description: Request teleport to another player
+    usage: /tpa <player>
+  tpaccept:
+    description: Accept a teleport request
+    usage: /tpaccept [player]
+    tpdeny:
+      description: Deny a teleport request
+      usage: /tpdeny [player]
+  teleport:
+    description: Teleport confirmation command
+    usage: /teleport <confirm|cancel>
+    aliases:
+      - tpconfirm
+      - tpcancel
+
+permissions:
+  chadteleport.admin:
+    description: Allows use of /chadteleport reload
+    default: op
+  chadteleport.bypass.*:
+    description: Bypass all ChadTeleport restrictions
+    default: op
+    children:
+      chadteleport.bypass.fee: true
+      chadteleport.bypass.warmup: true
+
+  chadteleport.bypass.fee:
+    description: Bypass teleport fee
+    default: op
+
+  chadteleport.bypass.warmup:
+    description: Bypass teleport warmup
+    default: op
