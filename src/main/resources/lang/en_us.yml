@@ -4,13 +4,16 @@ general:
   target-offline: "<red>The target player is not online.</red>"
   requester-offline: "<red>The requesting player is not online.</red>"
   unknown-error: "<red>An unknown error occurred while processing the command.</red>"
-  yes: "Yes"
-  no: "No"
+  feature-disabled: "<red>This feature is currently disabled.</red>"
+  text-yes: "Yes"
+  text-no: "No"
   usage:
     tpa: "<yellow>Usage: <white>/tpa <player></white></yellow>"
     teleport: "<yellow>Usage: <white>/teleport <confirm|cancel></white></yellow>"
     tpaccept: "<yellow>Usage: <white>/tpaccept [player]</white></yellow>"
     tpdeny: "<yellow>Usage: <white>/tpdeny [player]</white></yellow>"
+    setspawn: "<yellow>Usage: <white>/setspawn</white></yellow>"
+    spawn: "<yellow>Usage: <white>/spawn</white></yellow>"
 
 calculator:
   world-null: "<red>World cannot be null.</red>"
@@ -96,3 +99,12 @@ admin:
   reloading: "<gray>Reloading config and language files...</gray>"
   reload-success: "<green>Chadteleport config and language files have been reloaded successfully.</green>"
   reload-failed: "<red>Reload failed. Please check the console log.</red>"
+
+spawn:
+  not-set: "<red>Server spawn has not been set yet.</red>"
+  set-success: "<green>Server spawn has been set successfully.</green>"
+  set-failed: "<red>Failed to set server spawn.</red>"
+  player-only-setspawn: "<red>Only players can use /setspawn.</red>"
+  quote-created: "<yellow>Server spawn teleport quote created:</yellow>"
+  destination: "<gray>Destination: <white>Server Spawn</white></gray>"
+  permission-denied: "<red>You do not have permission to use /spawn.</red>"

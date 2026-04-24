@@ -1,5 +1,5 @@
 name: Chadteleport
-version: 0.1.0
+version: 0.1.1
 main: basementhost.randomchad.ChadteleportPlugin
 api-version: '1.21'
 description: Teleportation Plugin with few tweak
@@ -30,10 +30,21 @@ commands:
     aliases:
       - tpconfirm
       - tpcancel
+  setspawn:
+    description: Set the server spawn location
+    usage: /setspawn
+    permission: chadteleport.setspawn
+  spawn:
+    description: Teleport to the server spawn
+    usage: /spawn
+    permission: chadteleport.spawn
 
 permissions:
   chadteleport.admin:
     description: Allows use of /chadteleport reload
+    default: op
+  chadteleport.setspawn:
+    description: Allows setting the server spawn
     default: op
   chadteleport.bypass.*:
     description: Bypass all ChadTeleport restrictions
@@ -49,3 +60,7 @@ permissions:
   chadteleport.bypass.warmup:
     description: Bypass teleport warmup
     default: op
+
+  chadteleport.spawn:
+    description: Allows using /spawn
+    default: true

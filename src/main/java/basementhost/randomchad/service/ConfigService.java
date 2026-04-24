@@ -86,4 +86,32 @@ public class ConfigService {
 	public double getQuoteTargetMaxMoveDistance() {
 		return config().getDouble("quote.target-max-move-distance", 64.0);
 	}
+
+	public boolean isSpawnEnabled() {
+		return config().getBoolean("features.spawn.enable", false);
+	}
+	public boolean isSpawnPermissionRequired() {
+		return config().getBoolean("features.spawn.require-permission", false);
+	}
+	public String getSpawnPermission() {
+		return config().getString("features.spawn.permission", "chadteleport.spawn");
+	}
+	public boolean isSpawnMoneyEnabled() {
+		return config().getBoolean("features.spawn.money", true);
+	}
+	public boolean isSpawnUsingTpaPricing() {
+		return config().getBoolean("features.spawn.use-tpa-pricing", true);
+	}
+	public double getSpawnFixedPrice() {
+		return config().getDouble("features.spawn.fixed-price", 0.0);
+	}
+	public boolean isSpawnWarmupEnabled() {
+		return config().getBoolean("features.spawn.warmup", true);
+	}
+	public boolean isSpawnUsingTpaWarmup() {
+		return config().getBoolean("features.spawn.use-tpa-warmup", true);
+	}
+	public double getSpawnFixedWarmupSeconds() {
+		return config().getDouble("features.spawn.fixed-warmup-seconds", 0.0);
+	}
 }

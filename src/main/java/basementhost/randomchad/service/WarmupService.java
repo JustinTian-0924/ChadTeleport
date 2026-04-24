@@ -2,6 +2,7 @@ package basementhost.randomchad.service;
 
 import basementhost.randomchad.ChadteleportPlugin;
 import basementhost.randomchad.model.ActiveTeleport;
+import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.model.TeleportQuote;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -30,6 +31,35 @@ public class WarmupService {
 			return;
 		}
 
+		TeleportOffer offer = new TeleportOffer(
+				"tpa",
+				requester,
+				target,
+				quote.getFrom().clone(),
+				lockedDestination.clone(),
+				quote.getDistance(),
+				quote.getPrice(),
+				quote.getWarmupSeconds(),
+				quote.getWarmupTicks(),
+				quote.isCrossWorld()
+		);
+
+		startOfferWarmup(offer);
+	}
+
+	public void startOfferWarmup(TeleportOffer offer) {
+		Player requester = offer.getRequester();
+		Player target = offer.getTarget();
+
+		if (requester == null || !requester.isOnline()) {
+			return;
+		}
+
+		if (target != null && !target.isOnline()) {
+			plugin.getLangService().send(requester, "request.target-offline-cancelled");
+			return;
+		}
+
 		if (plugin.getTeleportManager().hasActiveTeleport(requester)) {
 			cancelWarmup(requester, "quote.replaced");
 		}
@@ -37,10 +67,16 @@ public class WarmupService {
 		boolean bypassWarmup = requester.hasPermission("chadteleport.bypass.warmup")
 				|| requester.hasPermission("chadteleport.bypass.*");
 
-		boolean warmupEnabled = plugin.getConfigService().isWarmupEnabled("tpa");
-		long warmupTicks = (warmupEnabled && !bypassWarmup) ? quote.getWarmupTicks() : 0L;
+		boolean warmupEnabled = offer.getFeatureName().equalsIgnoreCase("spawn")
+				? plugin.getConfigService().isSpawnWarmupEnabled()
+				: plugin.getConfigService().isWarmupEnabled(offer.getFeatureName());
+		long warmupTicks = (warmupEnabled && !bypassWarmup) ? offer.getWarmupTicks() : 0L;
 
-		ActiveTeleport activeTeleport = new ActiveTeleport("tpa", quote, lockedDestination.clone());
+		ActiveTeleport activeTeleport = new ActiveTeleport(
+				offer.getFeatureName(),
+				offer,
+				offer.getDestination().clone()
+		);
 
 		if (warmupTicks <= 0L) {
 			finishTeleport(activeTeleport);
@@ -48,7 +84,7 @@ public class WarmupService {
 		}
 
 		BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-			Player onlineRequester = quote.getRequester();
+			Player onlineRequester = offer.getRequester();
 			if (onlineRequester != null) {
 				completeWarmup(onlineRequester);
 			}
@@ -58,12 +94,15 @@ public class WarmupService {
 		plugin.getTeleportManager().setActiveTeleport(requester, activeTeleport);
 
 		plugin.getLangService().send(requester, "warmup.started", Map.of(
-				"seconds", String.valueOf(quote.getWarmupSeconds())
+				"seconds", String.valueOf(offer.getWarmupSeconds())
 		));
 		plugin.getLangService().send(requester, "warmup.dont-move");
-		plugin.getLangService().send(target, "warmup.target-notified", Map.of(
-				"requester", requester.getName()
-		));
+
+		if (target != null && target.isOnline()) {
+			plugin.getLangService().send(target, "warmup.target-notified", Map.of(
+					"requester", requester.getName()
+			));
+		}
 	}
 
 	public void completeWarmup(Player requester) {
@@ -89,7 +128,7 @@ public class WarmupService {
 			plugin.getLangService().send(requester, reasonKey);
 		}
 
-		Player target = activeTeleport.getQuote().getTarget();
+		Player target = activeTeleport.getOffer().getTarget();
 		if (target != null && target.isOnline()) {
 			plugin.getLangService().send(target, "warmup.target-cancelled", Map.of(
 					"requester", requester.getName()
@@ -100,24 +139,27 @@ public class WarmupService {
 	}
 
 	private void finishTeleport(ActiveTeleport activeTeleport) {
-		TeleportQuote quote = activeTeleport.getQuote();
-		Player requester = quote.getRequester();
-		Player target = quote.getTarget();
+		TeleportOffer offer = activeTeleport.getOffer();
+		Player requester = offer.getRequester();
+		Player target = offer.getTarget();
 
 		if (requester == null || !requester.isOnline()) {
 			return;
 		}
 
-		if (target == null || !target.isOnline()) {
+		if (target != null && !target.isOnline()) {
 			plugin.getLangService().send(requester, "request.target-offline-cancelled");
 			return;
 		}
 
-		boolean shouldCharge = plugin.getConfigService().isMoneyEnabled(activeTeleport.getFeatureName())
+		boolean moneyEnabled = activeTeleport.getFeatureName().equalsIgnoreCase("spawn")
+				? plugin.getConfigService().isSpawnMoneyEnabled()
+				: plugin.getConfigService().isMoneyEnabled(activeTeleport.getFeatureName());
+		boolean shouldCharge = moneyEnabled
 				&& !requester.hasPermission("chadteleport.bypass.fee")
 				&& !requester.hasPermission("chadteleport.bypass.*");
 
-		double price = quote.getPrice();
+		double price = offer.getPrice();
 
 		if (shouldCharge && price > 0.0) {
 			if (!plugin.getEconomyService().isAvailable()) {

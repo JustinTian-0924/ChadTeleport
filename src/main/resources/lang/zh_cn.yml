@@ -4,13 +4,16 @@ general:
   target-offline: "<red>目标玩家当前不在线。</red>"
   requester-offline: "<red>请求发起者当前不在线。</red>"
   unknown-error: "<red>处理命令时发生未知错误。</red>"
-  yes: "是"
-  no: "否"
+  feature-disabled: "<red>该功能当前未启用。</red>"
+  text-yes: "是"
+  text-no: "否"
   usage:
     tpa: "<yellow>用法: <white>/tpa <玩家名></white></yellow>"
     teleport: "<yellow>用法: <white>/teleport <confirm|cancel></white></yellow>"
     tpaccept: "<yellow>用法: <white>/tpaccept [玩家名]</white></yellow>"
     tpdeny: "<yellow>用法: <white>/tpdeny [玩家名]</white></yellow>"
+    setspawn: "<yellow>用法: <white>/setspawn</white></yellow>"
+    spawn: "<yellow>用法: <white>/spawn</white></yellow>"
 
 calculator:
   world-null: "<red>世界不能为空。</red>"
@@ -96,3 +99,12 @@ admin:
   reloading: "<gray>正在重载配置与语言文件...</gray>"
   reload-success: "<green>Chadteleport 配置与语言文件已成功重载。</green>"
   reload-failed: "<red>重载失败，请查看控制台日志。</red>"
+
+spawn:
+  not-set: "<red>服务器出生点尚未设置。</red>"
+  set-success: "<green>服务器出生点已设置成功。</green>"
+  set-failed: "<red>设置服务器出生点失败。</red>"
+  player-only-setspawn: "<red>只有玩家可以使用 /setspawn。</red>"
+  quote-created: "<yellow>服务器出生点传送报价已生成：</yellow>"
+  destination: "<gray>目标: <white>服务器出生点</white></gray>"
+  permission-denied: "<red>你没有权限使用 /spawn。</red>"

@@ -60,8 +60,8 @@ public class WarmupInterruptListener implements Listener {
 		plugin.getWarmupService().cancelWarmup(quittingPlayer, "warmup.cancelled-left");
 
 		for (ActiveTeleport activeTeleport : plugin.getTeleportManager().getActiveTeleports()) {
-			Player target = activeTeleport.getQuote().getTarget();
-			Player requester = activeTeleport.getQuote().getRequester();
+			Player target = activeTeleport.getOffer().getTarget();
+			Player requester = activeTeleport.getOffer().getRequester();
 
 			if (target != null && target.getUniqueId().equals(quittingPlayer.getUniqueId())) {
 				if (requester != null) {

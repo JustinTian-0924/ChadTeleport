@@ -1,6 +1,16 @@
 language:
   default-locale: en_us
 features:
+  spawn:
+    enable: true
+    require-permission: false
+    permission: chadteleport.spawn
+    money: true
+    use-tpa-pricing: true
+    fixed-price: 0.0
+    warmup: true
+    use-tpa-warmup: true
+    fixed-warmup-seconds: 0.0
   tpa:
     enable: true
     money: true

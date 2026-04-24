@@ -1,0 +1,8 @@
+spawn:
+  set: false # not being REALLY settled inside of server
+  world: world
+  x: 0.0
+  y: 64.0
+  z: 0.0
+  yaw: 0.0
+  pitch: 0.0

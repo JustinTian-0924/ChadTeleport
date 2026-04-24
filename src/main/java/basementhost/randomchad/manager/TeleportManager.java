@@ -1,8 +1,6 @@
 package basementhost.randomchad.manager;
 
-import basementhost.randomchad.model.ActiveTeleport;
-import basementhost.randomchad.model.PendingTeleportQuote;
-import basementhost.randomchad.model.PendingTeleportRequest;
+import basementhost.randomchad.model.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,6 +15,8 @@ public class TeleportManager {
 	private final Map<UUID, Map<UUID, PendingTeleportRequest>> pendingRequestsByTarget = new HashMap<>();
 
 	private final Map<UUID, ActiveTeleport> activeTeleportsByRequester = new HashMap<>();
+
+	private final Map<UUID, PendingTeleportOffer> pendingOffers = new HashMap<>();
 
 	public TeleportManager(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -166,5 +166,21 @@ public class TeleportManager {
 
 	public Collection<ActiveTeleport> getActiveTeleports() {
 		return new ArrayList<>(activeTeleportsByRequester.values());
+	}
+
+	public void setPendingOffer(Player player, PendingTeleportOffer offer) {
+		pendingOffers.put(player.getUniqueId(), offer);
+	}
+
+	public PendingTeleportOffer getPendingOffer(Player player) {
+		return pendingOffers.get(player.getUniqueId());
+	}
+
+	public PendingTeleportOffer removePendingOffer(Player player) {
+		return pendingOffers.remove(player.getUniqueId());
+	}
+
+	public boolean hasPendingOffer(Player player) {
+		return pendingOffers.containsKey(player.getUniqueId());
 	}
 }

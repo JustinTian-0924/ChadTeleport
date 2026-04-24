@@ -19,6 +19,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	private WarmupService warmupService;
 	private ExpirationService expirationService;
 	private LangService langService;
+	private SpawnService spawnService;
+
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
@@ -28,6 +30,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.configService = new ConfigService(this);
 		this.teleportCalculator = new TeleportCalculator(configService);
 		this.warmupService = new WarmupService(this);
+		this.spawnService = new SpawnService(this);
+		this.spawnService.load();
 		this.expirationService = new ExpirationService(this);
 		this.langService = new LangService(this);
 		this.langService.load();
@@ -55,6 +59,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerCommand("tpaccept", new TpAcceptCommand(this));
 		registerCommand("tpdeny", new TpDenyCommand(this));
 		registerCommand("teleport", new TeleportCommand(this));
+		registerCommand("setspawn", new SetSpawnCommand(this));
+		registerCommand("spawn", new SpawnCommand(this));
 
 		AdminCommand adminCommand = new AdminCommand(this);
 		registerCommand("chadteleport", adminCommand);
@@ -99,6 +105,9 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		if (langService != null) {
 			langService.load();
 		}
+		if (spawnService != null) {
+			spawnService.load();
+		}
 	}
 
 	public EconomyService getEconomyService() {
@@ -127,5 +136,9 @@ public final class ChadteleportPlugin extends JavaPlugin {
 
 	public LangService getLangService() {
 		return langService;
+	}
+
+	public SpawnService getSpawnService() {
+		return spawnService;
 	}
 }

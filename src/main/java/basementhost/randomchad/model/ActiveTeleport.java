@@ -6,13 +6,13 @@ import org.bukkit.scheduler.BukkitTask;
 public class ActiveTeleport {
 
 	private final String featureName;
-	private final TeleportQuote quote;
+	private final TeleportOffer offer;
 	private final Location destination;
 	private BukkitTask task;
 
-	public ActiveTeleport(String featureName, TeleportQuote quote, Location destination) {
+	public ActiveTeleport(String featureName, TeleportOffer offer, Location destination) {
 		this.featureName = featureName;
-		this.quote = quote;
+		this.offer = offer;
 		this.destination = destination;
 	}
 
@@ -20,8 +20,8 @@ public class ActiveTeleport {
 		return featureName;
 	}
 
-	public TeleportQuote getQuote() {
-		return quote;
+	public TeleportOffer getOffer() {
+		return offer;
 	}
 
 	public Location getDestination() {

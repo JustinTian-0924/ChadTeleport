@@ -1,8 +1,10 @@
 package basementhost.randomchad.command;
 
 import basementhost.randomchad.ChadteleportPlugin;
+import basementhost.randomchad.model.PendingTeleportOffer;
 import basementhost.randomchad.model.PendingTeleportQuote;
 import basementhost.randomchad.model.PendingTeleportRequest;
+import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.model.TeleportQuote;
 import basementhost.randomchad.util.TeleportMessageUtil;
 import org.bukkit.command.Command;
@@ -33,6 +35,23 @@ public class TeleportCommand implements CommandExecutor {
 		}
 
 		if (args[0].equalsIgnoreCase("confirm")) {
+			PendingTeleportOffer pendingOffer = plugin.getTeleportManager().getPendingOffer(player);
+			if (pendingOffer != null) {
+				long ageMillis = System.currentTimeMillis() - pendingOffer.getCreatedAt();
+				long maxAgeMillis = plugin.getConfigService().getQuoteExpireSeconds() * 1000L;
+
+				if (ageMillis > maxAgeMillis) {
+					plugin.getTeleportManager().removePendingOffer(player);
+					plugin.getLangService().send(player, "quote.expired");
+					return true;
+				}
+
+				TeleportOffer offer = pendingOffer.getOffer();
+				plugin.getTeleportManager().removePendingOffer(player);
+				plugin.getWarmupService().startOfferWarmup(offer);
+				return true;
+			}
+
 			PendingTeleportQuote pending = plugin.getTeleportManager().getPendingQuote(player);
 			if (pending == null) {
 				plugin.getLangService().send(player, "quote.none");
@@ -87,18 +106,20 @@ public class TeleportCommand implements CommandExecutor {
 		}
 
 		if (args[0].equalsIgnoreCase("cancel")) {
+			PendingTeleportOffer removedOffer = plugin.getTeleportManager().removePendingOffer(player);
 			PendingTeleportQuote removedQuote = plugin.getTeleportManager().removePendingQuote(player);
+
 			boolean cancelledWarmup = plugin.getWarmupService().cancelWarmup(
 					player,
 					"warmup.cancel-command"
 			);
 
-			if (removedQuote == null && !cancelledWarmup) {
+			if (removedOffer == null && removedQuote == null && !cancelledWarmup) {
 				plugin.getLangService().send(player, "teleport.no-pending-or-warmup");
 				return true;
 			}
 
-			if (removedQuote != null) {
+			if (removedOffer != null || removedQuote != null) {
 				plugin.getLangService().send(player, "quote.cancelled");
 			}
 
