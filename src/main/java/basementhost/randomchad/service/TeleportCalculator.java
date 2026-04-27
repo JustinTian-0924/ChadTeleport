@@ -162,6 +162,18 @@ public class TeleportCalculator {
 			}
 		}
 
+		if ("home".equalsIgnoreCase(featureName)) {
+			if (configService.isHomeUsingCustomPricingFormula()) {
+				price = configService.getHomeBasePrice()
+						+ configService.getHomeDistancePricePer1k() * (distance / 1000.0);
+			}
+
+			if (configService.isHomeUsingCustomTimingFormula()) {
+				warmupSeconds = configService.getHomeBaseTime()
+						+ configService.getHomeDistanceTimePer1k() * (distance / 1000.0);
+			}
+		}
+
 		distance = floor1(distance);
 		price = floor1(price);
 		warmupSeconds = floor1(warmupSeconds);

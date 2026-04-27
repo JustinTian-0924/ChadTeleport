@@ -67,9 +67,14 @@ public class WarmupService {
 		boolean bypassWarmup = requester.hasPermission("chadteleport.bypass.warmup")
 				|| requester.hasPermission("chadteleport.bypass.*");
 
-		boolean warmupEnabled = offer.getFeatureName().equalsIgnoreCase("spawn")
-				? plugin.getConfigService().isSpawnWarmupEnabled()
-				: plugin.getConfigService().isWarmupEnabled(offer.getFeatureName());
+		boolean warmupEnabled;
+		if (offer.getFeatureName().equalsIgnoreCase("spawn")) {
+			warmupEnabled = plugin.getConfigService().isSpawnWarmupEnabled();
+		} else if (offer.getFeatureName().equalsIgnoreCase("home")) {
+			warmupEnabled = plugin.getConfigService().isHomeWarmupEnabled();
+		} else {
+			warmupEnabled = plugin.getConfigService().isWarmupEnabled(offer.getFeatureName());
+		}
 		long warmupTicks = (warmupEnabled && !bypassWarmup) ? offer.getWarmupTicks() : 0L;
 
 		ActiveTeleport activeTeleport = new ActiveTeleport(
@@ -152,9 +157,14 @@ public class WarmupService {
 			return;
 		}
 
-		boolean moneyEnabled = activeTeleport.getFeatureName().equalsIgnoreCase("spawn")
-				? plugin.getConfigService().isSpawnMoneyEnabled()
-				: plugin.getConfigService().isMoneyEnabled(activeTeleport.getFeatureName());
+		boolean moneyEnabled;
+		if (activeTeleport.getFeatureName().equalsIgnoreCase("spawn")) {
+			moneyEnabled = plugin.getConfigService().isSpawnMoneyEnabled();
+		} else if (activeTeleport.getFeatureName().equalsIgnoreCase("home")) {
+			moneyEnabled = plugin.getConfigService().isHomeMoneyEnabled();
+		} else {
+			moneyEnabled = plugin.getConfigService().isMoneyEnabled(activeTeleport.getFeatureName());
+		}
 		boolean shouldCharge = moneyEnabled
 				&& !requester.hasPermission("chadteleport.bypass.fee")
 				&& !requester.hasPermission("chadteleport.bypass.*");

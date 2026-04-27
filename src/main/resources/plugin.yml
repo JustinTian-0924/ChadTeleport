@@ -1,5 +1,5 @@
 name: Chadteleport
-version: 0.1.1
+version: 0.2.0
 main: basementhost.randomchad.ChadteleportPlugin
 api-version: '1.21'
 description: Teleportation Plugin with few tweak
@@ -15,37 +15,61 @@ commands:
     usage: /chadteleport reload
     aliases: [ct]
     permission: chadteleport.admin
+
   tpa:
     description: Request teleport to another player
     usage: /tpa <player>
+
   tpaccept:
     description: Accept a teleport request
     usage: /tpaccept [player]
-    tpdeny:
-      description: Deny a teleport request
-      usage: /tpdeny [player]
+
+  tpdeny:
+    description: Deny a teleport request
+    usage: /tpdeny [player]
+
   teleport:
     description: Teleport confirmation command
     usage: /teleport <confirm|cancel>
     aliases:
       - tpconfirm
       - tpcancel
+
   setspawn:
     description: Set the server spawn location
     usage: /setspawn
     permission: chadteleport.setspawn
+
   spawn:
     description: Teleport to the server spawn
     usage: /spawn
     permission: chadteleport.spawn
 
+  sethome:
+    description: Set one of your homes
+    usage: /sethome [name]
+
+  home:
+    description: Teleport to one of your homes
+    usage: /home [name]
+
+  delhome:
+    description: Delete one of your homes
+    usage: /delhome <name>
+
+  homes:
+    description: List your homes
+    usage: /homes
+
 permissions:
   chadteleport.admin:
     description: Allows use of /chadteleport reload
     default: op
+
   chadteleport.setspawn:
     description: Allows setting the server spawn
     default: op
+
   chadteleport.bypass.*:
     description: Bypass all ChadTeleport restrictions
     default: op
@@ -64,3 +88,15 @@ permissions:
   chadteleport.spawn:
     description: Allows using /spawn
     default: true
+
+  chadteleport.home.*:
+    description: Allows unlimited homes
+    default: op
+
+  chadteleport.home.1:
+    description: Allows 1 home
+    default: false
+
+  chadteleport.home.3:
+    description: Allows 3 homes
+    default: false

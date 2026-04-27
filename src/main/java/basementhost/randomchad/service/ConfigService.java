@@ -90,28 +90,72 @@ public class ConfigService {
 	public boolean isSpawnEnabled() {
 		return config().getBoolean("features.spawn.enable", false);
 	}
+
 	public boolean isSpawnPermissionRequired() {
 		return config().getBoolean("features.spawn.require-permission", false);
 	}
+
 	public String getSpawnPermission() {
 		return config().getString("features.spawn.permission", "chadteleport.spawn");
 	}
+
 	public boolean isSpawnMoneyEnabled() {
 		return config().getBoolean("features.spawn.money", true);
 	}
+
 	public boolean isSpawnUsingTpaPricing() {
 		return config().getBoolean("features.spawn.use-tpa-pricing", true);
 	}
+
 	public double getSpawnFixedPrice() {
 		return config().getDouble("features.spawn.fixed-price", 0.0);
 	}
+
 	public boolean isSpawnWarmupEnabled() {
 		return config().getBoolean("features.spawn.warmup", true);
 	}
+
 	public boolean isSpawnUsingTpaWarmup() {
 		return config().getBoolean("features.spawn.use-tpa-warmup", true);
 	}
+
 	public double getSpawnFixedWarmupSeconds() {
 		return config().getDouble("features.spawn.fixed-warmup-seconds", 0.0);
+	}
+
+	public boolean isHomeEnabled() {
+		return config().getBoolean("features.home.enable", false);
+	}
+
+	public boolean isHomeMoneyEnabled() {
+		return config().getBoolean("features.home.money", true);
+	}
+
+	public boolean isHomeWarmupEnabled() {
+		return config().getBoolean("features.home.warmup", true);
+	}
+
+	public boolean isHomeUsingCustomPricingFormula() {
+		return config().getBoolean("features.home.pricing.use-custom-formula", false);
+	}
+
+	public double getHomeBasePrice() {
+		return config().getDouble("features.home.pricing.base-price", 10.0);
+	}
+
+	public double getHomeDistancePricePer1k() {
+		return config().getDouble("features.home.pricing.distance-price-1k", 10.0);
+	}
+
+	public boolean isHomeUsingCustomTimingFormula() {
+		return config().getBoolean("features.home.timing.use-custom-formula", false);
+	}
+
+	public double getHomeBaseTime() {
+		return config().getDouble("features.home.timing.base-time", 3.0);
+	}
+
+	public double getHomeDistanceTimePer1k() {
+		return config().getDouble("features.home.timing.distance-time-1k", 1.0);
 	}
 }

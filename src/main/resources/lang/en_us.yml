@@ -14,6 +14,10 @@ general:
     tpdeny: "<yellow>Usage: <white>/tpdeny [player]</white></yellow>"
     setspawn: "<yellow>Usage: <white>/setspawn</white></yellow>"
     spawn: "<yellow>Usage: <white>/spawn</white></yellow>"
+    sethome: "<yellow>Usage: <white>/sethome [name]</white></yellow>"
+    home: "<yellow>Usage: <white>/home [name]</white></yellow>"
+    delhome: "<yellow>Usage: <white>/delhome <name></white></yellow>"
+    homes: "<yellow>Usage: <white>/homes</white></yellow>"
 
 calculator:
   world-null: "<red>World cannot be null.</red>"
@@ -108,3 +112,21 @@ spawn:
   quote-created: "<yellow>Server spawn teleport quote created:</yellow>"
   destination: "<gray>Destination: <white>Server Spawn</white></gray>"
   permission-denied: "<red>You do not have permission to use /spawn.</red>"
+
+home:
+  player-only-sethome: "<red>Only players can use /sethome.</red>"
+  player-only-delhome: "<red>Only players can use /delhome.</red>"
+  player-only-homes: "<red>Only players can use /homes.</red>"
+  created: "<green>Home <white>{name}</white><green> has been set.</green>"
+  updated: "<yellow>Home <white>{name}</white><yellow> has been updated.</yellow>"
+  deleted: "<green>Home <white>{name}</white><green> has been deleted.</green>"
+  limit-reached: "<red>You have reached your home limit: <white>{max}</white></red>"
+  not-found: "<red>Home <white>{name}</white><red> was not found.</red>"
+  none: "<gray>You have not set any homes yet.</gray>"
+  quote-created: "<yellow>Home teleport quote created:</yellow>"
+  destination: "<gray>Home destination: <white>{name}</white></gray>"
+  list-header: "<gold>Your Homes <gray>(<white>{used}</white>/<white>{max}</white><gray>):</gray></gold>"
+  list-header-empty: "<gold>Your Homes <gray>(<white>{used}</white>/<white>{max}</white><gray>):</gray></gold>"
+  list-entry: "<yellow>- <white>{name}</white></yellow>"
+  default-name: "default"
+  unlimited: "unlimited"

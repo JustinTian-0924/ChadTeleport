@@ -20,6 +20,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	private ExpirationService expirationService;
 	private LangService langService;
 	private SpawnService spawnService;
+	private HomeService homeService;
+	private HomeLimitService homeLimitService;
 
 	@Override
 	public void onEnable() {
@@ -33,8 +35,11 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.spawnService = new SpawnService(this);
 		this.spawnService.load();
 		this.expirationService = new ExpirationService(this);
+		this.homeService = new HomeService(this);
+		this.homeLimitService = new HomeLimitService();
 		this.langService = new LangService(this);
 		this.langService.load();
+
 
 		registerCommands();
 		registerListeners();
@@ -61,6 +66,14 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerCommand("teleport", new TeleportCommand(this));
 		registerCommand("setspawn", new SetSpawnCommand(this));
 		registerCommand("spawn", new SpawnCommand(this));
+		registerCommand("sethome", new SetHomeCommand(this));
+		registerCommand("home", new HomeCommand(this));
+		registerCommand("delhome", new DelHomeCommand(this));
+		registerCommand("homes", new HomesCommand(this));
+		HomeTabCompleter homeTabCompleter = new HomeTabCompleter(this);
+		registerTabCompleter("sethome", homeTabCompleter);
+		registerTabCompleter("home", homeTabCompleter);
+		registerTabCompleter("delhome", homeTabCompleter);
 
 		AdminCommand adminCommand = new AdminCommand(this);
 		registerCommand("chadteleport", adminCommand);
@@ -134,11 +147,19 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		return expirationService;
 	}
 
+	public SpawnService getSpawnService() {
+		return spawnService;
+	}
+
+	public HomeService getHomeService() {
+		return homeService;
+	}
+	public HomeLimitService getHomeLimitService() {
+		return homeLimitService;
+	}
+
 	public LangService getLangService() {
 		return langService;
 	}
 
-	public SpawnService getSpawnService() {
-		return spawnService;
-	}
 }

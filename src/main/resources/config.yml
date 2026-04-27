@@ -11,6 +11,18 @@ features:
     warmup: true
     use-tpa-warmup: true
     fixed-warmup-seconds: 0.0
+  home:
+    enable: true
+    money: true
+    warmup: true
+    pricing:
+      use-custom-formula: false
+      base-price: 10.0
+      distance-price-1k: 10.0
+    timing:
+      use-custom-formula: false
+      base-time: 3.0
+      distance-time-1k: 1.0
   tpa:
     enable: true
     money: true

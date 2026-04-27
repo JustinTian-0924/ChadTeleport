@@ -14,6 +14,10 @@ general:
     tpdeny: "<yellow>用法: <white>/tpdeny [玩家名]</white></yellow>"
     setspawn: "<yellow>用法: <white>/setspawn</white></yellow>"
     spawn: "<yellow>用法: <white>/spawn</white></yellow>"
+    sethome: "<yellow>用法: <white>/sethome [名称]</white></yellow>"
+    home: "<yellow>用法: <white>/home [名称]</white></yellow>"
+    delhome: "<yellow>用法: <white>/delhome <名称></white></yellow>"
+    homes: "<yellow>用法: <white>/homes</white></yellow>"
 
 calculator:
   world-null: "<red>世界不能为空。</red>"
@@ -108,3 +112,21 @@ spawn:
   quote-created: "<yellow>服务器出生点传送报价已生成：</yellow>"
   destination: "<gray>目标: <white>服务器出生点</white></gray>"
   permission-denied: "<red>你没有权限使用 /spawn。</red>"
+
+home:
+  player-only-sethome: "<red>只有玩家可以使用 /sethome。</red>"
+  player-only-delhome: "<red>只有玩家可以使用 /delhome。</red>"
+  player-only-homes: "<red>只有玩家可以使用 /homes。</red>"
+  created: "<green>Home <white>{name}</white><green> 设置成功。</green>"
+  updated: "<yellow>Home <white>{name}</white><yellow> 已更新。</yellow>"
+  deleted: "<green>Home <white>{name}</white><green> 已删除。</green>"
+  limit-reached: "<red>你可以设置的 home 数量已达上限：<white>{max}</white></red>"
+  not-found: "<red>未找到名为 <white>{name}</white><red> 的 home。</red>"
+  none: "<gray>你当前还没有设置任何 home。</gray>"
+  quote-created: "<yellow>Home 传送报价已生成：</yellow>"
+  destination: "<gray>目标 Home: <white>{name}</white></gray>"
+  list-header: "<gold>你的 Homes <gray>(<white>{used}</white>/<white>{max}</white><gray>):</gray></gold>"
+  list-header-empty: "<gold>你的 Homes <gray>(<white>{used}</white>/<white>{max}</white><gray>):</gray></gold>"
+  list-entry: "<yellow>- <white>{name}</white></yellow>"
+  default-name: "默认"
+  unlimited: "无限"
