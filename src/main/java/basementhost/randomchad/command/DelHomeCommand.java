@@ -1,6 +1,7 @@
 package basementhost.randomchad.command;
 
 import basementhost.randomchad.ChadteleportPlugin;
+import basementhost.randomchad.util.HomeNameValidator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,7 +30,15 @@ public class DelHomeCommand implements CommandExecutor {
 			return true;
 		}
 
-		String homeName = normalizeHomeName(args[0]);
+		if (!HomeNameValidator.isValid(args[0])) {
+			plugin.getLangService().send(player, "home.invalid-name", Map.of(
+					"min", String.valueOf(HomeNameValidator.getMinLength()),
+					"max", String.valueOf(HomeNameValidator.getMaxLength())
+			));
+			return true;
+		}
+
+		String homeName = HomeNameValidator.normalize(args[0]);
 
 		boolean deleted = plugin.getHomeService().deleteHome(player, homeName);
 		if (!deleted) {

@@ -6,6 +6,7 @@ import basementhost.randomchad.model.HomeEntry;
 import basementhost.randomchad.model.PendingTeleportOffer;
 import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.util.HomeMessageUtil;
+import basementhost.randomchad.util.HomeNameValidator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -39,7 +40,19 @@ public class HomeCommand implements CommandExecutor {
 			return true;
 		}
 
-		String homeName = (args.length == 0) ? "default" : normalizeHomeName(args[0]);
+		String homeName;
+		if (args.length == 0) {
+			homeName = "default";
+		} else {
+			if (!HomeNameValidator.isValid(args[0])) {
+				plugin.getLangService().send(player, "home.invalid-name", Map.of(
+						"min", String.valueOf(HomeNameValidator.getMinLength()),
+						"max", String.valueOf(HomeNameValidator.getMaxLength())
+				));
+				return true;
+			}
+			homeName = HomeNameValidator.normalize(args[0]);
+		}
 
 		HomeEntry home = plugin.getHomeService().getHome(player, homeName);
 		if (home == null) {

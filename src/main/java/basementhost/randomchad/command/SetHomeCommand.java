@@ -1,13 +1,13 @@
 package basementhost.randomchad.command;
 
 import basementhost.randomchad.ChadteleportPlugin;
+import basementhost.randomchad.util.HomeNameValidator;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Locale;
 import java.util.Map;
 
 public class SetHomeCommand implements CommandExecutor {
@@ -30,7 +30,19 @@ public class SetHomeCommand implements CommandExecutor {
 			return true;
 		}
 
-		String homeName = (args.length == 0) ? "default" : normalizeHomeName(args[0]);
+		String homeName;
+		if (args.length == 0) {
+			homeName = "default";
+		} else {
+			if (!HomeNameValidator.isValid(args[0])) {
+				plugin.getLangService().send(player, "home.invalid-name", Map.of(
+						"min", String.valueOf(HomeNameValidator.getMinLength()),
+						"max", String.valueOf(HomeNameValidator.getMaxLength())
+				));
+				return true;
+			}
+			homeName = HomeNameValidator.normalize(args[0]);
+		}
 
 		boolean alreadyExists = plugin.getHomeService().hasHome(player, homeName);
 
@@ -55,12 +67,5 @@ public class SetHomeCommand implements CommandExecutor {
 		);
 
 		return true;
-	}
-
-	private String normalizeHomeName(String input) {
-		if (input == null || input.isBlank()) {
-			return "default";
-		}
-		return input.toLowerCase(Locale.ROOT);
 	}
 }

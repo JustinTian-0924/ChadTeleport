@@ -130,3 +130,4 @@ home:
   list-entry: "<yellow>- <white>{name}</white></yellow>"
   default-name: "default"
   unlimited: "unlimited"
+  invalid-name: "<red>Invalid home name. Only {min} to {max} characters using letters, numbers, underscore(_) and hyphen(-) are allowed.</red>"
