@@ -3,6 +3,8 @@ package basementhost.randomchad.command;
 import basementhost.randomchad.ChadteleportPlugin;
 import basementhost.randomchad.model.HomeEntry;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -51,7 +53,15 @@ public class HomesCommand implements CommandExecutor {
 		));
 
 		List<String> names = new ArrayList<>(homes.keySet());
-		names.sort(String::compareToIgnoreCase);
+		names.sort((a, b) -> {
+			if (a.equalsIgnoreCase("default")) {
+				return -1;
+			}
+			if (b.equalsIgnoreCase("default")) {
+				return 1;
+			}
+			return a.compareToIgnoreCase(b);
+		});
 
 		for (String name : names) {
 			boolean isDefault = name.equalsIgnoreCase("default");
@@ -60,12 +70,22 @@ public class HomesCommand implements CommandExecutor {
 					? plugin.getLangService().getRaw("home.default-name")
 					: name;
 
+			String commandText = "/home " + name;
+
 			Component line = plugin.getLangService().get("home.list-entry", Map.of(
-					"name", displayName
-			));
+							"name", displayName
+					)).clickEvent(ClickEvent.runCommand(commandText))
+					.hoverEvent(HoverEvent.showText(
+							plugin.getLangService().get("home.list-entry-hover", Map.of(
+									"name", displayName,
+									"command", commandText
+							))
+					));
 
 			player.sendMessage(line);
 		}
+
+		player.sendMessage(plugin.getLangService().get("home.list-footer"));
 
 		return true;
 	}

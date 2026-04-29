@@ -128,6 +128,8 @@ home:
   list-header: "<gold>Your Homes <gray>(<white>{used}</white>/<white>{max}</white><gray>):</gray></gold>"
   list-header-empty: "<gold>Your Homes <gray>(<white>{used}</white>/<white>{max}</white><gray>):</gray></gold>"
   list-entry: "<yellow>- <white>{name}</white></yellow>"
+  list-entry-hover: "<gray>Click to teleport to home: <white>{name}</white></gray>\n<dark_gray>{command}</dark_gray>"
+  list-footer: "<gray>Click a home name above to teleport.</gray>"
   default-name: "default"
   unlimited: "unlimited"
   invalid-name: "<red>Invalid home name. Only {min} to {max} characters using letters, numbers, underscore(_) and hyphen(-) are allowed.</red>"
