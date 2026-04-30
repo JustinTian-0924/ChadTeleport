@@ -1,5 +1,5 @@
 name: Chadteleport
-version: 0.3.0
+version: 0.3.1
 main: basementhost.randomchad.ChadteleportPlugin
 api-version: '1.21'
 description: Teleportation Plugin with few tweak
@@ -53,6 +53,16 @@ commands:
   warp:
     description: Teleport to a public warp
     usage: /warp <name>
+    permission: chadteleport.warp
+
+  delwarp:
+    description: Delete a public warp
+    usage: /delwarp <name>
+    permission: chadteleport.delwarp
+
+  warps:
+    description: List all public warps
+    usage: /warps
     permission: chadteleport.warp
 
   sethome:

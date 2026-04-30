@@ -15,7 +15,9 @@ general:
     setspawn: "<yellow>用法: <white>/setspawn</white></yellow>"
     spawn: "<yellow>用法: <white>/spawn</white></yellow>"
     setwarp: "<yellow>用法: <white>/setwarp <名称></white></yellow>"
+    delwarp: "<yellow>用法: <white>/delwarp <名称></white></yellow>"
     warp: "<yellow>用法: <white>/warp <名称></white></yellow>"
+    warps: "<yellow>用法: <white>/warps</white></yellow>"
     sethome: "<yellow>用法: <white>/sethome [名称]</white></yellow>"
     home: "<yellow>用法: <white>/home [名称]</white></yellow>"
     delhome: "<yellow>用法: <white>/delhome <名称></white></yellow>"
@@ -89,6 +91,11 @@ teleport:
   success: "<green>传送成功。</green>"
   failed: "<red>传送失败。</red>"
   no-pending-or-warmup: "<red>你当前没有待确认的传送报价或正在进行的预热可取消。</red>"
+  quote-distance: "<gray>距离: <white>{distance}</white></gray>"
+  quote-price: "<gray>价格: <white>{price}</white></gray>"
+  quote-warmup: "<gray>预热时间: <white>{seconds}</white> 秒</gray>"
+  quote-cross-world: "<gray>跨世界: <white>{value}</white></gray>"
+  quote-confirm-hint: "<yellow>输入 <white>/teleport confirm</white> 确认传送，或输入 <white>/teleport cancel</white> 取消。</yellow>"
 
 feature:
   tpa-disabled: "<red>TPA 功能当前已关闭。</red>"
@@ -117,15 +124,22 @@ spawn:
 
 warp:
   player-only-setwarp: "<red>只有玩家可以使用 /setwarp。</red>"
+  player-only-delwarp: "<red>只有玩家可以使用 /delwarp。</red>"
   player-only-warp: "<red>只有玩家可以使用 /warp。</red>"
+  player-only-warps: "<red>只有玩家可以使用 /warps。</red>"
   disabled: "<red>Warp 功能当前未启用。</red>"
   created: "<green>Warp <white>{name}</white><green> 设置成功。</green>"
   updated: "<yellow>Warp <white>{name}</white><yellow> 已更新。</yellow>"
+  deleted: "<green>Warp <white>{name}</white><green> 已删除。</green>"
   save-failed: "<red>Warp <white>{name}</white><red> 保存失败。</red>"
   invalid-name: "<red>Warp 名称不合法。只允许 {min} 到 {max} 位的英文字母、数字、下划线(_)和短横线(-)。</red>"
   not-found: "<red>未找到名为 <white>{name}</white><red> 的 warp。</red>"
+  none: "<gray>当前还没有任何 warp。</gray>"
   quote-created: "<yellow>Warp 传送报价已生成：</yellow>"
   destination: "<gray>目标 Warp: <white>{name}</white></gray>"
+  list-header: "<gold>可用 Warps <gray>(<white>{count}</white><gray>):</gray></gold>"
+  list-header-empty: "<gold>可用 Warps <gray>(<white>0</white><gray>):</gray></gold>"
+  list-entry: "<yellow>- <white>{name}</white></yellow>"
 
 home:
   player-only-sethome: "<red>只有玩家可以使用 /sethome。</red>"

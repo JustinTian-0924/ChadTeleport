@@ -15,7 +15,9 @@ general:
     setspawn: "<yellow>Usage: <white>/setspawn</white></yellow>"
     spawn: "<yellow>Usage: <white>/spawn</white></yellow>"
     setwarp: "<yellow>Usage: <white>/setwarp <name></white></yellow>"
+    delwarp: "<yellow>Usage: <white>/delwarp <name></white></yellow>"
     warp: "<yellow>Usage: <white>/warp <name></white></yellow>"
+    warps: "<yellow>Usage: <white>/warps</white></yellow>"
     sethome: "<yellow>Usage: <white>/sethome [name]</white></yellow>"
     home: "<yellow>Usage: <white>/home [name]</white></yellow>"
     delhome: "<yellow>Usage: <white>/delhome <name></white></yellow>"
@@ -89,6 +91,11 @@ teleport:
   success: "<green>Teleported successfully.</green>"
   failed: "<red>Teleport failed.</red>"
   no-pending-or-warmup: "<red>You have no pending teleport quote or active warmup to cancel.</red>"
+  quote-distance: "<gray>Distance: <white>{distance}</white></gray>"
+  quote-price: "<gray>Price: <white>{price}</white></gray>"
+  quote-warmup: "<gray>Warmup: <white>{seconds}</white> seconds</gray>"
+  quote-cross-world: "<gray>Cross-world: <white>{value}</white></gray>"
+  quote-confirm-hint: "<yellow>Type <white>/teleport confirm</white> to confirm, or <white>/teleport cancel</white> to cancel.</yellow>"
 
 feature:
   tpa-disabled: "<red>TPA feature is disabled.</red>"
@@ -117,15 +124,22 @@ spawn:
 
 warp:
   player-only-setwarp: "<red>Only players can use /setwarp.</red>"
+  player-only-delwarp: "<red>Only players can use /delwarp.</red>"
   player-only-warp: "<red>Only players can use /warp.</red>"
+  player-only-warps: "<red>Only players can use /warps.</red>"
   disabled: "<red>The warp feature is currently disabled.</red>"
   created: "<green>Warp <white>{name}</white><green> has been set.</green>"
   updated: "<yellow>Warp <white>{name}</white><yellow> has been updated.</yellow>"
+  deleted: "<green>Warp <white>{name}</white><green> has been deleted.</green>"
   save-failed: "<red>Failed to save warp <white>{name}</white><red>.</red>"
   invalid-name: "<red>Invalid warp name. Only {min} to {max} characters using letters, numbers, underscore(_) and hyphen(-) are allowed.</red>"
   not-found: "<red>Warp <white>{name}</white><red> was not found.</red>"
+  none: "<gray>There are currently no warps.</gray>"
   quote-created: "<yellow>Warp teleport quote created:</yellow>"
   destination: "<gray>Warp destination: <white>{name}</white></gray>"
+  list-header: "<gold>Available Warps <gray>(<white>{count}</white><gray>):</gray></gold>"
+  list-header-empty: "<gold>Available Warps <gray>(<white>0</white><gray>):</gray></gold>"
+  list-entry: "<yellow>- <white>{name}</white></yellow>"
 
 home:
   player-only-sethome: "<red>Only players can use /sethome.</red>"
