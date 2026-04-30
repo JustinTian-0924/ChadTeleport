@@ -14,6 +14,8 @@ general:
     tpdeny: "<yellow>用法: <white>/tpdeny [玩家名]</white></yellow>"
     setspawn: "<yellow>用法: <white>/setspawn</white></yellow>"
     spawn: "<yellow>用法: <white>/spawn</white></yellow>"
+    setwarp: "<yellow>用法: <white>/setwarp <名称></white></yellow>"
+    warp: "<yellow>用法: <white>/warp <名称></white></yellow>"
     sethome: "<yellow>用法: <white>/sethome [名称]</white></yellow>"
     home: "<yellow>用法: <white>/home [名称]</white></yellow>"
     delhome: "<yellow>用法: <white>/delhome <名称></white></yellow>"
@@ -112,6 +114,18 @@ spawn:
   quote-created: "<yellow>服务器出生点传送报价已生成：</yellow>"
   destination: "<gray>目标: <white>服务器出生点</white></gray>"
   permission-denied: "<red>你没有权限使用 /spawn。</red>"
+
+warp:
+  player-only-setwarp: "<red>只有玩家可以使用 /setwarp。</red>"
+  player-only-warp: "<red>只有玩家可以使用 /warp。</red>"
+  disabled: "<red>Warp 功能当前未启用。</red>"
+  created: "<green>Warp <white>{name}</white><green> 设置成功。</green>"
+  updated: "<yellow>Warp <white>{name}</white><yellow> 已更新。</yellow>"
+  save-failed: "<red>Warp <white>{name}</white><red> 保存失败。</red>"
+  invalid-name: "<red>Warp 名称不合法。只允许 {min} 到 {max} 位的英文字母、数字、下划线(_)和短横线(-)。</red>"
+  not-found: "<red>未找到名为 <white>{name}</white><red> 的 warp。</red>"
+  quote-created: "<yellow>Warp 传送报价已生成：</yellow>"
+  destination: "<gray>目标 Warp: <white>{name}</white></gray>"
 
 home:
   player-only-sethome: "<red>只有玩家可以使用 /sethome。</red>"

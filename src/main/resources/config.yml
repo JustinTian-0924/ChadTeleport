@@ -11,6 +11,14 @@ features:
     warmup: true
     use-tpa-warmup: true
     fixed-warmup-seconds: 0.0
+  warp:
+    enable: true
+    money: true
+    warmup: true
+    use-tpa-pricing: true
+    fixed-price: 0.0
+    use-tpa-warmup: true
+    fixed-warmup-seconds: 0.0
   home:
     enable: true
     money: true

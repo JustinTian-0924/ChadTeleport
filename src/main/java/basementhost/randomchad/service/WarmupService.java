@@ -70,6 +70,8 @@ public class WarmupService {
 		boolean warmupEnabled;
 		if (offer.getFeatureName().equalsIgnoreCase("spawn")) {
 			warmupEnabled = plugin.getConfigService().isSpawnWarmupEnabled();
+		} else if (offer.getFeatureName().equalsIgnoreCase("warp")) {
+			warmupEnabled = plugin.getConfigService().isWarpWarmupEnabled();
 		} else if (offer.getFeatureName().equalsIgnoreCase("home")) {
 			warmupEnabled = plugin.getConfigService().isHomeWarmupEnabled();
 		} else {
@@ -160,6 +162,8 @@ public class WarmupService {
 		boolean moneyEnabled;
 		if (activeTeleport.getFeatureName().equalsIgnoreCase("spawn")) {
 			moneyEnabled = plugin.getConfigService().isSpawnMoneyEnabled();
+		} else if (activeTeleport.getFeatureName().equalsIgnoreCase("warp")) {
+			moneyEnabled = plugin.getConfigService().isWarpMoneyEnabled();
 		} else if (activeTeleport.getFeatureName().equalsIgnoreCase("home")) {
 			moneyEnabled = plugin.getConfigService().isHomeMoneyEnabled();
 		} else {

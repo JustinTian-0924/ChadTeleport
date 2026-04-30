@@ -1,5 +1,5 @@
 name: Chadteleport
-version: 0.2.2
+version: 0.3.0
 main: basementhost.randomchad.ChadteleportPlugin
 api-version: '1.21'
 description: Teleportation Plugin with few tweak
@@ -44,6 +44,16 @@ commands:
     description: Teleport to the server spawn
     usage: /spawn
     permission: chadteleport.spawn
+
+  setwarp:
+    description: Set a public warp point
+    usage: /setwarp <name>
+    permission: chadteleport.setwarp
+
+  warp:
+    description: Teleport to a public warp
+    usage: /warp <name>
+    permission: chadteleport.warp
 
   sethome:
     description: Set one of your homes

@@ -162,6 +162,16 @@ public class TeleportCalculator {
 			}
 		}
 
+		if ("warp".equalsIgnoreCase(featureName)) {
+			if (!configService.isWarpUsingTpaPricing()) {
+				price = configService.getWarpFixedPrice();
+			}
+
+			if (!configService.isWarpUsingTpaWarmup()) {
+				warmupSeconds = configService.getWarpFixedWarmupSeconds();
+			}
+		}
+
 		if ("home".equalsIgnoreCase(featureName)) {
 			if (configService.isHomeUsingCustomPricingFormula()) {
 				price = configService.getHomeBasePrice()

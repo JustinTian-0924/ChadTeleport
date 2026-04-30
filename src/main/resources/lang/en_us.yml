@@ -14,6 +14,8 @@ general:
     tpdeny: "<yellow>Usage: <white>/tpdeny [player]</white></yellow>"
     setspawn: "<yellow>Usage: <white>/setspawn</white></yellow>"
     spawn: "<yellow>Usage: <white>/spawn</white></yellow>"
+    setwarp: "<yellow>Usage: <white>/setwarp <name></white></yellow>"
+    warp: "<yellow>Usage: <white>/warp <name></white></yellow>"
     sethome: "<yellow>Usage: <white>/sethome [name]</white></yellow>"
     home: "<yellow>Usage: <white>/home [name]</white></yellow>"
     delhome: "<yellow>Usage: <white>/delhome <name></white></yellow>"
@@ -112,6 +114,18 @@ spawn:
   quote-created: "<yellow>Server spawn teleport quote created:</yellow>"
   destination: "<gray>Destination: <white>Server Spawn</white></gray>"
   permission-denied: "<red>You do not have permission to use /spawn.</red>"
+
+warp:
+  player-only-setwarp: "<red>Only players can use /setwarp.</red>"
+  player-only-warp: "<red>Only players can use /warp.</red>"
+  disabled: "<red>The warp feature is currently disabled.</red>"
+  created: "<green>Warp <white>{name}</white><green> has been set.</green>"
+  updated: "<yellow>Warp <white>{name}</white><yellow> has been updated.</yellow>"
+  save-failed: "<red>Failed to save warp <white>{name}</white><red>.</red>"
+  invalid-name: "<red>Invalid warp name. Only {min} to {max} characters using letters, numbers, underscore(_) and hyphen(-) are allowed.</red>"
+  not-found: "<red>Warp <white>{name}</white><red> was not found.</red>"
+  quote-created: "<yellow>Warp teleport quote created:</yellow>"
+  destination: "<gray>Warp destination: <white>{name}</white></gray>"
 
 home:
   player-only-sethome: "<red>Only players can use /sethome.</red>"

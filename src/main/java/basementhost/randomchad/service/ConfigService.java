@@ -158,4 +158,32 @@ public class ConfigService {
 	public double getHomeDistanceTimePer1k() {
 		return config().getDouble("features.home.timing.distance-time-1k", 1.0);
 	}
+
+	public boolean isWarpEnabled() {
+		return config().getBoolean("features.warp.enable", false);
+	}
+
+	public boolean isWarpMoneyEnabled() {
+		return config().getBoolean("features.warp.money", true);
+	}
+
+	public boolean isWarpUsingTpaPricing() {
+		return config().getBoolean("features.warp.use-tpa-pricing", true);
+	}
+
+	public double getWarpFixedPrice() {
+		return config().getDouble("features.warp.fixed-price", 0.0);
+	}
+
+	public boolean isWarpWarmupEnabled() {
+		return config().getBoolean("features.warp.warmup", true);
+	}
+
+	public boolean isWarpUsingTpaWarmup() {
+		return config().getBoolean("features.warp.use-tpa-warmup", true);
+	}
+
+	public double getWarpFixedWarmupSeconds() {
+		return config().getDouble("features.warp.fixed-warmup-seconds", 0.0);
+	}
 }

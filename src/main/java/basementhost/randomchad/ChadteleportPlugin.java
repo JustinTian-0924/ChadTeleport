@@ -22,6 +22,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	private SpawnService spawnService;
 	private HomeService homeService;
 	private HomeLimitService homeLimitService;
+	private WarpService warpService;
 
 	@Override
 	public void onEnable() {
@@ -37,6 +38,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.expirationService = new ExpirationService(this);
 		this.homeService = new HomeService(this);
 		this.homeLimitService = new HomeLimitService();
+		this.warpService = new WarpService(this);
 		this.langService = new LangService(this);
 		this.langService.load();
 
@@ -66,6 +68,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerCommand("teleport", new TeleportCommand(this));
 		registerCommand("setspawn", new SetSpawnCommand(this));
 		registerCommand("spawn", new SpawnCommand(this));
+		registerCommand("setwarp", new SetWarpCommand(this));
+		registerCommand("warp", new WarpCommand(this));
 		registerCommand("sethome", new SetHomeCommand(this));
 		registerCommand("home", new HomeCommand(this));
 		registerCommand("delhome", new DelHomeCommand(this));
@@ -154,8 +158,13 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	public HomeService getHomeService() {
 		return homeService;
 	}
+
 	public HomeLimitService getHomeLimitService() {
 		return homeLimitService;
+	}
+
+	public WarpService getWarpService() {
+		return warpService;
 	}
 
 	public LangService getLangService() {
