@@ -22,46 +22,7 @@ public final class TeleportMessageUtil {
 				"target", quote.getTarget().getName()
 		)));
 
-		player.sendMessage(langService.get("quote.distance", Map.of(
-				"distance", String.valueOf(quote.getDistance())
-		)));
-
-		player.sendMessage(langService.get("quote.fee", Map.of(
-				"price", String.valueOf(quote.getPrice())
-		)));
-
-		player.sendMessage(langService.get("quote.warmup", Map.of(
-				"seconds", String.valueOf(quote.getWarmupSeconds()),
-				"ticks", String.valueOf(quote.getWarmupTicks())
-		)));
-
-		String crossWorldText = quote.isCrossWorld()
-				? langService.getRaw("general.yes")
-				: langService.getRaw("general.no");
-
-		player.sendMessage(langService.get("quote.cross-world", Map.of(
-				"cross_world", crossWorldText
-		)));
-
-		Component confirmButton = Component.text(
-						langService.getRaw("buttons.confirm"),
-						NamedTextColor.GREEN
-				)
-				.clickEvent(ClickEvent.runCommand("/teleport confirm"))
-				.hoverEvent(HoverEvent.showText(langService.get("quote.confirm-hover")));
-
-		Component cancelButton = Component.text(
-						langService.getRaw("buttons.cancel"),
-						NamedTextColor.RED
-				)
-				.clickEvent(ClickEvent.runCommand("/teleport cancel"))
-				.hoverEvent(HoverEvent.showText(langService.get("quote.cancel-hover")));
-
-		Component buttonsLine = confirmButton
-				.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-				.append(cancelButton);
-
-		player.sendMessage(buttonsLine);
+		QuoteMessageUtil.sendQuoteDetails(player, quote, langService);
 	}
 
 	public static void sendIncomingRequestMessage(

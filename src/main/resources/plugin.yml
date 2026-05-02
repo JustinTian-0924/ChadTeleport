@@ -1,5 +1,5 @@
 name: Chadteleport
-version: 0.3.2
+version: 0.3.3
 main: basementhost.randomchad.ChadteleportPlugin
 api-version: '1.21'
 description: Teleportation Plugin with few tweak
