@@ -54,11 +54,11 @@ public class TeleportOffer {
 	}
 
 	public Location getFrom() {
-		return from;
+		return from == null ? null : from.clone();
 	}
 
 	public Location getDestination() {
-		return destination;
+		return destination == null ? null : destination.clone();
 	}
 
 	public double getDistance() {

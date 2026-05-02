@@ -1,6 +1,7 @@
 package basementhost.randomchad;
 
 import basementhost.randomchad.command.*;
+import basementhost.randomchad.listener.PendingOfferMoveInvalidationListener;
 import basementhost.randomchad.listener.QuoteInvalidationListener;
 import basementhost.randomchad.listener.RequestTargetMoveInvalidationListener;
 import basementhost.randomchad.listener.WarmupInterruptListener;
@@ -94,6 +95,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new QuoteInvalidationListener(this), this);
 		getServer().getPluginManager().registerEvents(new WarmupInterruptListener(this), this);
 		getServer().getPluginManager().registerEvents(new RequestTargetMoveInvalidationListener(this), this);
+		getServer().getPluginManager().registerEvents(new PendingOfferMoveInvalidationListener(this), this);
 	}
 
 	private void registerCommand(String name, org.bukkit.command.CommandExecutor executor) {

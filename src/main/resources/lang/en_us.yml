@@ -46,6 +46,7 @@ quote:
   none: "<red>You have no pending teleport quote.</red>"
   calculate-failed: "<red>An error occurred while calculating teleport quote.</red>"
   replaced: "<red>Your previous teleport warmup was replaced.</red>"
+  expired-moved: "<red>This teleport quote has expired because you moved too far.</red>"
 
 request:
   sent: "<green>Teleport request sent to <white>{target}</white><green>.</green>"

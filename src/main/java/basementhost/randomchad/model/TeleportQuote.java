@@ -38,7 +38,7 @@ public class TeleportQuote {
 	}
 
 	public Location getFrom() {
-		return from;
+		return from == null ? null : from.clone();
 	}
 
 	public Location getTo() {

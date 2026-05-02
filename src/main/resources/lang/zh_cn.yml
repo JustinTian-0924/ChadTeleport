@@ -46,6 +46,7 @@ quote:
   none: "<red>你当前没有待确认的传送报价。</red>"
   calculate-failed: "<red>计算传送报价时发生错误。</red>"
   replaced: "<red>你之前的传送预热已被新的请求替换。</red>"
+  expired-moved: "<red>由于你移动过远，此传送报价已失效。</red>"
 
 request:
   sent: "<green>传送请求已发送给 <white>{target}</white><green>。</green>"

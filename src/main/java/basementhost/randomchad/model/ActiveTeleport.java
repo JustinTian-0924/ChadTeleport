@@ -25,7 +25,7 @@ public class ActiveTeleport {
 	}
 
 	public Location getDestination() {
-		return destination;
+		return destination == null ? null : destination.clone();
 	}
 
 	public BukkitTask getTask() {

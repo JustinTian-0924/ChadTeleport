@@ -2,6 +2,10 @@ package basementhost.randomchad.util;
 
 import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.service.LangService;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -12,30 +16,53 @@ public final class WarpMessageUtil {
 	}
 
 	public static void sendWarpQuoteMessage(Player player, String warpName, TeleportOffer offer, LangService langService) {
-		langService.send(player, "warp.quote-created", Map.of(
+		player.sendMessage(langService.get("warp.quote-created", Map.of(
 				"name", warpName
-		));
+		)));
 
-		langService.send(player, "teleport.quote-distance", Map.of(
+		player.sendMessage(langService.get("warp.destination", Map.of(
+				"name", warpName
+		)));
+
+		player.sendMessage(langService.get("quote.distance", Map.of(
 				"distance", String.valueOf(offer.getDistance())
-		));
+		)));
 
-		langService.send(player, "teleport.quote-price", Map.of(
+		player.sendMessage(langService.get("quote.fee", Map.of(
 				"price", String.valueOf(offer.getPrice())
-		));
+		)));
 
-		langService.send(player, "teleport.quote-warmup", Map.of(
-				"seconds", String.valueOf(offer.getWarmupSeconds())
-		));
+		player.sendMessage(langService.get("quote.warmup", Map.of(
+				"seconds", String.valueOf(offer.getWarmupSeconds()),
+				"ticks", String.valueOf(offer.getWarmupTicks())
+		)));
 
-		langService.send(player, "teleport.quote-cross-world", Map.of(
-				"value", String.valueOf(offer.isCrossWorld())
-		));
+		String crossWorldText = offer.isCrossWorld()
+				? langService.getRaw("general.text-yes")
+				: langService.getRaw("general.text-no");
 
-		langService.send(player, "warp.destination", Map.of(
-				"name", warpName
-		));
+		player.sendMessage(langService.get("quote.cross-world", Map.of(
+				"cross_world", crossWorldText
+		)));
 
-		langService.send(player, "teleport.quote-confirm-hint");
+		Component confirmButton = Component.text(
+						langService.getRaw("buttons.confirm"),
+						NamedTextColor.GREEN
+				)
+				.clickEvent(ClickEvent.runCommand("/teleport confirm"))
+				.hoverEvent(HoverEvent.showText(langService.get("quote.confirm-hover")));
+
+		Component cancelButton = Component.text(
+						langService.getRaw("buttons.cancel"),
+						NamedTextColor.RED
+				)
+				.clickEvent(ClickEvent.runCommand("/teleport cancel"))
+				.hoverEvent(HoverEvent.showText(langService.get("quote.cancel-hover")));
+
+		Component buttonsLine = confirmButton
+				.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
+				.append(cancelButton);
+
+		player.sendMessage(buttonsLine);
 	}
 }

@@ -186,4 +186,9 @@ public class ConfigService {
 	public double getWarpFixedWarmupSeconds() {
 		return config().getDouble("features.warp.fixed-warmup-seconds", 0.0);
 	}
+
+	public boolean isQuoteCancelledOnMove() {
+		return config().getBoolean("teleport.quote-cancel-on-move", true);
+	}
+
 }
