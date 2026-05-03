@@ -16,46 +16,71 @@ public final class QuoteMessageUtil {
 	private QuoteMessageUtil() {
 	}
 
-	public static void sendOfferDetails(Player player, TeleportOffer offer, LangService langService) {
-		player.sendMessage(langService.get("quote.distance", Map.of(
-				"distance", String.valueOf(offer.getDistance())
-		)));
+	public static void sendOfferQuote(
+			Player player,
+			TeleportOffer offer,
+			Component title,
+			Component destination,
+			LangService langService
+	) {
+		player.sendMessage(title);
+		player.sendMessage(destination);
 
-		player.sendMessage(langService.get("quote.fee", Map.of(
-				"price", String.valueOf(offer.getPrice())
-		)));
-
-		player.sendMessage(langService.get("quote.warmup", Map.of(
-				"seconds", String.valueOf(offer.getWarmupSeconds()),
-				"ticks", String.valueOf(offer.getWarmupTicks())
-		)));
-
-		String crossWorldText = offer.isCrossWorld()
-				? langService.getRaw("general.text-yes")
-				: langService.getRaw("general.text-no");
-
-		player.sendMessage(langService.get("quote.cross-world", Map.of(
-				"cross_world", crossWorldText
-		)));
-
-		sendConfirmCancelButtons(player, langService);
+		sendCommonQuoteDetails(
+				player,
+				offer.getDistance(),
+				offer.getPrice(),
+				offer.getWarmupSeconds(),
+				offer.getWarmupTicks(),
+				offer.isCrossWorld(),
+				langService
+		);
 	}
 
-	public static void sendQuoteDetails(Player player, TeleportQuote quote, LangService langService) {
+	public static void sendPlayerQuote(
+			Player player,
+			TeleportQuote quote,
+			Component title,
+			Component destination,
+			LangService langService
+	) {
+		player.sendMessage(title);
+		player.sendMessage(destination);
+
+		sendCommonQuoteDetails(
+				player,
+				quote.getDistance(),
+				quote.getPrice(),
+				quote.getWarmupSeconds(),
+				quote.getWarmupTicks(),
+				quote.isCrossWorld(),
+				langService
+		);
+	}
+
+	private static void sendCommonQuoteDetails(
+			Player player,
+			double distance,
+			double price,
+			double warmupSeconds,
+			long warmupTicks,
+			boolean crossWorld,
+			LangService langService
+	) {
 		player.sendMessage(langService.get("quote.distance", Map.of(
-				"distance", String.valueOf(quote.getDistance())
+				"distance", String.valueOf(distance)
 		)));
 
 		player.sendMessage(langService.get("quote.fee", Map.of(
-				"price", String.valueOf(quote.getPrice())
+				"price", String.valueOf(price)
 		)));
 
 		player.sendMessage(langService.get("quote.warmup", Map.of(
-				"seconds", String.valueOf(quote.getWarmupSeconds()),
-				"ticks", String.valueOf(quote.getWarmupTicks())
+				"seconds", String.valueOf(warmupSeconds),
+				"ticks", String.valueOf(warmupTicks)
 		)));
 
-		String crossWorldText = quote.isCrossWorld()
+		String crossWorldText = crossWorld
 				? langService.getRaw("general.text-yes")
 				: langService.getRaw("general.text-no");
 

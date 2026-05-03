@@ -77,6 +77,9 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerCommand("home", new HomeCommand(this));
 		registerCommand("delhome", new DelHomeCommand(this));
 		registerCommand("homes", new HomesCommand(this));
+		registerCommand("tp", new AdminTpCommand(this));
+		registerCommand("tphere", new AdminTpHereCommand(this));
+		registerCommand("tpall", new AdminTpAllCommand(this));
 		HomeTabCompleter homeTabCompleter = new HomeTabCompleter(this);
 		registerTabCompleter("sethome", homeTabCompleter);
 		registerTabCompleter("home", homeTabCompleter);
@@ -85,6 +88,10 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerTabCompleter("setwarp", warpTabCompleter);
 		registerTabCompleter("warp", warpTabCompleter);
 		registerTabCompleter("delwarp", warpTabCompleter);
+		AdminTeleportTabCompleter adminTeleportTabCompleter = new AdminTeleportTabCompleter(this);
+		registerTabCompleter("tp", adminTeleportTabCompleter);
+		registerTabCompleter("tphere", adminTeleportTabCompleter);
+		registerTabCompleter("tpall", adminTeleportTabCompleter);
 
 		AdminCommand adminCommand = new AdminCommand(this);
 		registerCommand("chadteleport", adminCommand);

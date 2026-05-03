@@ -1,5 +1,5 @@
 name: Chadteleport
-version: 0.3.3
+version: 0.4.0
 main: basementhost.randomchad.ChadteleportPlugin
 api-version: '1.21'
 description: Teleportation Plugin with few tweak
@@ -15,6 +15,21 @@ commands:
     usage: /chadteleport reload
     aliases: [ct]
     permission: chadteleport.admin
+
+  tp:
+    description: Teleport to a player instantly
+    usage: /tp <player>
+    permission: chadteleport.admin.tp
+
+  tphere:
+    description: Teleport a player to your location instantly
+    usage: /tphere <player>
+    permission: chadteleport.admin.tphere
+
+  tpall:
+    description: Teleport all players to a player or to yourself
+    usage: /tpall [player]
+    permission: chadteleport.admin.tpall
 
   tpa:
     description: Request teleport to another player

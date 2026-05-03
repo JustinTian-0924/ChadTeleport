@@ -2,6 +2,7 @@ package basementhost.randomchad.util;
 
 import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.service.LangService;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public final class SpawnMessageUtil {
@@ -10,9 +11,9 @@ public final class SpawnMessageUtil {
 	}
 
 	public static void sendSpawnQuoteMessage(Player player, TeleportOffer offer, LangService langService) {
-		player.sendMessage(langService.get("spawn.quote-created"));
-		player.sendMessage(langService.get("spawn.destination"));
+		Component title = langService.get("spawn.quote-created");
+		Component destination = langService.get("spawn.destination");
 
-		QuoteMessageUtil.sendOfferDetails(player, offer, langService);
+		QuoteMessageUtil.sendOfferQuote(player, offer, title, destination, langService);
 	}
 }

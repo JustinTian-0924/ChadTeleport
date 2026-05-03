@@ -8,6 +8,9 @@ general:
   text-yes: "Yes"
   text-no: "No"
   usage:
+    tp: "<yellow>Usage: <white>/tp <player></white></yellow>"
+    tphere: "<yellow>Usage: <white>/tphere <player></white></yellow>"
+    tpall: "<yellow>Usage: <white>/tpall [player]</white></yellow>"
     tpa: "<yellow>Usage: <white>/tpa <player></white></yellow>"
     teleport: "<yellow>Usage: <white>/teleport <confirm|cancel></white></yellow>"
     tpaccept: "<yellow>Usage: <white>/tpaccept [player]</white></yellow>"
@@ -22,6 +25,15 @@ general:
     home: "<yellow>Usage: <white>/home [name]</white></yellow>"
     delhome: "<yellow>Usage: <white>/delhome <name></white></yellow>"
     homes: "<yellow>Usage: <white>/homes</white></yellow>"
+
+admin-tp:
+  self-tp: "<red>You are already at your own location.</red>"
+  self-tphere: "<red>You cannot teleport yourself to yourself.</red>"
+  teleported-to-player: "<green>You have been teleported to <white>{target}</white><green>.</green>"
+  brought-player: "<green>You have teleported <white>{target}</white><green> to your location.</green>"
+  brought-to-player: "<yellow>You have been teleported to <white>{target}</white><yellow>.</yellow>"
+  tpall-success: "<green>Teleported <white>{count}</white><green> player(s) to <white>{target}</white><green>.</green>"
+  tpall-target-notice: "<yellow>You have been teleported by <white>{sender}</white><yellow> to <white>{target}</white><yellow>.</yellow>"
 
 calculator:
   world-null: "<red>World cannot be null.</red>"

@@ -16,13 +16,13 @@ public final class TeleportMessageUtil {
 	}
 
 	public static void sendQuoteMessage(Player player, TeleportQuote quote, LangService langService) {
-		player.sendMessage(langService.get("quote.created"));
+		Component title = langService.get("quote.created");
 
-		player.sendMessage(langService.get("quote.target", Map.of(
+		Component destination = langService.get("quote.target", Map.of(
 				"target", quote.getTarget().getName()
-		)));
+		));
 
-		QuoteMessageUtil.sendQuoteDetails(player, quote, langService);
+		QuoteMessageUtil.sendPlayerQuote(player, quote, title, destination, langService);
 	}
 
 	public static void sendIncomingRequestMessage(

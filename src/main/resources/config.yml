@@ -1,8 +1,5 @@
 language:
   default-locale: en_us
-teleport:
-  quote-cancel-on-move: true
-  quote-max-move-distance: 1.5
 features:
   spawn:
     enable: true

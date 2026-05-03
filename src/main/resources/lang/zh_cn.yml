@@ -8,6 +8,9 @@ general:
   text-yes: "是"
   text-no: "否"
   usage:
+    tp: "<yellow>用法: <white>/tp <玩家名></white></yellow>"
+    tphere: "<yellow>用法: <white>/tphere <玩家名></white></yellow>"
+    tpall: "<yellow>用法: <white>/tpall [玩家名]</white></yellow>"
     tpa: "<yellow>用法: <white>/tpa <玩家名></white></yellow>"
     teleport: "<yellow>用法: <white>/teleport <confirm|cancel></white></yellow>"
     tpaccept: "<yellow>用法: <white>/tpaccept [玩家名]</white></yellow>"
@@ -22,6 +25,15 @@ general:
     home: "<yellow>用法: <white>/home [名称]</white></yellow>"
     delhome: "<yellow>用法: <white>/delhome <名称></white></yellow>"
     homes: "<yellow>用法: <white>/homes</white></yellow>"
+
+admin-tp:
+  self-tp: "<red>你已经在自己的位置上了。</red>"
+  self-tphere: "<red>你不能把自己传送到自己这里。</red>"
+  teleported-to-player: "<green>你已传送到 <white>{target}</white><green> 的位置。</green>"
+  brought-player: "<green>你已将 <white>{target}</white><green> 传送到你的位置。</green>"
+  brought-to-player: "<yellow>你被传送到了 <white>{target}</white><yellow> 的位置。</yellow>"
+  tpall-success: "<green>已将 <white>{count}</white><green> 名玩家传送到 <white>{target}</white><green> 的位置。</green>"
+  tpall-target-notice: "<yellow>你被 <white>{sender}</white><yellow> 传送到了 <white>{target}</white><yellow> 的位置。</yellow>"
 
 calculator:
   world-null: "<red>世界不能为空。</red>"
