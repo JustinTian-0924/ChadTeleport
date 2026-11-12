@@ -1,9 +1,8 @@
 package basementhost.randomchad.command;
 
 import basementhost.randomchad.ChadteleportPlugin;
-import org.bukkit.command.Command;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class AdminTeleportTabCompleter implements TabCompleter {
+public class AdminTeleportTabCompleter implements CommandSuggestions {
 
 	private final ChadteleportPlugin plugin;
 
@@ -20,7 +19,8 @@ public class AdminTeleportTabCompleter implements TabCompleter {
 	}
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public List<String> suggest(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			return Collections.emptyList();
 		}

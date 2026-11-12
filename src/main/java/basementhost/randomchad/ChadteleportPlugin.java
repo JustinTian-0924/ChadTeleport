@@ -7,9 +7,13 @@ import basementhost.randomchad.listener.RequestTargetMoveInvalidationListener;
 import basementhost.randomchad.listener.WarmupInterruptListener;
 import basementhost.randomchad.manager.TeleportManager;
 import basementhost.randomchad.service.*;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Collection;
+import java.util.List;
 
 public final class ChadteleportPlugin extends JavaPlugin {
 
@@ -63,39 +67,40 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	}
 
 	private void registerCommands() {
-		registerCommand("tpa", new TpaCommand(this));
-		registerCommand("tpaccept", new TpAcceptCommand(this));
-		registerCommand("tpdeny", new TpDenyCommand(this));
-		registerCommand("teleport", new TeleportCommand(this));
-		registerCommand("setspawn", new SetSpawnCommand(this));
-		registerCommand("spawn", new SpawnCommand(this));
-		registerCommand("setwarp", new SetWarpCommand(this));
-		registerCommand("warp", new WarpCommand(this));
-		registerCommand("delwarp", new DelWarpCommand(this));
-		registerCommand("warps", new WarpsCommand(this));
-		registerCommand("sethome", new SetHomeCommand(this));
-		registerCommand("home", new HomeCommand(this));
-		registerCommand("delhome", new DelHomeCommand(this));
-		registerCommand("homes", new HomesCommand(this));
-		registerCommand("tp", new AdminTpCommand(this));
-		registerCommand("tphere", new AdminTpHereCommand(this));
-		registerCommand("tpall", new AdminTpAllCommand(this));
 		HomeTabCompleter homeTabCompleter = new HomeTabCompleter(this);
-		registerTabCompleter("sethome", homeTabCompleter);
-		registerTabCompleter("home", homeTabCompleter);
-		registerTabCompleter("delhome", homeTabCompleter);
 		WarpTabCompleter warpTabCompleter = new WarpTabCompleter(this);
-		registerTabCompleter("setwarp", warpTabCompleter);
-		registerTabCompleter("warp", warpTabCompleter);
-		registerTabCompleter("delwarp", warpTabCompleter);
 		AdminTeleportTabCompleter adminTeleportTabCompleter = new AdminTeleportTabCompleter(this);
-		registerTabCompleter("tp", adminTeleportTabCompleter);
-		registerTabCompleter("tphere", adminTeleportTabCompleter);
-		registerTabCompleter("tpall", adminTeleportTabCompleter);
+
+		registerPluginCommand("tpa", "Request teleport to another player", null, new TpaCommand(this), null);
+		registerPluginCommand("tpaccept", "Accept a teleport request", null, new TpAcceptCommand(this), null);
+		registerPluginCommand("tpdeny", "Deny a teleport request", null, new TpDenyCommand(this), null);
+		registerPluginCommand("teleport", "Teleport confirmation command", null, new TeleportCommand(this), null,
+				"tpconfirm", "tpcancel");
+		registerPluginCommand("setspawn", "Set the server spawn location", "chadteleport.setspawn",
+				new SetSpawnCommand(this), null);
+		registerPluginCommand("spawn", "Teleport to the server spawn", "chadteleport.spawn",
+				new SpawnCommand(this), null);
+		registerPluginCommand("setwarp", "Set a public warp point", "chadteleport.setwarp",
+				new SetWarpCommand(this), warpTabCompleter);
+		registerPluginCommand("warp", "Teleport to a public warp", "chadteleport.warp",
+				new WarpCommand(this), warpTabCompleter);
+		registerPluginCommand("delwarp", "Delete a public warp", "chadteleport.delwarp",
+				new DelWarpCommand(this), warpTabCompleter);
+		registerPluginCommand("warps", "List all public warps", "chadteleport.warp", new WarpsCommand(this), null);
+		registerPluginCommand("sethome", "Set one of your homes", null, new SetHomeCommand(this), homeTabCompleter);
+		registerPluginCommand("home", "Teleport to one of your homes", null, new HomeCommand(this), homeTabCompleter);
+		registerPluginCommand("delhome", "Delete one of your homes", null, new DelHomeCommand(this), homeTabCompleter);
+		registerPluginCommand("homes", "List your homes", null, new HomesCommand(this), null);
+		registerPluginCommand("tp", "Teleport to a player instantly", "chadteleport.admin.tp",
+				new AdminTpCommand(this), adminTeleportTabCompleter);
+		registerPluginCommand("tphere", "Teleport a player to your location instantly", "chadteleport.admin.tphere",
+				new AdminTpHereCommand(this), adminTeleportTabCompleter);
+		registerPluginCommand("tpall", "Teleport all players to a player or to yourself", "chadteleport.admin.tpall",
+				new AdminTpAllCommand(this), adminTeleportTabCompleter);
 
 		AdminCommand adminCommand = new AdminCommand(this);
-		registerCommand("chadteleport", adminCommand);
-		registerTabCompleter("chadteleport", adminCommand);
+		registerPluginCommand("chadteleport", "Chadteleport admin command", "chadteleport.admin",
+				adminCommand, adminCommand::suggest, "ct");
 	}
 
 	private void registerListeners() {
@@ -105,13 +110,26 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new PendingOfferMoveInvalidationListener(this), this);
 	}
 
-	private void registerCommand(String name, org.bukkit.command.CommandExecutor executor) {
-		PluginCommand command = getCommand(name);
-		if (command == null) {
-			getLogger().warning("Command '" + name + "' is missing in plugin.yml");
-			return;
-		}
-		command.setExecutor(executor);
+	private void registerPluginCommand(String name, String description, String permission,
+			BasicCommand executor, CommandSuggestions suggestions, String... aliases) {
+		// 保留原来的权限和补全规则，统一交给 Paper 的新指令接口注册。
+		CommandSuggestions completer = suggestions != null ? suggestions : new PlayerNameTabCompleter(this);
+		registerCommand(name, description, List.of(aliases), new BasicCommand() {
+			@Override
+			public void execute(CommandSourceStack source, String[] args) throws CommandSyntaxException {
+				executor.execute(source, args);
+			}
+
+			@Override
+			public Collection<String> suggest(CommandSourceStack source, String[] args) {
+				return completer.suggest(source, args);
+			}
+
+			@Override
+			public String permission() {
+				return permission;
+			}
+		});
 	}
 
 	private void scheduleEconomyRetry() {
@@ -123,13 +141,6 @@ public final class ChadteleportPlugin extends JavaPlugin {
 				}
 			}
 		}, 40L);
-	}
-
-	private void registerTabCompleter(String name, TabCompleter completer) {
-		PluginCommand command = getCommand(name);
-		if (command != null) {
-			command.setTabCompleter(completer);
-		}
 	}
 
 	public void reloadPluginResources() {

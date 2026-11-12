@@ -5,8 +5,8 @@ import basementhost.randomchad.model.HomeEntry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HomesCommand implements CommandExecutor {
+public class HomesCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -23,15 +23,16 @@ public class HomesCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "home.player-only-homes");
-			return true;
+			return;
 		}
 
 		if (args.length != 0) {
 			plugin.getLangService().send(player, "general.usage.homes");
-			return true;
+			return;
 		}
 
 		Map<String, HomeEntry> homes = plugin.getHomeService().getHomes(player);
@@ -44,7 +45,7 @@ public class HomesCommand implements CommandExecutor {
 					"max", formatMax(max)
 			));
 			plugin.getLangService().send(player, "home.none");
-			return true;
+			return;
 		}
 
 		plugin.getLangService().send(player, "home.list-header", Map.of(
@@ -87,7 +88,6 @@ public class HomesCommand implements CommandExecutor {
 
 		player.sendMessage(plugin.getLangService().get("home.list-footer"));
 
-		return true;
 	}
 
 	private String formatMax(int max) {

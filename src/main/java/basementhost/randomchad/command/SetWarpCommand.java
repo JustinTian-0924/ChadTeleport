@@ -3,14 +3,14 @@ package basementhost.randomchad.command;
 import basementhost.randomchad.ChadteleportPlugin;
 import basementhost.randomchad.util.HomeNameValidator;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class SetWarpCommand implements CommandExecutor {
+public class SetWarpCommand implements BasicCommand {
 
 	private static final String PERMISSION = "chadteleport.setwarp";
 
@@ -21,20 +21,21 @@ public class SetWarpCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "warp.player-only-setwarp");
-			return true;
+			return;
 		}
 
 		if (!player.hasPermission(PERMISSION)) {
 			plugin.getLangService().send(player, "general.no-permission");
-			return true;
+			return;
 		}
 
 		if (args.length != 1) {
 			plugin.getLangService().send(player, "general.usage.setwarp");
-			return true;
+			return;
 		}
 
 		if (!HomeNameValidator.isValid(args[0])) {
@@ -42,7 +43,7 @@ public class SetWarpCommand implements CommandExecutor {
 					"min", String.valueOf(HomeNameValidator.getMinLength()),
 					"max", String.valueOf(HomeNameValidator.getMaxLength())
 			));
-			return true;
+			return;
 		}
 
 		String warpName = HomeNameValidator.normalize(args[0]);
@@ -55,7 +56,7 @@ public class SetWarpCommand implements CommandExecutor {
 			plugin.getLangService().send(player, "warp.save-failed", Map.of(
 					"name", warpName
 			));
-			return true;
+			return;
 		}
 
 		plugin.getLangService().send(player,
@@ -63,6 +64,5 @@ public class SetWarpCommand implements CommandExecutor {
 				Map.of("name", warpName)
 		);
 
-		return true;
 	}
 }

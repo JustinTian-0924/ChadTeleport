@@ -1,15 +1,15 @@
 package basementhost.randomchad.command;
 
 import basementhost.randomchad.ChadteleportPlugin;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class AdminTpAllCommand implements CommandExecutor {
+public class AdminTpAllCommand implements BasicCommand {
 
 	private static final String PERMISSION = "chadteleport.admin.tpall";
 
@@ -20,20 +20,21 @@ public class AdminTpAllCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "general.player-only");
-			return true;
+			return;
 		}
 
 		if (!player.hasPermission(PERMISSION)) {
 			plugin.getLangService().send(player, "general.no-permission");
-			return true;
+			return;
 		}
 
 		if (args.length > 1) {
 			plugin.getLangService().send(player, "general.usage.tpall");
-			return true;
+			return;
 		}
 
 		Player destinationPlayer = player;
@@ -42,7 +43,7 @@ public class AdminTpAllCommand implements CommandExecutor {
 			Player namedTarget = plugin.getServer().getPlayerExact(args[0]);
 			if (namedTarget == null || !namedTarget.isOnline()) {
 				plugin.getLangService().send(player, "general.target-offline");
-				return true;
+				return;
 			}
 			destinationPlayer = namedTarget;
 		}
@@ -69,6 +70,5 @@ public class AdminTpAllCommand implements CommandExecutor {
 				"count", String.valueOf(teleportedCount)
 		));
 
-		return true;
 	}
 }

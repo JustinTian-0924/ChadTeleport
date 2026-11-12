@@ -2,15 +2,15 @@ package basementhost.randomchad.command;
 
 import basementhost.randomchad.ChadteleportPlugin;
 import basementhost.randomchad.util.HomeNameValidator;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Locale;
 import java.util.Map;
 
-public class DelHomeCommand implements CommandExecutor {
+public class DelHomeCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -19,15 +19,16 @@ public class DelHomeCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "home.player-only-delhome");
-			return true;
+			return;
 		}
 
 		if (args.length != 1) {
 			plugin.getLangService().send(player, "general.usage.delhome");
-			return true;
+			return;
 		}
 
 		if (!HomeNameValidator.isValid(args[0])) {
@@ -35,7 +36,7 @@ public class DelHomeCommand implements CommandExecutor {
 					"min", String.valueOf(HomeNameValidator.getMinLength()),
 					"max", String.valueOf(HomeNameValidator.getMaxLength())
 			));
-			return true;
+			return;
 		}
 
 		String homeName = HomeNameValidator.normalize(args[0]);
@@ -45,13 +46,12 @@ public class DelHomeCommand implements CommandExecutor {
 			plugin.getLangService().send(player, "home.not-found", Map.of(
 					"name", homeName
 			));
-			return true;
+			return;
 		}
 
 		plugin.getLangService().send(player, "home.deleted", Map.of(
 				"name", homeName
 		));
-		return true;
 	}
 
 	private String normalizeHomeName(String input) {

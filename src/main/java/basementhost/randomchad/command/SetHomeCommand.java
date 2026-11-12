@@ -3,14 +3,14 @@ package basementhost.randomchad.command;
 import basementhost.randomchad.ChadteleportPlugin;
 import basementhost.randomchad.util.HomeNameValidator;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class SetHomeCommand implements CommandExecutor {
+public class SetHomeCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -19,15 +19,16 @@ public class SetHomeCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "home.player-only-sethome");
-			return true;
+			return;
 		}
 
 		if (args.length > 1) {
 			plugin.getLangService().send(player, "general.usage.sethome");
-			return true;
+			return;
 		}
 
 		String homeName;
@@ -39,7 +40,7 @@ public class SetHomeCommand implements CommandExecutor {
 						"min", String.valueOf(HomeNameValidator.getMinLength()),
 						"max", String.valueOf(HomeNameValidator.getMaxLength())
 				));
-				return true;
+				return;
 			}
 			homeName = HomeNameValidator.normalize(args[0]);
 		}
@@ -54,7 +55,7 @@ public class SetHomeCommand implements CommandExecutor {
 				plugin.getLangService().send(player, "home.limit-reached", Map.of(
 						"max", String.valueOf(maxHomes)
 				));
-				return true;
+				return;
 			}
 		}
 
@@ -66,6 +67,5 @@ public class SetHomeCommand implements CommandExecutor {
 				Map.of("name", homeName)
 		);
 
-		return true;
 	}
 }

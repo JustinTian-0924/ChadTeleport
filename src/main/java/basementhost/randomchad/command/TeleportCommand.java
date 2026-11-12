@@ -7,14 +7,14 @@ import basementhost.randomchad.model.PendingTeleportRequest;
 import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.model.TeleportQuote;
 import basementhost.randomchad.util.TeleportMessageUtil;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class TeleportCommand implements CommandExecutor {
+public class TeleportCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -23,15 +23,16 @@ public class TeleportCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "general.player-only");
-			return true;
+			return;
 		}
 
 		if (args.length != 1) {
 			plugin.getLangService().send(player, "general.usage.teleport");
-			return true;
+			return;
 		}
 
 		if (args[0].equalsIgnoreCase("confirm")) {
@@ -43,19 +44,19 @@ public class TeleportCommand implements CommandExecutor {
 				if (ageMillis > maxAgeMillis) {
 					plugin.getTeleportManager().removePendingOffer(player);
 					plugin.getLangService().send(player, "quote.expired");
-					return true;
+					return;
 				}
 
 				TeleportOffer offer = pendingOffer.getOffer();
 				plugin.getTeleportManager().removePendingOffer(player);
 				plugin.getWarmupService().startOfferWarmup(offer);
-				return true;
+				return;
 			}
 
 			PendingTeleportQuote pending = plugin.getTeleportManager().getPendingQuote(player);
 			if (pending == null) {
 				plugin.getLangService().send(player, "quote.none");
-				return true;
+				return;
 			}
 
 			long ageMillis = System.currentTimeMillis() - pending.getCreatedAt();
@@ -63,7 +64,7 @@ public class TeleportCommand implements CommandExecutor {
 			if (ageMillis > maxAgeMillis) {
 				plugin.getTeleportManager().removePendingQuote(player);
 				plugin.getLangService().send(player, "quote.expired");
-				return true;
+				return;
 			}
 
 			TeleportQuote quote = pending.getQuote();
@@ -72,7 +73,7 @@ public class TeleportCommand implements CommandExecutor {
 			if (target == null || !target.isOnline()) {
 				plugin.getTeleportManager().removePendingQuote(player);
 				plugin.getLangService().send(player, "general.target-offline");
-				return true;
+				return;
 			}
 
 			plugin.getTeleportManager().removePendingQuote(player);
@@ -102,7 +103,7 @@ public class TeleportCommand implements CommandExecutor {
 				plugin.getLangService().send(target, "request.multiple-hint-usage");
 			}
 
-			return true;
+			return;
 		}
 
 		if (args[0].equalsIgnoreCase("cancel")) {
@@ -116,17 +117,16 @@ public class TeleportCommand implements CommandExecutor {
 
 			if (removedOffer == null && removedQuote == null && !cancelledWarmup) {
 				plugin.getLangService().send(player, "teleport.no-pending-or-warmup");
-				return true;
+				return;
 			}
 
 			if (removedOffer != null || removedQuote != null) {
 				plugin.getLangService().send(player, "quote.cancelled");
 			}
 
-			return true;
+			return;
 		}
 
 		plugin.getLangService().send(player, "general.usage.teleport");
-		return true;
 	}
 }

@@ -1,15 +1,14 @@
 package basementhost.randomchad.command;
 
 import basementhost.randomchad.ChadteleportPlugin;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 
 import java.util.Collections;
 import java.util.List;
 
-public class AdminCommand implements CommandExecutor, TabCompleter {
+public class AdminCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -18,15 +17,16 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!sender.hasPermission("chadteleport.admin")) {
 			plugin.getLangService().send(sender, "general.no-permission");
-			return true;
+			return;
 		}
 
 		if (args.length != 1 || !args[0].equalsIgnoreCase("reload")) {
 			plugin.getLangService().send(sender, "admin.usage");
-			return true;
+			return;
 		}
 
 		plugin.getLangService().send(sender, "admin.reloading");
@@ -40,11 +40,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
 			plugin.getLangService().send(sender, "admin.reload-failed");
 		}
 
-		return true;
 	}
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public List<String> suggest(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!sender.hasPermission("chadteleport.admin")) {
 			return Collections.emptyList();
 		}

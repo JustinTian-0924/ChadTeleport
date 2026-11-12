@@ -7,15 +7,15 @@ import basementhost.randomchad.model.PendingTeleportOffer;
 import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.util.HomeMessageUtil;
 import basementhost.randomchad.util.HomeNameValidator;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Locale;
 import java.util.Map;
 
-public class HomeCommand implements CommandExecutor {
+public class HomeCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -24,20 +24,21 @@ public class HomeCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "general.player-only");
-			return true;
+			return;
 		}
 
 		if (args.length > 1) {
 			plugin.getLangService().send(player, "general.usage.home");
-			return true;
+			return;
 		}
 
 		if (!plugin.getConfigService().isHomeEnabled()) {
 			plugin.getLangService().send(player, "general.feature-disabled");
-			return true;
+			return;
 		}
 
 		String homeName;
@@ -49,7 +50,7 @@ public class HomeCommand implements CommandExecutor {
 						"min", String.valueOf(HomeNameValidator.getMinLength()),
 						"max", String.valueOf(HomeNameValidator.getMaxLength())
 				));
-				return true;
+				return;
 			}
 			homeName = HomeNameValidator.normalize(args[0]);
 		}
@@ -59,7 +60,7 @@ public class HomeCommand implements CommandExecutor {
 			plugin.getLangService().send(player, "home.not-found", Map.of(
 					"name", homeName
 			));
-			return true;
+			return;
 		}
 
 		try {
@@ -77,7 +78,7 @@ public class HomeCommand implements CommandExecutor {
 
 				if (!plugin.getEconomyService().isAvailable()) {
 					plugin.getLangService().send(player, "economy.unavailable-cancelled");
-					return true;
+					return;
 				}
 
 				if (!plugin.getEconomyService().has(player, offer.getPrice())) {
@@ -85,7 +86,7 @@ public class HomeCommand implements CommandExecutor {
 					plugin.getLangService().send(player, "economy.required", Map.of(
 							"price", String.valueOf(offer.getPrice())
 					));
-					return true;
+					return;
 				}
 			}
 
@@ -100,7 +101,6 @@ public class HomeCommand implements CommandExecutor {
 			e.printStackTrace();
 		}
 
-		return true;
 	}
 
 	private String normalizeHomeName(String input) {

@@ -5,15 +5,15 @@ import basementhost.randomchad.exception.LocalizedException;
 import basementhost.randomchad.model.PendingTeleportQuote;
 import basementhost.randomchad.model.TeleportQuote;
 import basementhost.randomchad.util.TeleportMessageUtil;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class TpaCommand implements CommandExecutor {
+public class TpaCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -22,31 +22,32 @@ public class TpaCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "general.player-only");
-			return true;
+			return;
 		}
 
 		if (!plugin.getConfigService().isFeatureEnabled("tpa")) {
 			plugin.getLangService().send(player, "feature.tpa-disabled");
-			return true;
+			return;
 		}
 
 		if (args.length != 1) {
 			plugin.getLangService().send(player, "general.usage.tpa");
-			return true;
+			return;
 		}
 
 		Player target = Bukkit.getPlayerExact(args[0]);
 		if (target == null || !target.isOnline()) {
 			plugin.getLangService().send(player, "general.target-offline");
-			return true;
+			return;
 		}
 
 		if (target.equals(player)) {
 			plugin.getLangService().send(player, "feature.self-request");
-			return true;
+			return;
 		}
 
 		try {
@@ -63,7 +64,7 @@ public class TpaCommand implements CommandExecutor {
 
 				if (!plugin.getEconomyService().isAvailable()) {
 					plugin.getLangService().send(player, "economy.unavailable");
-					return true;
+					return;
 				}
 
 				if (!plugin.getEconomyService().has(player, quote.getPrice())) {
@@ -71,7 +72,7 @@ public class TpaCommand implements CommandExecutor {
 					plugin.getLangService().send(player, "economy.required", Map.of(
 							"price", String.valueOf(quote.getPrice())
 					));
-					return true;
+					return;
 				}
 			}
 
@@ -81,13 +82,12 @@ public class TpaCommand implements CommandExecutor {
 		} catch (LocalizedException e) {
 			plugin.getLangService().send(player, e.getMessageKey(), e.getPlaceholders());
 		} catch (IllegalArgumentException e) {
-			player.sendMessage(e.getMessage());
+			player.sendPlainMessage(e.getMessage());
 		} catch (Exception e) {
 			plugin.getLangService().send(player, "quote.calculate-failed");
 			plugin.getLogger().warning("Failed to calculate TPA quote: " + e.getMessage());
 			e.printStackTrace();
 		}
 
-		return true;
 	}
 }

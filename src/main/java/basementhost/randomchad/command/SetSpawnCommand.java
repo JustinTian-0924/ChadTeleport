@@ -1,12 +1,12 @@
 package basementhost.randomchad.command;
 
 import basementhost.randomchad.ChadteleportPlugin;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SetSpawnCommand implements CommandExecutor {
+public class SetSpawnCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -15,20 +15,21 @@ public class SetSpawnCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "spawn.player-only-setspawn");
-			return true;
+			return;
 		}
 
 		if (!player.hasPermission("chadteleport.setspawn") && !player.hasPermission("chadteleport.admin")) {
 			plugin.getLangService().send(player, "general.no-permission");
-			return true;
+			return;
 		}
 
 		if (args.length != 0) {
 			plugin.getLangService().send(player, "general.usage.setspawn");
-			return true;
+			return;
 		}
 
 		boolean success = plugin.getSpawnService().setSpawnLocation(player.getLocation());
@@ -39,6 +40,5 @@ public class SetSpawnCommand implements CommandExecutor {
 			plugin.getLangService().send(player, "spawn.set-failed");
 		}
 
-		return true;
 	}
 }

@@ -1,100 +1,13 @@
 name: Chadteleport
 version: 0.4.0
 main: basementhost.randomchad.ChadteleportPlugin
-api-version: '1.21'
+api-version: '26.1.2'
 description: Teleportation Plugin with few tweak
 author: Random_Chad
 
 softdepend:
   - Vault
   - ChadCore
-
-commands:
-  chadteleport:
-    description: Chadteleport admin command
-    usage: /chadteleport reload
-    aliases: [ct]
-    permission: chadteleport.admin
-
-  tp:
-    description: Teleport to a player instantly
-    usage: /tp <player>
-    permission: chadteleport.admin.tp
-
-  tphere:
-    description: Teleport a player to your location instantly
-    usage: /tphere <player>
-    permission: chadteleport.admin.tphere
-
-  tpall:
-    description: Teleport all players to a player or to yourself
-    usage: /tpall [player]
-    permission: chadteleport.admin.tpall
-
-  tpa:
-    description: Request teleport to another player
-    usage: /tpa <player>
-
-  tpaccept:
-    description: Accept a teleport request
-    usage: /tpaccept [player]
-
-  tpdeny:
-    description: Deny a teleport request
-    usage: /tpdeny [player]
-
-  teleport:
-    description: Teleport confirmation command
-    usage: /teleport <confirm|cancel>
-    aliases:
-      - tpconfirm
-      - tpcancel
-
-  setspawn:
-    description: Set the server spawn location
-    usage: /setspawn
-    permission: chadteleport.setspawn
-
-  spawn:
-    description: Teleport to the server spawn
-    usage: /spawn
-    permission: chadteleport.spawn
-
-  setwarp:
-    description: Set a public warp point
-    usage: /setwarp <name>
-    permission: chadteleport.setwarp
-
-  warp:
-    description: Teleport to a public warp
-    usage: /warp <name>
-    permission: chadteleport.warp
-
-  delwarp:
-    description: Delete a public warp
-    usage: /delwarp <name>
-    permission: chadteleport.delwarp
-
-  warps:
-    description: List all public warps
-    usage: /warps
-    permission: chadteleport.warp
-
-  sethome:
-    description: Set one of your homes
-    usage: /sethome [name]
-
-  home:
-    description: Teleport to one of your homes
-    usage: /home [name]
-
-  delhome:
-    description: Delete one of your homes
-    usage: /delhome <name>
-
-  homes:
-    description: List your homes
-    usage: /homes
 
 permissions:
   chadteleport.admin:

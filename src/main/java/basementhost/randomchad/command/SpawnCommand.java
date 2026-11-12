@@ -6,14 +6,14 @@ import basementhost.randomchad.model.PendingTeleportOffer;
 import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.util.SpawnMessageUtil;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class SpawnCommand implements CommandExecutor {
+public class SpawnCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -22,34 +22,35 @@ public class SpawnCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "general.player-only");
-			return true;
+			return;
 		}
 
 		if (args.length != 0) {
 			plugin.getLangService().send(player, "general.usage.spawn");
-			return true;
+			return;
 		}
 
 		if (!plugin.getConfigService().isSpawnEnabled()) {
 			plugin.getLangService().send(player, "general.feature-disabled");
-			return true;
+			return;
 		}
 
 		if (plugin.getConfigService().isSpawnPermissionRequired()) {
 			String permission = plugin.getConfigService().getSpawnPermission();
 			if (permission != null && !permission.isBlank() && !player.hasPermission(permission)) {
 				plugin.getLangService().send(player, "spawn.permission-denied");
-				return true;
+				return;
 			}
 		}
 
 		Location spawnLocation = plugin.getSpawnService().getSpawnLocation();
 		if (spawnLocation == null) {
 			plugin.getLangService().send(player, "spawn.not-set");
-			return true;
+			return;
 		}
 
 		try {
@@ -67,7 +68,7 @@ public class SpawnCommand implements CommandExecutor {
 
 				if (!plugin.getEconomyService().isAvailable()) {
 					plugin.getLangService().send(player, "economy.unavailable-cancelled");
-					return true;
+					return;
 				}
 
 				if (!plugin.getEconomyService().has(player, offer.getPrice())) {
@@ -75,7 +76,7 @@ public class SpawnCommand implements CommandExecutor {
 					plugin.getLangService().send(player, "economy.required", Map.of(
 							"price", String.valueOf(offer.getPrice())
 					));
-					return true;
+					return;
 				}
 			}
 
@@ -90,6 +91,5 @@ public class SpawnCommand implements CommandExecutor {
 			e.printStackTrace();
 		}
 
-		return true;
 	}
 }

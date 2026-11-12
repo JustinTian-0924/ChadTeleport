@@ -8,14 +8,14 @@ import basementhost.randomchad.model.WarpEntry;
 import basementhost.randomchad.util.HomeNameValidator;
 import basementhost.randomchad.util.WarpMessageUtil;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class WarpCommand implements CommandExecutor {
+public class WarpCommand implements BasicCommand {
 
 	private static final String PERMISSION = "chadteleport.warp";
 
@@ -26,25 +26,26 @@ public class WarpCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "warp.player-only-warp");
-			return true;
+			return;
 		}
 
 		if (!plugin.getConfigService().isWarpEnabled()) {
 			plugin.getLangService().send(player, "warp.disabled");
-			return true;
+			return;
 		}
 
 		if (!player.hasPermission(PERMISSION)) {
 			plugin.getLangService().send(player, "general.no-permission");
-			return true;
+			return;
 		}
 
 		if (args.length != 1) {
 			plugin.getLangService().send(player, "general.usage.warp");
-			return true;
+			return;
 		}
 
 		if (!HomeNameValidator.isValid(args[0])) {
@@ -52,7 +53,7 @@ public class WarpCommand implements CommandExecutor {
 					"min", String.valueOf(HomeNameValidator.getMinLength()),
 					"max", String.valueOf(HomeNameValidator.getMaxLength())
 			));
-			return true;
+			return;
 		}
 
 		String warpName = HomeNameValidator.normalize(args[0]);
@@ -62,7 +63,7 @@ public class WarpCommand implements CommandExecutor {
 			plugin.getLangService().send(player, "warp.not-found", Map.of(
 					"name", warpName
 			));
-			return true;
+			return;
 		}
 
 		Location destination = warp.getLocation();
@@ -82,7 +83,7 @@ public class WarpCommand implements CommandExecutor {
 
 				if (!plugin.getEconomyService().isAvailable()) {
 					plugin.getLangService().send(player, "economy.unavailable-cancelled");
-					return true;
+					return;
 				}
 
 				if (!plugin.getEconomyService().has(player, offer.getPrice())) {
@@ -90,7 +91,7 @@ public class WarpCommand implements CommandExecutor {
 					plugin.getLangService().send(player, "economy.required", Map.of(
 							"price", String.valueOf(offer.getPrice())
 					));
-					return true;
+					return;
 				}
 			}
 
@@ -105,6 +106,5 @@ public class WarpCommand implements CommandExecutor {
 			e.printStackTrace();
 		}
 
-		return true;
 	}
 }

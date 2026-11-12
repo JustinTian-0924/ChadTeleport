@@ -4,14 +4,14 @@ import basementhost.randomchad.ChadteleportPlugin;
 import basementhost.randomchad.model.PendingTeleportRequest;
 import basementhost.randomchad.model.TeleportQuote;
 import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-public class TpAcceptCommand implements CommandExecutor {
+public class TpAcceptCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
 
@@ -20,10 +20,11 @@ public class TpAcceptCommand implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public void execute(CommandSourceStack source, String[] args) {
+		CommandSender sender = source.getSender();
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "general.player-only");
-			return true;
+			return;
 		}
 
 		PendingTeleportRequest request;
@@ -34,12 +35,12 @@ public class TpAcceptCommand implements CommandExecutor {
 			request = plugin.getTeleportManager().getPendingRequestByRequesterName(player, args[0]);
 		} else {
 			plugin.getLangService().send(player, "general.usage.tpaccept");
-			return true;
+			return;
 		}
 
 		if (request == null) {
 			plugin.getLangService().send(player, "request.none-matching");
-			return true;
+			return;
 		}
 
 		long ageMillis = System.currentTimeMillis() - request.getCreatedAt();
@@ -58,7 +59,7 @@ public class TpAcceptCommand implements CommandExecutor {
 			if (requesterPlayer != null && requesterPlayer.isOnline()) {
 				plugin.getLangService().send(requesterPlayer, "request.expired", placeholders);
 			}
-			return true;
+			return;
 		}
 
 		TeleportQuote quote = request.getQuote();
@@ -67,7 +68,7 @@ public class TpAcceptCommand implements CommandExecutor {
 		if (requester == null || !requester.isOnline()) {
 			plugin.getTeleportManager().removePendingRequest(player, request.getRequesterId());
 			plugin.getLangService().send(player, "general.requester-offline");
-			return true;
+			return;
 		}
 
 		plugin.getTeleportManager().removePendingRequest(player, request.getRequesterId());
@@ -82,6 +83,5 @@ public class TpAcceptCommand implements CommandExecutor {
 		));
 
 		plugin.getWarmupService().startTpaWarmup(quote, lockedDestination);
-		return true;
 	}
 }
