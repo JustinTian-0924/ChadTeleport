@@ -35,7 +35,11 @@ public class TeleportManager {
 	}
 
 	public PendingTeleportQuote removePendingQuote(Player player) {
-		return pendingQuotes.remove(player.getUniqueId());
+		return removePendingQuote(player.getUniqueId());
+	}
+
+	public PendingTeleportQuote removePendingQuote(UUID playerId) {
+		return pendingQuotes.remove(playerId);
 	}
 
 	public boolean hasPendingQuote(Player player) {
@@ -90,14 +94,18 @@ public class TeleportManager {
 	}
 
 	public PendingTeleportRequest removePendingRequest(Player target, UUID requesterId) {
-		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(target.getUniqueId());
+		return removePendingRequest(target.getUniqueId(), requesterId);
+	}
+
+	public PendingTeleportRequest removePendingRequest(UUID targetId, UUID requesterId) {
+		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(targetId);
 		if (requests == null) {
 			return null;
 		}
 
 		PendingTeleportRequest removed = requests.remove(requesterId);
 		if (requests.isEmpty()) {
-			pendingRequestsByTarget.remove(target.getUniqueId());
+			pendingRequestsByTarget.remove(targetId);
 		}
 		return removed;
 	}
@@ -177,7 +185,15 @@ public class TeleportManager {
 	}
 
 	public PendingTeleportOffer removePendingOffer(Player player) {
-		return pendingOffers.remove(player.getUniqueId());
+		return removePendingOffer(player.getUniqueId());
+	}
+
+	public PendingTeleportOffer removePendingOffer(UUID playerId) {
+		return pendingOffers.remove(playerId);
+	}
+
+	public Collection<Map.Entry<UUID, PendingTeleportOffer>> getAllPendingOffers() {
+		return new ArrayList<>(pendingOffers.entrySet());
 	}
 
 	public boolean hasPendingOffer(Player player) {

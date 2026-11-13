@@ -5,12 +5,14 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 public class HomeLimitService {
 
+	private static final int DEFAULT_MAX_HOMES = 1;
+
 	public int getMaxHomes(Player player) {
 		if (player.hasPermission("chadteleport.home.*")) {
 			return Integer.MAX_VALUE;
 		}
 
-		int max = 0;
+		int max = -1;
 
 		for (PermissionAttachmentInfo permissionInfo : player.getEffectivePermissions()) {
 			if (!permissionInfo.getValue()) {
@@ -37,11 +39,12 @@ public class HomeLimitService {
 					max = value;
 				}
 			} catch (NumberFormatException ignored) {
-				// 不是数字就跳过
+				// skip if its not a number
 			}
 		}
 
-		return max;
+		// 1 sethome allowance if not explicitelly setted；home.0 will make that player cannot set home。
+		return max >= 0 ? max : DEFAULT_MAX_HOMES;
 	}
 
 	public boolean hasFreeSlot(Player player, int currentCount) {

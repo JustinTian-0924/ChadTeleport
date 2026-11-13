@@ -1,6 +1,7 @@
 package basementhost.randomchad.service;
 
 import basementhost.randomchad.ChadteleportPlugin;
+import basementhost.randomchad.model.PendingTeleportOffer;
 import basementhost.randomchad.model.PendingTeleportQuote;
 import basementhost.randomchad.model.PendingTeleportRequest;
 import org.bukkit.entity.Player;
@@ -35,6 +36,7 @@ public class ExpirationService {
 
 	private void cleanupExpiredData() {
 		cleanupExpiredQuotes();
+		cleanupExpiredOffers();
 		cleanupExpiredRequests();
 	}
 
@@ -47,9 +49,26 @@ public class ExpirationService {
 			PendingTeleportQuote pendingQuote = entry.getValue();
 
 			if (now - pendingQuote.getCreatedAt() > maxAgeMillis) {
+				plugin.getTeleportManager().removePendingQuote(playerId);
 				Player player = plugin.getServer().getPlayer(playerId);
 				if (player != null && player.isOnline()) {
-					plugin.getTeleportManager().removePendingQuote(player);
+					plugin.getLangService().send(player, "quote.expired");
+				}
+			}
+		}
+	}
+
+	private void cleanupExpiredOffers() {
+		long now = System.currentTimeMillis();
+		long maxAgeMillis = plugin.getConfigService().getQuoteExpireSeconds() * 1000L;
+
+		for (Map.Entry<UUID, PendingTeleportOffer> entry : plugin.getTeleportManager().getAllPendingOffers()) {
+			if (now - entry.getValue().getCreatedAt() > maxAgeMillis) {
+				UUID playerId = entry.getKey();
+				// Clear based on player's UUID to support offline quota removal
+				plugin.getTeleportManager().removePendingOffer(playerId);
+				Player player = plugin.getServer().getPlayer(playerId);
+				if (player != null && player.isOnline()) {
 					plugin.getLangService().send(player, "quote.expired");
 				}
 			}
@@ -62,10 +81,8 @@ public class ExpirationService {
 
 		for (PendingTeleportRequest request : plugin.getTeleportManager().getAllPendingRequests()) {
 			if (now - request.getCreatedAt() > maxAgeMillis) {
+				plugin.getTeleportManager().removePendingRequest(request.getTargetId(), request.getRequesterId());
 				Player target = plugin.getServer().getPlayer(request.getTargetId());
-				if (target != null) {
-					plugin.getTeleportManager().removePendingRequest(target, request.getRequesterId());
-				}
 
 				Map<String, String> placeholders = Map.of(
 						"requester", request.getRequesterName(),

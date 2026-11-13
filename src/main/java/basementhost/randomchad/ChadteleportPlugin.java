@@ -70,12 +70,17 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		HomeTabCompleter homeTabCompleter = new HomeTabCompleter(this);
 		WarpTabCompleter warpTabCompleter = new WarpTabCompleter(this);
 		AdminTeleportTabCompleter adminTeleportTabCompleter = new AdminTeleportTabCompleter(this);
+		TeleportCommand teleportCommand = new TeleportCommand(this);
+		TeleportCommand confirmCommand = new TeleportCommand(this, "confirm");
+		TeleportCommand cancelCommand = new TeleportCommand(this, "cancel");
 
 		registerPluginCommand("tpa", "Request teleport to another player", null, new TpaCommand(this), null);
 		registerPluginCommand("tpaccept", "Accept a teleport request", null, new TpAcceptCommand(this), null);
 		registerPluginCommand("tpdeny", "Deny a teleport request", null, new TpDenyCommand(this), null);
-		registerPluginCommand("teleport", "Teleport confirmation command", null, new TeleportCommand(this), null,
-				"tpconfirm", "tpcancel");
+		registerPluginCommand("teleport", "Teleport confirmation command", null,
+				teleportCommand, teleportCommand::suggest);
+		registerPluginCommand("tpconfirm", "Confirm a teleport quote", null, confirmCommand, confirmCommand::suggest);
+		registerPluginCommand("tpcancel", "Cancel a teleport quote or warmup", null, cancelCommand, cancelCommand::suggest);
 		registerPluginCommand("setspawn", "Set the server spawn location", "chadteleport.setspawn",
 				new SetSpawnCommand(this), null);
 		registerPluginCommand("spawn", "Teleport to the server spawn", "chadteleport.spawn",
@@ -150,6 +155,9 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		}
 		if (spawnService != null) {
 			spawnService.load();
+		}
+		if (warpService != null) {
+			warpService.load();
 		}
 	}
 

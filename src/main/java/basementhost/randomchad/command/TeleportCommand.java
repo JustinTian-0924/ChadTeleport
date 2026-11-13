@@ -12,14 +12,22 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class TeleportCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
+	private final String shortcutAction;
 
 	public TeleportCommand(ChadteleportPlugin plugin) {
+		this(plugin, null);
+	}
+
+	public TeleportCommand(ChadteleportPlugin plugin, String shortcutAction) {
 		this.plugin = plugin;
+		this.shortcutAction = shortcutAction;
 	}
 
 	@Override
@@ -28,6 +36,16 @@ public class TeleportCommand implements BasicCommand {
 		if (!(sender instanceof Player player)) {
 			plugin.getLangService().send(sender, "general.player-only");
 			return;
+		}
+
+		if (shortcutAction != null) {
+			// Shortcuts require no arguments, while legacy syntax—such as `/tpconfirm confirm`—remains supported.
+			if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase(shortcutAction))) {
+				args = new String[]{shortcutAction};
+			} else {
+				plugin.getLangService().send(player, "general.usage.teleport");
+				return;
+			}
 		}
 
 		if (args.length != 1) {
@@ -128,5 +146,17 @@ public class TeleportCommand implements BasicCommand {
 		}
 
 		plugin.getLangService().send(player, "general.usage.teleport");
+	}
+
+	@Override
+	public List<String> suggest(CommandSourceStack source, String[] args) {
+		if (shortcutAction != null || args.length != 1) {
+			return List.of();
+		}
+
+		String input = args[0].toLowerCase(Locale.ROOT);
+		return List.of("confirm", "cancel").stream()
+				.filter(action -> action.startsWith(input))
+				.toList();
 	}
 }
