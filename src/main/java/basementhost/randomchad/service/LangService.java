@@ -7,6 +7,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +55,15 @@ public class LangService {
 		}
 
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		// 保留服务器自定义文案，旧文件缺少的新条目从插件内置语言文件补足。
+		try (InputStream resource = plugin.getResource("lang/" + locale + ".yml")) {
+			if (resource != null) {
+				yaml.setDefaults(YamlConfiguration.loadConfiguration(
+						new InputStreamReader(resource, StandardCharsets.UTF_8)));
+			}
+		} catch (IOException e) {
+			plugin.getLogger().warning("Failed to load bundled locale '" + locale + "': " + e.getMessage());
+		}
 		loadedLocales.put(locale, yaml);
 	}
 

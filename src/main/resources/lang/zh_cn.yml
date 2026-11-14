@@ -11,6 +11,7 @@ general:
     tp: "<yellow>用法: <white>/tp <玩家名></white></yellow>"
     tphere: "<yellow>用法: <white>/tphere <玩家名></white></yellow>"
     tpall: "<yellow>用法: <white>/tpall [玩家名]</white></yellow>"
+    tppos: "<yellow>用法: <white>/tppos <x> <y> <z></white></yellow>"
     tpa: "<yellow>用法: <white>/tpa <玩家名></white></yellow>"
     teleport: "<yellow>用法: <white>/teleport <confirm|cancel></white></yellow>"
     tpaccept: "<yellow>用法: <white>/tpaccept [玩家名]</white></yellow>"
@@ -27,6 +28,11 @@ general:
     homes: "<yellow>用法: <white>/homes</white></yellow>"
 
 admin-tp:
+  invalid-coordinates: "<red>请为 X、Y、Z 输入三个有限数值，支持负数和小数；暂不支持 ~ 或 ^ 相对坐标。</red>"
+  horizontal-out-of-range: "<red>X 和 Z 必须大于 -{limit} 且小于 {limit}。</red>"
+  height-out-of-range: "<red>当前世界的 Y 坐标必须大于或等于 {min}，并且小于 {max}。</red>"
+  outside-world-border: "<red>目标位置位于当前世界边界之外。</red>"
+  teleported-to-position: "<green>已传送到世界 <white>{world}</white> 的坐标：<white>{x}, {y}, {z}</white>。</green>"
   self-tp: "<red>你已经在自己的位置上了。</red>"
   self-tphere: "<red>你不能把自己传送到自己这里。</red>"
   teleported-to-player: "<green>你已传送到 <white>{target}</white><green> 的位置。</green>"

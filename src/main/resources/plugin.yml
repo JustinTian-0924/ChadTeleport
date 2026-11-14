@@ -1,5 +1,5 @@
 name: Chadteleport
-version: 0.4.2
+version: 0.4.3
 main: basementhost.randomchad.ChadteleportPlugin
 api-version: '26.1.2'
 description: Teleportation Plugin with few tweak
@@ -12,6 +12,10 @@ softdepend:
 permissions:
   chadteleport.admin:
     description: Allows use of /chadteleport reload
+    default: op
+
+  chadteleport.admin.tppos:
+    description: Allows teleporting to coordinates with /tppos
     default: op
 
   chadteleport.setspawn:

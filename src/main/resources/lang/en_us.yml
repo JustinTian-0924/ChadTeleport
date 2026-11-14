@@ -11,6 +11,7 @@ general:
     tp: "<yellow>Usage: <white>/tp <player></white></yellow>"
     tphere: "<yellow>Usage: <white>/tphere <player></white></yellow>"
     tpall: "<yellow>Usage: <white>/tpall [player]</white></yellow>"
+    tppos: "<yellow>Usage: <white>/tppos <x> <y> <z></white></yellow>"
     tpa: "<yellow>Usage: <white>/tpa <player></white></yellow>"
     teleport: "<yellow>Usage: <white>/teleport <confirm|cancel></white></yellow>"
     tpaccept: "<yellow>Usage: <white>/tpaccept [player]</white></yellow>"
@@ -27,6 +28,11 @@ general:
     homes: "<yellow>Usage: <white>/homes</white></yellow>"
 
 admin-tp:
+  invalid-coordinates: "<red>Enter three finite numbers for X, Y and Z. Negative numbers and decimals are supported; relative coordinates (~ or ^) are not supported.</red>"
+  horizontal-out-of-range: "<red>X and Z must be greater than -{limit} and less than {limit}.</red>"
+  height-out-of-range: "<red>Y must be at least {min} and less than {max} in this world.</red>"
+  outside-world-border: "<red>The destination is outside this world's border.</red>"
+  teleported-to-position: "<green>Teleported to <white>{world}</white>: <white>{x}, {y}, {z}</white>.</green>"
   self-tp: "<red>You are already at your own location.</red>"
   self-tphere: "<red>You cannot teleport yourself to yourself.</red>"
   teleported-to-player: "<green>You have been teleported to <white>{target}</white><green>.</green>"

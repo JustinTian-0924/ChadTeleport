@@ -73,6 +73,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		TeleportCommand teleportCommand = new TeleportCommand(this);
 		TeleportCommand confirmCommand = new TeleportCommand(this, "confirm");
 		TeleportCommand cancelCommand = new TeleportCommand(this, "cancel");
+		AdminTpPosCommand tpPosCommand = new AdminTpPosCommand(this);
 
 		registerPluginCommand("tpa", "Request teleport to another player", null, new TpaCommand(this), null);
 		registerPluginCommand("tpaccept", "Accept a teleport request", null, new TpAcceptCommand(this), null);
@@ -102,6 +103,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 				new AdminTpHereCommand(this), adminTeleportTabCompleter);
 		registerPluginCommand("tpall", "Teleport all players to a player or to yourself", "chadteleport.admin.tpall",
 				new AdminTpAllCommand(this), adminTeleportTabCompleter);
+		registerPluginCommand("tppos", "Teleport to coordinates in your current world", "chadteleport.admin.tppos",
+				tpPosCommand, tpPosCommand::suggest);
 
 		AdminCommand adminCommand = new AdminCommand(this);
 		registerPluginCommand("chadteleport", "Chadteleport admin command", "chadteleport.admin",
