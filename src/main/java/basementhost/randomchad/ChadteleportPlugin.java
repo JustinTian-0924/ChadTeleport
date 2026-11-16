@@ -74,6 +74,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		TeleportCommand confirmCommand = new TeleportCommand(this, "confirm");
 		TeleportCommand cancelCommand = new TeleportCommand(this, "cancel");
 		AdminTpPosCommand tpPosCommand = new AdminTpPosCommand(this);
+		AdminTpCommand tpCommand = new AdminTpCommand(this);
 
 		registerPluginCommand("tpa", "Request teleport to another player", null, new TpaCommand(this), null);
 		registerPluginCommand("tpaccept", "Accept a teleport request", null, new TpAcceptCommand(this), null);
@@ -97,8 +98,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerPluginCommand("home", "Teleport to one of your homes", null, new HomeCommand(this), homeTabCompleter);
 		registerPluginCommand("delhome", "Delete one of your homes", null, new DelHomeCommand(this), homeTabCompleter);
 		registerPluginCommand("homes", "List your homes", null, new HomesCommand(this), null);
-		registerPluginCommand("tp", "Teleport to a player instantly", "chadteleport.admin.tp",
-				new AdminTpCommand(this), adminTeleportTabCompleter);
+		registerPluginCommand("tp", "Teleport yourself or another player to a player", "chadteleport.admin.tp",
+				tpCommand, tpCommand::suggest);
 		registerPluginCommand("tphere", "Teleport a player to your location instantly", "chadteleport.admin.tphere",
 				new AdminTpHereCommand(this), adminTeleportTabCompleter);
 		registerPluginCommand("tpall", "Teleport all players to a player or to yourself", "chadteleport.admin.tpall",

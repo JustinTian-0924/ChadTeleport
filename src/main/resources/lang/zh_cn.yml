@@ -9,6 +9,7 @@ general:
   text-no: "否"
   usage:
     tp: "<yellow>用法: <white>/tp <玩家名></white></yellow>"
+    tp-extended: "<yellow>用法: <white>/tp <目标玩家></white> 或 <white>/tp <玩家A> <玩家B></white>（将 A 传送到 B）。</yellow>"
     tphere: "<yellow>用法: <white>/tphere <玩家名></white></yellow>"
     tpall: "<yellow>用法: <white>/tpall [玩家名]</white></yellow>"
     tppos: "<yellow>用法: <white>/tppos <x> <y> <z></white></yellow>"
@@ -28,6 +29,12 @@ general:
     homes: "<yellow>用法: <white>/homes</white></yellow>"
 
 admin-tp:
+  source-required: "<yellow>非玩家执行此指令时，请指定两名玩家：<white>/tp <玩家A> <玩家B></white>。</yellow>"
+  player-offline: "<red>玩家 <white>{player}</white> 当前不在线。</red>"
+  same-player: "<red>这两名玩家是同一个人，无需传送。</red>"
+  forced-teleport-success: "<green>已将 <white>{source}</white> 传送到 <white>{target}</white> 的位置。</green>"
+  forced-teleport-notice: "<yellow><white>{sender}</white> 已将你传送到 <white>{target}</white> 的位置。</yellow>"
+  forced-teleport-failed: "<red>无法将 <white>{source}</white> 传送到 <white>{target}</white> 的位置。</red>"
   invalid-coordinates: "<red>请为 X、Y、Z 输入三个有限数值，支持负数和小数；暂不支持 ~ 或 ^ 相对坐标。</red>"
   horizontal-out-of-range: "<red>X 和 Z 必须大于 -{limit} 且小于 {limit}。</red>"
   height-out-of-range: "<red>当前世界的 Y 坐标必须大于或等于 {min}，并且小于 {max}。</red>"
@@ -87,6 +94,7 @@ request:
   target-offline-cancelled: "<red>传送已取消，因为目标玩家不在线。</red>"
 
 warmup:
+  cancelled-admin: "<yellow>你之前的传送预热已因管理员传送而取消。</yellow>"
   started: "<yellow>传送预热已开始: <white>{seconds} 秒</white></yellow>"
   dont-move: "<gray>请不要移动或受到伤害。</gray>"
   target-notified: "<gray><white>{requester}</white> 正在预热传送到你这里。</gray>"

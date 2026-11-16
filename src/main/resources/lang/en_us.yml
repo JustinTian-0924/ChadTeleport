@@ -9,6 +9,7 @@ general:
   text-no: "No"
   usage:
     tp: "<yellow>Usage: <white>/tp <player></white></yellow>"
+    tp-extended: "<yellow>Usage: <white>/tp <target></white> or <white>/tp <playerA> <playerB></white> (teleport A to B).</yellow>"
     tphere: "<yellow>Usage: <white>/tphere <player></white></yellow>"
     tpall: "<yellow>Usage: <white>/tpall [player]</white></yellow>"
     tppos: "<yellow>Usage: <white>/tppos <x> <y> <z></white></yellow>"
@@ -28,6 +29,12 @@ general:
     homes: "<yellow>Usage: <white>/homes</white></yellow>"
 
 admin-tp:
+  source-required: "<yellow>Specify both players when using this command outside the game: <white>/tp <playerA> <playerB></white>.</yellow>"
+  player-offline: "<red>Player <white>{player}</white> is not online.</red>"
+  same-player: "<red>The two players are the same; there is no need to teleport.</red>"
+  forced-teleport-success: "<green>Teleported <white>{source}</white> to <white>{target}</white>.</green>"
+  forced-teleport-notice: "<yellow><white>{sender}</white> teleported you to <white>{target}</white>.</yellow>"
+  forced-teleport-failed: "<red>Could not teleport <white>{source}</white> to <white>{target}</white>.</red>"
   invalid-coordinates: "<red>Enter three finite numbers for X, Y and Z. Negative numbers and decimals are supported; relative coordinates (~ or ^) are not supported.</red>"
   horizontal-out-of-range: "<red>X and Z must be greater than -{limit} and less than {limit}.</red>"
   height-out-of-range: "<red>Y must be at least {min} and less than {max} in this world.</red>"
@@ -87,6 +94,7 @@ request:
   target-offline-cancelled: "<red>Teleport cancelled because the target player is offline.</red>"
 
 warmup:
+  cancelled-admin: "<yellow>Your previous teleport warmup was cancelled by an administrator teleport.</yellow>"
   started: "<yellow>Teleport warmup started: <white>{seconds} sec</white></yellow>"
   dont-move: "<gray>Do not move or take damage.</gray>"
   target-notified: "<gray><white>{requester}</white> is warming up to teleport to you.</gray>"
