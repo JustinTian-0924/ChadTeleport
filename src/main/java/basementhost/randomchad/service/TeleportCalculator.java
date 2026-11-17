@@ -3,6 +3,7 @@ package basementhost.randomchad.service;
 import basementhost.randomchad.exception.LocalizedException;
 import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.model.TeleportQuote;
+import basementhost.randomchad.model.TeleportRoute;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -12,208 +13,66 @@ import java.util.Map;
 public class TeleportCalculator {
 
 	private final ConfigService configService;
+	private final PricingService pricingService;
 
-	public TeleportCalculator(ConfigService configService) {
+	public TeleportCalculator(ConfigService configService, PricingService pricingService) {
 		this.configService = configService;
+		this.pricingService = pricingService;
 	}
 
 	public TeleportQuote calculateTpaQuote(Player requester, Player target) {
-		Location from = requester.getLocation();
-		Location to = target.getLocation();
-
-		World fromWorld = from.getWorld();
-		World toWorld = to.getWorld();
-
-		if (fromWorld == null || toWorld == null) {
-			throw new LocalizedException("calculator.world-null");
-		}
-
-		boolean crossWorld = !fromWorld.getName().equals(toWorld.getName());
-
-		if (crossWorld && !configService.isCrossWorldEnabled()) {
-			throw new LocalizedException("calculator.cross-world-disabled");
-		}
-
-		double distance;
-		double price;
-		double warmupSeconds;
-
-		if (!crossWorld) {
-			distance = flatDistance(from, to);
-
-			String worldName = fromWorld.getName();
-
-			price = configService.getBasePrice(worldName)
-					+ configService.getDistancePricePer1k(worldName) * (distance / 1000.0);
-
-			warmupSeconds = configService.getBaseTime(worldName)
-					+ configService.getDistanceTimePer1k(worldName) * (distance / 1000.0);
-		} else {
-			String fromWorldName = fromWorld.getName();
-			String toWorldName = toWorld.getName();
-
-			double enterPrice = configService.getEnterPrice(toWorldName);
-			if (enterPrice < 0) {
-				throw new LocalizedException("calculator.world-enter-denied", Map.of(
-						"world", toWorldName
-				));
-			}
-
-			double fromDistance = flatDistanceToOrigin(from);
-			double toDistance = flatDistanceToOrigin(to);
-
-			distance = fromDistance + toDistance;
-
-			price = configService.getLeavePrice(fromWorldName)
-					+ enterPrice
-					+ configService.getBasePrice(fromWorldName)
-					+ configService.getDistancePricePer1k(fromWorldName) * (fromDistance / 1000.0)
-					+ configService.getDistancePricePer1k(toWorldName) * (toDistance / 1000.0);
-
-			warmupSeconds = configService.getBaseTime(fromWorldName)
-					+ configService.getDistanceTimePer1k(fromWorldName) * (fromDistance / 1000.0)
-					+ configService.getDistanceTimePer1k(toWorldName) * (toDistance / 1000.0);
-		}
-
-		distance = floor1(distance);
-		price = floor1(price);
-		warmupSeconds = floor1(warmupSeconds);
-
-		long warmupTicks = (long) Math.floor(warmupSeconds * 20.0);
-
-		return new TeleportQuote(
-				requester,
-				target,
-				from,
-				to,
-				distance,
-				price,
-				warmupSeconds,
-				warmupTicks,
-				crossWorld
-		);
+		TeleportOffer offer = calculateOffer("tpa", requester, target, target.getLocation());
+		return new TeleportQuote(requester, target, offer.getFrom(), offer.getDestination(), offer.getDistance(),
+				offer.getPrice(), offer.getWarmupSeconds(), offer.getWarmupTicks(), offer.isCrossWorld());
 	}
 
 	public TeleportOffer calculateLocationOffer(String featureName, Player requester, Location destination) {
-		Location from = requester.getLocation();
-		Location to = destination;
+		return calculateOffer(featureName, requester, null, destination);
+	}
 
+	private TeleportOffer calculateOffer(String featureName, Player requester, Player target, Location destination) {
+		Location from = requester.getLocation();
+		Location to = destination.clone();
 		World fromWorld = from.getWorld();
 		World toWorld = to.getWorld();
-
 		if (fromWorld == null || toWorld == null) {
 			throw new LocalizedException("calculator.world-null");
 		}
-
-		boolean crossWorld = !fromWorld.getName().equals(toWorld.getName());
-
+		String fromKey = fromWorld.getKey().asString();
+		String toKey = toWorld.getKey().asString();
+		boolean crossWorld = !fromKey.equals(toKey);
 		if (crossWorld && !configService.isCrossWorldEnabled()) {
 			throw new LocalizedException("calculator.cross-world-disabled");
 		}
-
-		double distance;
-		double price;
-		double warmupSeconds;
-
-		if (!crossWorld) {
-			distance = flatDistance(from, to);
-
-			String worldName = fromWorld.getName();
-
-			price = configService.getBasePrice(worldName)
-					+ configService.getDistancePricePer1k(worldName) * (distance / 1000.0);
-
-			warmupSeconds = configService.getBaseTime(worldName)
-					+ configService.getDistanceTimePer1k(worldName) * (distance / 1000.0);
-		} else {
-			String fromWorldName = fromWorld.getName();
-			String toWorldName = toWorld.getName();
-
-			double enterPrice = configService.getEnterPrice(toWorldName);
-			if (enterPrice < 0) {
-				throw new LocalizedException("calculator.world-enter-denied", Map.of(
-						"world", toWorldName
-				));
-			}
-
-			double fromDistance = flatDistanceToOrigin(from);
-			double toDistance = flatDistanceToOrigin(to);
-
-			distance = fromDistance + toDistance;
-
-			price = configService.getLeavePrice(fromWorldName)
-					+ enterPrice
-					+ configService.getBasePrice(fromWorldName)
-					+ configService.getDistancePricePer1k(fromWorldName) * (fromDistance / 1000.0)
-					+ configService.getDistancePricePer1k(toWorldName) * (toDistance / 1000.0);
-
-			warmupSeconds = configService.getBaseTime(fromWorldName)
-					+ configService.getDistanceTimePer1k(fromWorldName) * (fromDistance / 1000.0)
-					+ configService.getDistanceTimePer1k(toWorldName) * (toDistance / 1000.0);
+		// 世界进入限制与收费分开，免费和免手续费权限也不能跳过限制。
+		if (crossWorld && !configService.isWorldEnterAllowed(toKey)) {
+			throw new LocalizedException("calculator.world-enter-denied", Map.of("world", toKey));
 		}
-
-		if ("spawn".equalsIgnoreCase(featureName)) {
-			if (!configService.isSpawnUsingTpaPricing()) {
-				price = configService.getSpawnFixedPrice();
-			}
-
-			if (!configService.isSpawnUsingTpaWarmup()) {
-				warmupSeconds = configService.getSpawnFixedWarmupSeconds();
-			}
+		TeleportRoute route = crossWorld
+				? new TeleportRoute(fromKey, toKey, flatDistanceToOrigin(from), flatDistanceToOrigin(to))
+				: new TeleportRoute(fromKey, toKey, Math.hypot(from.getX() - to.getX(), from.getZ() - to.getZ()), 0.0);
+		double price = pricingService.calculate(featureName, requester, route);
+		double warmupSeconds = configService.getBaseTime(fromKey)
+				+ configService.getDistanceTimePer1k(fromKey) * (route.fromDistance() / 1000.0);
+		if (crossWorld) {
+			warmupSeconds += configService.getDistanceTimePer1k(toKey) * (route.toDistance() / 1000.0);
 		}
-
-		if ("warp".equalsIgnoreCase(featureName)) {
-			if (!configService.isWarpUsingTpaPricing()) {
-				price = configService.getWarpFixedPrice();
-			}
-
-			if (!configService.isWarpUsingTpaWarmup()) {
-				warmupSeconds = configService.getWarpFixedWarmupSeconds();
-			}
+		if ("spawn".equals(featureName) && !configService.isSpawnUsingTpaWarmup()) {
+			warmupSeconds = configService.getSpawnFixedWarmupSeconds();
+		} else if ("warp".equals(featureName) && !configService.isWarpUsingTpaWarmup()) {
+			warmupSeconds = configService.getWarpFixedWarmupSeconds();
+		} else if ("home".equals(featureName) && configService.isHomeUsingCustomTimingFormula()) {
+			warmupSeconds = configService.getHomeBaseTime()
+					+ configService.getHomeDistanceTimePer1k() * (route.totalDistance() / 1000.0);
 		}
-
-		if ("home".equalsIgnoreCase(featureName)) {
-			if (configService.isHomeUsingCustomPricingFormula()) {
-				price = configService.getHomeBasePrice()
-						+ configService.getHomeDistancePricePer1k() * (distance / 1000.0);
-			}
-
-			if (configService.isHomeUsingCustomTimingFormula()) {
-				warmupSeconds = configService.getHomeBaseTime()
-						+ configService.getHomeDistanceTimePer1k() * (distance / 1000.0);
-			}
-		}
-
-		distance = floor1(distance);
-		price = floor1(price);
 		warmupSeconds = floor1(warmupSeconds);
-
 		long warmupTicks = (long) Math.floor(warmupSeconds * 20.0);
-
-		return new TeleportOffer(
-				featureName,
-				requester,
-				null,
-				from.clone(),
-				to.clone(),
-				distance,
-				price,
-				warmupSeconds,
-				warmupTicks,
-				crossWorld
-		);
-	}
-
-	private double flatDistance(Location a, Location b) {
-		double dx = a.getX() - b.getX();
-		double dz = a.getZ() - b.getZ();
-		return Math.sqrt(dx * dx + dz * dz);
+		return new TeleportOffer(featureName, requester, target, from.clone(), to, floor1(route.totalDistance()),
+				price, warmupSeconds, warmupTicks, crossWorld);
 	}
 
 	private double flatDistanceToOrigin(Location location) {
-		double x = location.getX();
-		double z = location.getZ();
-		return Math.sqrt(x * x + z * z);
+		return Math.hypot(location.getX(), location.getZ());
 	}
 
 	private double floor1(double value) {

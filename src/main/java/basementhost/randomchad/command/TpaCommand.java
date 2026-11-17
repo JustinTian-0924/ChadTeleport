@@ -11,8 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
-
 public class TpaCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
@@ -53,27 +51,8 @@ public class TpaCommand implements BasicCommand {
 		try {
 			TeleportQuote quote = plugin.getTeleportCalculator().calculateTpaQuote(player, target);
 
-			boolean shouldCharge = plugin.getConfigService().isMoneyEnabled("tpa")
-					&& !player.hasPermission("chadteleport.bypass.fee")
-					&& !player.hasPermission("chadteleport.bypass.*");
-
-			if (shouldCharge && quote.getPrice() > 0.0) {
-				if (!plugin.getEconomyService().isAvailable()) {
-					plugin.getEconomyService().tryHook();
-				}
-
-				if (!plugin.getEconomyService().isAvailable()) {
-					plugin.getLangService().send(player, "economy.unavailable");
-					return;
-				}
-
-				if (!plugin.getEconomyService().has(player, quote.getPrice())) {
-					plugin.getLangService().send(player, "economy.insufficient");
-					plugin.getLangService().send(player, "economy.required", Map.of(
-							"price", String.valueOf(quote.getPrice())
-					));
-					return;
-				}
+			if (!plugin.getTeleportPaymentService().checkCanAfford(player, quote.getPrice())) {
+				return;
 			}
 
 			plugin.getTeleportManager().setPendingQuote(player, new PendingTeleportQuote(quote));

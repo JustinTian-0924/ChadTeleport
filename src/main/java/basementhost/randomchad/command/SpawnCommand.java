@@ -11,8 +11,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
-
 public class SpawnCommand implements BasicCommand {
 
 	private final ChadteleportPlugin plugin;
@@ -57,27 +55,8 @@ public class SpawnCommand implements BasicCommand {
 			TeleportOffer offer = plugin.getTeleportCalculator()
 					.calculateLocationOffer("spawn", player, spawnLocation);
 
-			if (plugin.getConfigService().isSpawnMoneyEnabled()
-					&& !player.hasPermission("chadteleport.bypass.fee")
-					&& !player.hasPermission("chadteleport.bypass.*")
-					&& offer.getPrice() > 0.0) {
-
-				if (!plugin.getEconomyService().isAvailable()) {
-					plugin.getEconomyService().tryHook();
-				}
-
-				if (!plugin.getEconomyService().isAvailable()) {
-					plugin.getLangService().send(player, "economy.unavailable-cancelled");
-					return;
-				}
-
-				if (!plugin.getEconomyService().has(player, offer.getPrice())) {
-					plugin.getLangService().send(player, "economy.insufficient");
-					plugin.getLangService().send(player, "economy.required", Map.of(
-							"price", String.valueOf(offer.getPrice())
-					));
-					return;
-				}
+			if (!plugin.getTeleportPaymentService().checkCanAfford(player, offer.getPrice())) {
+				return;
 			}
 
 			plugin.getTeleportManager().setPendingOffer(player, new PendingTeleportOffer(offer));

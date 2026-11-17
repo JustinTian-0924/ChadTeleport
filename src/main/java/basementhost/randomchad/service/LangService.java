@@ -17,16 +17,18 @@ import java.util.Map;
 public class LangService {
 
 	private final JavaPlugin plugin;
+	private final ConfigService configService;
 	private final MiniMessage miniMessage = MiniMessage.miniMessage();
 	private final Map<String, YamlConfiguration> loadedLocales = new HashMap<>();
 	private String defaultLocale;
 
-	public LangService(JavaPlugin plugin) {
+	public LangService(JavaPlugin plugin, ConfigService configService) {
 		this.plugin = plugin;
+		this.configService = configService;
 	}
 
 	public void load() {
-		defaultLocale = plugin.getConfig().getString("language.default-locale", "en_us");
+		defaultLocale = configService.getDefaultLocale();
 
 		saveLocaleIfMissing("en_us");
 		saveLocaleIfMissing("zh_cn");

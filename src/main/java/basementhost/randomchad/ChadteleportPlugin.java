@@ -20,6 +20,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	private EconomyService economyService;
 	private TeleportManager teleportManager;
 	private ConfigService configService;
+	private TeleportPaymentService teleportPaymentService;
 	private TeleportCalculator teleportCalculator;
 	private WarmupService warmupService;
 	private ExpirationService expirationService;
@@ -36,7 +37,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.economyService = new EconomyService(this);
 		this.teleportManager = new TeleportManager(this);
 		this.configService = new ConfigService(this);
-		this.teleportCalculator = new TeleportCalculator(configService);
+		this.teleportCalculator = new TeleportCalculator(configService, new PricingService(configService));
 		this.warmupService = new WarmupService(this);
 		this.spawnService = new SpawnService(this);
 		this.spawnService.load();
@@ -44,8 +45,9 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.homeService = new HomeService(this);
 		this.homeLimitService = new HomeLimitService();
 		this.warpService = new WarpService(this);
-		this.langService = new LangService(this);
+		this.langService = new LangService(this, configService);
 		this.langService.load();
+		this.teleportPaymentService = new TeleportPaymentService(economyService, langService);
 
 
 		registerCommands();
@@ -153,7 +155,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	}
 
 	public void reloadPluginResources() {
-		reloadConfig();
+		configService.reload();
 		if (langService != null) {
 			langService.load();
 		}
@@ -175,6 +177,10 @@ public final class ChadteleportPlugin extends JavaPlugin {
 
 	public ConfigService getConfigService() {
 		return configService;
+	}
+
+	public TeleportPaymentService getTeleportPaymentService() {
+		return teleportPaymentService;
 	}
 
 	public TeleportCalculator getTeleportCalculator() {

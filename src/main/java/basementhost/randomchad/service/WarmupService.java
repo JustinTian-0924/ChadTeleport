@@ -67,16 +67,7 @@ public class WarmupService {
 		boolean bypassWarmup = requester.hasPermission("chadteleport.bypass.warmup")
 				|| requester.hasPermission("chadteleport.bypass.*");
 
-		boolean warmupEnabled;
-		if (offer.getFeatureName().equalsIgnoreCase("spawn")) {
-			warmupEnabled = plugin.getConfigService().isSpawnWarmupEnabled();
-		} else if (offer.getFeatureName().equalsIgnoreCase("warp")) {
-			warmupEnabled = plugin.getConfigService().isWarpWarmupEnabled();
-		} else if (offer.getFeatureName().equalsIgnoreCase("home")) {
-			warmupEnabled = plugin.getConfigService().isHomeWarmupEnabled();
-		} else {
-			warmupEnabled = plugin.getConfigService().isWarmupEnabled(offer.getFeatureName());
-		}
+		boolean warmupEnabled = plugin.getConfigService().isWarmupEnabled(offer.getFeatureName());
 		long warmupTicks = (warmupEnabled && !bypassWarmup) ? offer.getWarmupTicks() : 0L;
 
 		ActiveTeleport activeTeleport = new ActiveTeleport(
@@ -159,39 +150,10 @@ public class WarmupService {
 			return;
 		}
 
-		boolean moneyEnabled;
-		if (activeTeleport.getFeatureName().equalsIgnoreCase("spawn")) {
-			moneyEnabled = plugin.getConfigService().isSpawnMoneyEnabled();
-		} else if (activeTeleport.getFeatureName().equalsIgnoreCase("warp")) {
-			moneyEnabled = plugin.getConfigService().isWarpMoneyEnabled();
-		} else if (activeTeleport.getFeatureName().equalsIgnoreCase("home")) {
-			moneyEnabled = plugin.getConfigService().isHomeMoneyEnabled();
-		} else {
-			moneyEnabled = plugin.getConfigService().isMoneyEnabled(activeTeleport.getFeatureName());
-		}
-		boolean shouldCharge = moneyEnabled
-				&& !requester.hasPermission("chadteleport.bypass.fee")
-				&& !requester.hasPermission("chadteleport.bypass.*");
-
+		// 报价已经包含计价方式和免手续费权限的结果，执行时不再另算价格。
 		double price = offer.getPrice();
-
-		if (shouldCharge && price > 0.0) {
-			if (!plugin.getEconomyService().isAvailable()) {
-				plugin.getEconomyService().tryHook();
-			}
-
-			if (!plugin.getEconomyService().isAvailable()) {
-				plugin.getLangService().send(requester, "economy.unavailable-cancelled");
-				return;
-			}
-
-			if (!plugin.getEconomyService().has(requester, price)) {
-				plugin.getLangService().send(requester, "economy.insufficient");
-				plugin.getLangService().send(requester, "economy.required", Map.of(
-						"price", String.valueOf(price)
-				));
-				return;
-			}
+		if (!plugin.getTeleportPaymentService().checkCanAfford(requester, price)) {
+			return;
 		}
 
 		boolean success = requester.teleport(activeTeleport.getDestination().clone());
@@ -201,8 +163,8 @@ public class WarmupService {
 			return;
 		}
 
-		if (shouldCharge && price > 0.0) {
-			boolean charged = plugin.getEconomyService().withdraw(requester, price);
+		if (price > 0.0) {
+			boolean charged = plugin.getTeleportPaymentService().charge(requester, price);
 			if (!charged) {
 				plugin.getLangService().send(requester, "economy.charge-failed-after-teleport");
 				plugin.getLogger().warning("Failed to charge " + requester.getName() + " after successful teleport.");

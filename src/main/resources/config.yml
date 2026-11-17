@@ -1,40 +1,68 @@
 language:
   default-locale: en_us
+
+# Each command independently selects 'free', 'fixed', or 'distance' pricing.
+# fixed-price is used only in fixed mode. base-price, distance-price-1k, and world-overrides apply only to distance mode.
+# The final total is rounded to two decimal places. Fee bypass permissions make the quoted price 0.
 features:
   spawn:
     enable: true
     require-permission: false
     permission: chadteleport.spawn
-    money: true
-    use-tpa-pricing: true
-    fixed-price: 0.0
+    pricing:
+      mode: free
+      fixed-price: 0.0
+      base-price: 10.0
+      distance-price-1k: 10.0
+      include-world-transfer-fees: true
     warmup: true
     use-tpa-warmup: true
     fixed-warmup-seconds: 0.0
   warp:
     enable: true
-    money: true
+    pricing:
+      mode: distance
+      fixed-price: 10.0
+      base-price: 10.0
+      distance-price-1k: 10.0
+      include-world-transfer-fees: true
     warmup: true
-    use-tpa-pricing: true
-    fixed-price: 0.0
     use-tpa-warmup: true
     fixed-warmup-seconds: 0.0
   home:
     enable: true
-    money: true
-    warmup: true
     pricing:
-      use-custom-formula: false
+      mode: fixed
+      fixed-price: 10.0
       base-price: 10.0
       distance-price-1k: 10.0
+      include-world-transfer-fees: true
+    warmup: true
     timing:
       use-custom-formula: false
       base-time: 3.0
       distance-time-1k: 1.0
   tpa:
     enable: true
-    money: true
+    pricing:
+      mode: distance
+      fixed-price: 10.0
+      base-price: 10.0
+      distance-price-1k: 10.0
+      include-world-transfer-fees: true
+      # Use full world keys. For custom worlds, enter the actual key used by the server.
+      world-overrides:
+        "minecraft:resources":
+          base-price: 0.0
+          distance-price-1k: 5.0
+        "minecraft:the_nether":
+          base-price: 20.0
+          distance-price-1k: 15.0
+        "minecraft:the_end":
+          base-price: 30.0
+          distance-price-1k: 20.0
     warmup: true
+
 quote:
   max-move-distance: 8.0
   expire-seconds: 30
@@ -47,38 +75,37 @@ request:
 cross-world:
   enable: true
 
+# This section controls warmup times only. Set prices in each command's pricing section.
 worlds:
   default:
     base_time: 3.0
-    base_price: 10.0
     distance_time_1k: 1.0
-    distance_price_1k: 10.0
-  resources:
+  "minecraft:resources":
     base_time: 3.0
-    base_price: 0.0
     distance_time_1k: 1.0
-    distance_price_1k: 5.0
-  world_nether:
+  "minecraft:the_nether":
     base_time: 5.0
-    base_price: 20.0
     distance_time_1k: 1.5
-    distance_price_1k: 15.0
-  world_the_end:
+  "minecraft:the_end":
     base_time: 5.0
-    base_price: 30.0
     distance_time_1k: 2.0
-    distance_price_1k: 20.0
 
+# Worlds not listed here use default. Missing fields in individual world entries also use default.
+# allow-enter controls entry from another world, independently of pricing mode or fee bypass permissions.
+# enter/leave fees apply only to distance mode with include-world-transfer-fees: true.
+# free always costs 0. fixed charges only fixed-price, without additional world transfer fees.
 world-transfers:
   default:
+    allow-enter: true
     enter: 100.0
     leave: 50.0
-  resources:
+  "minecraft:resources":
     enter: 50.0
     leave: 0.0
-  world_nether:
+  "minecraft:the_nether":
     enter: 100.0
     leave: 200.0
-  world_the_end:
-    enter: -1.0
+  "minecraft:the_end":
+    allow-enter: false
+    enter: 0.0
     leave: 500.0
