@@ -12,7 +12,7 @@ public class PricingService {
 	}
 
 	public double calculate(String featureName, Player player, TeleportRoute route) {
-		var rule = configService.getPricingRule(featureName);
+		var rule = configService.resolvePricingRule(featureName, player::hasPermission);
 		if (player.hasPermission("chadteleport.bypass.fee") || player.hasPermission("chadteleport.bypass.*")) {
 			return 0.0;
 		}

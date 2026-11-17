@@ -63,6 +63,39 @@ features:
           distance-price-1k: 20.0
     warmup: true
 
+# Pricing groups use permission nodes granted by your permissions plugin.
+# Rules are resolved separately for each command. Highest priority wins; ties use group IDs in alphabetical order.
+# Only matching groups that define the command participate. Otherwise the command's normal pricing is used.
+# Each command entry is a complete pricing rule, not a percentage discount or a partial override.
+# Group world-overrides belong to that group rule and do not inherit the normal command's world-overrides.
+# New permission nodes are registered as default: false. Grant them explicitly to the intended groups or players.
+# Set pricing-groups: {} to disable group pricing.
+pricing-groups:
+  vip:
+    permission: chadteleport.pricing.vip
+    priority: 100
+    commands:
+      tpa:
+        mode: distance
+        base-price: 5.0
+        distance-price-1k: 5.0
+        include-world-transfer-fees: true
+      home:
+        mode: fixed
+        fixed-price: 5.0
+  vip_plus:
+    permission: chadteleport.pricing.vip_plus
+    priority: 200
+    commands:
+      tpa:
+        mode: free
+      home:
+        mode: fixed
+        fixed-price: 2.0
+      warp:
+        mode: fixed
+        fixed-price: 3.0
+
 quote:
   max-move-distance: 8.0
   expire-seconds: 30

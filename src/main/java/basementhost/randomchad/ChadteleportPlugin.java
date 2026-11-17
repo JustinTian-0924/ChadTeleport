@@ -64,6 +64,9 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		if (expirationService != null) {
 			expirationService.stop();
 		}
+		if (configService != null) {
+			configService.close();
+		}
 
 		getLogger().info("Chadteleport Plugin has been disabled!"); // do not think I need to translate this shit too #
 	}

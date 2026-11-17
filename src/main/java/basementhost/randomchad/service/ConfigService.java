@@ -1,6 +1,8 @@
 package basementhost.randomchad.service;
 
 import basementhost.randomchad.model.PricingMode;
+import basementhost.randomchad.model.PricingGroup;
+import basementhost.randomchad.model.PricingPolicy;
 import basementhost.randomchad.model.PricingRule;
 import basementhost.randomchad.model.PricingRule.DistanceRate;
 import org.bukkit.configuration.ConfigurationSection;
@@ -8,19 +10,24 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class ConfigService {
 
 	private final JavaPlugin plugin;
 	private FileConfiguration activeConfig;
-	private Map<String, PricingRule> pricingRules;
+	private PricingPolicy pricingPolicy;
 	private Map<String, WorldTransferRule> worldTransferRules;
+	private final Map<String, Permission> ownedGroupPermissions = new HashMap<>();
 
 	public ConfigService(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -37,9 +44,10 @@ public class ConfigService {
 			throw new IllegalArgumentException("Cannot load config.yml: " + e.getMessage(), e);
 		}
 		Map<String, PricingRule> newPricingRules = new HashMap<>();
-		for (String feature : List.of("tpa", "spawn", "home", "warp")) {
+		for (String feature : PricingPolicy.COMMANDS) {
 			newPricingRules.put(feature, readPricingRule(requiredSection(candidate, "features." + feature + ".pricing")));
 		}
+		PricingPolicy newPolicy = new PricingPolicy(newPricingRules, readPricingGroups(candidate));
 		ConfigurationSection transfers = requiredSection(candidate, "world-transfers");
 		WorldTransferRule defaults = readWorldTransferRule(requiredSection(transfers, "default"), null);
 		Map<String, WorldTransferRule> newTransferRules = new HashMap<>();
@@ -54,9 +62,90 @@ public class ConfigService {
 			}
 		}
 		// 所有价格检查通过后才启用新配置，重载失败时继续使用原来的有效配置。
-		pricingRules = Map.copyOf(newPricingRules);
+		registerGroupPermissions(newPolicy.groups());
+		pricingPolicy = newPolicy;
 		worldTransferRules = Map.copyOf(newTransferRules);
 		activeConfig = candidate;
+	}
+
+	private List<PricingGroup> readPricingGroups(ConfigurationSection candidate) {
+		List<PricingGroup> groups = new ArrayList<>();
+		if (!candidate.contains("pricing-groups")) {
+			return groups;
+		}
+		ConfigurationSection configuredGroups = requiredSection(candidate, "pricing-groups");
+		for (var entry : configuredGroups.getValues(false).entrySet()) {
+			if (!(entry.getValue() instanceof ConfigurationSection group)) {
+				throw new IllegalArgumentException("pricing-groups." + entry.getKey() + " must be a section.");
+			}
+			Object rawPermission = group.get("permission");
+			if (!(rawPermission instanceof String permission)) {
+				throw new IllegalArgumentException(group.getCurrentPath() + ".permission must be a permission node.");
+			}
+			Map<String, PricingRule> rules = new HashMap<>();
+			ConfigurationSection commands = requiredSection(group, "commands");
+			for (var command : commands.getValues(false).entrySet()) {
+				if (!PricingPolicy.COMMANDS.contains(command.getKey())) {
+					throw new IllegalArgumentException(commands.getCurrentPath() + ": unsupported command " + command.getKey());
+				}
+				if (!(command.getValue() instanceof ConfigurationSection pricing)) {
+					throw new IllegalArgumentException(commands.getCurrentPath() + "." + command.getKey() + " must be a pricing section.");
+				}
+				rules.put(command.getKey(), readPricingRule(pricing));
+			}
+			groups.add(new PricingGroup(entry.getKey(), permission, integer(group, "priority", 0), rules));
+		}
+		return groups;
+	}
+
+	private int integer(ConfigurationSection section, String key, int fallback) {
+		Object raw = section.get(key);
+		if (raw == null) {
+			return fallback;
+		}
+		if (raw instanceof Byte || raw instanceof Short || raw instanceof Integer || raw instanceof Long) {
+			long value = ((Number) raw).longValue();
+			if (value >= Integer.MIN_VALUE && value <= Integer.MAX_VALUE) {
+				return (int) value;
+			}
+		}
+		throw new IllegalArgumentException(section.getCurrentPath() + "." + key + " must be a 32-bit integer.");
+	}
+
+	private void registerGroupPermissions(List<PricingGroup> groups) {
+		var manager = plugin.getServer().getPluginManager();
+		List<Permission> added = new ArrayList<>();
+		try {
+			for (PricingGroup group : groups) {
+				if (manager.getPermission(group.permission()) == null) {
+					Permission permission = new Permission(group.permission(), "Selects ChadTeleport group pricing", PermissionDefault.FALSE);
+					manager.addPermission(permission);
+					added.add(permission);
+					permission.recalculatePermissibles();
+				}
+			}
+		} catch (RuntimeException e) {
+			for (Permission permission : added) {
+				manager.removePermission(permission);
+				permission.recalculatePermissibles();
+			}
+			throw e;
+		}
+		for (Permission permission : added) {
+			ownedGroupPermissions.put(permission.getName(), permission);
+		}
+	}
+
+	public void close() {
+		var manager = plugin.getServer().getPluginManager();
+		for (Permission permission : ownedGroupPermissions.values()) {
+			// Only unregister nodes created by this plugin, leaving other plugins' definitions intact.
+			if (manager.getPermission(permission.getName()) == permission) {
+				manager.removePermission(permission);
+				permission.recalculatePermissibles();
+			}
+		}
+		ownedGroupPermissions.clear();
 	}
 
 	private PricingRule readPricingRule(ConfigurationSection section) {
@@ -132,11 +221,15 @@ public class ConfigService {
 	}
 
 	public PricingRule getPricingRule(String featureName) {
-		PricingRule rule = pricingRules.get(featureName);
+		PricingRule rule = pricingPolicy.defaults().get(featureName);
 		if (rule == null) {
 			throw new IllegalArgumentException("No pricing rule for feature: " + featureName);
 		}
 		return rule;
+	}
+
+	public PricingRule resolvePricingRule(String featureName, Predicate<String> hasPermission) {
+		return pricingPolicy.resolve(featureName, hasPermission);
 	}
 
 	private WorldTransferRule transferRule(String worldKey) {
