@@ -119,6 +119,8 @@ balance:
   usage: "<yellow>Usage: /tpbalance</yellow>"
   disabled: "<red>Teleport balances are disabled.</red>"
   current: "<yellow>{name}: <white>{points}</white></yellow>"
+  recovery-full: "<gray>Recovery paused at the cap of <white>{cap}</white>.</gray>"
+  recovery-next: "<gray>Next recovery in <white>{seconds}s</white> (cap: <white>{cap}</white>).</gray>"
   quote: "<yellow>Fee: <white>{points} {name} + {price} coins</white></yellow>"
   spent: "<yellow>Used <white>{points} {name}</white>.</yellow>"
   quote-outdated: "<red>You no longer have enough points for this quote. Please request a new one.</red>"

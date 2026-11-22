@@ -47,7 +47,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.warpService = new WarpService(this);
 		this.langService = new LangService(this, configService);
 		this.langService.load();
-		this.teleportBalanceService = new TeleportBalanceService(this);
+		this.teleportBalanceService = new TeleportBalanceService(this, configService);
 		this.teleportPaymentService = new TeleportPaymentService(economyService, langService, configService,
 				teleportBalanceService, getLogger());
 		this.teleportCalculator = new TeleportCalculator(configService, new PricingService(configService), teleportPaymentService);

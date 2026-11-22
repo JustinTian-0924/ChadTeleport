@@ -104,6 +104,12 @@ teleport-balance:
   starting-points: 30
   coins-per-point: 1.0
   display-name: Teleport Points
+  # The cap limits recovery and the starting grant. Existing points above the cap are kept.
+  max-points: 50
+  # Recovery uses elapsed wall-clock time, including time away, and pauses at the cap.
+  recovery:
+    interval-seconds: 3600
+    points-per-interval: 10
 
 quote:
   max-move-distance: 8.0

@@ -119,6 +119,8 @@ balance:
   usage: "<yellow>用法：/tpbalance</yellow>"
   disabled: "<red>传送余额功能已关闭。</red>"
   current: "<yellow>{name}：<white>{points}</white></yellow>"
+  recovery-full: "<gray>已达到恢复上限 <white>{cap}</white>，暂停恢复。</gray>"
+  recovery-next: "<gray>距离下次恢复还有 <white>{seconds} 秒</white>（上限 <white>{cap}</white>）。</gray>"
   quote: "<yellow>费用：<white>{points} 点 {name} + {price} 金币</white></yellow>"
   spent: "<yellow>已使用 <white>{points} 点 {name}</white>。</yellow>"
   quote-outdated: "<red>点数不足以支付这份报价，请重新获取报价。</red>"

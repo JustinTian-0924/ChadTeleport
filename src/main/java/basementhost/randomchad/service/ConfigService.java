@@ -5,6 +5,7 @@ import basementhost.randomchad.model.PricingGroup;
 import basementhost.randomchad.model.PricingPolicy;
 import basementhost.randomchad.model.PricingRule;
 import basementhost.randomchad.model.PricingRule.DistanceRate;
+import basementhost.randomchad.model.TeleportBalance.Recovery;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -24,6 +25,7 @@ import java.util.function.Predicate;
 
 public class ConfigService {
 
+	private static final Recovery DEFAULT_RECOVERY = new Recovery(50, 3600, 10);
 	private final JavaPlugin plugin;
 	private FileConfiguration activeConfig;
 	private PricingPolicy pricingPolicy;
@@ -74,7 +76,7 @@ public class ConfigService {
 
 	private BalanceSettings readBalanceSettings(ConfigurationSection candidate) {
 		if (!candidate.contains("teleport-balance")) {
-			return new BalanceSettings(false, 30, BigDecimal.ONE, "Teleport Points");
+			return new BalanceSettings(false, 30, BigDecimal.ONE, "Teleport Points", DEFAULT_RECOVERY);
 		}
 		ConfigurationSection section = requiredSection(candidate, "teleport-balance");
 		int startingPoints = integer(section, "starting-points", 30);
@@ -90,14 +92,24 @@ public class ConfigService {
 				|| name.chars().anyMatch(c -> Character.isISOControl(c) || "<>{}\\".indexOf(c) >= 0)) {
 			throw new IllegalArgumentException("teleport-balance.display-name must be plain text between 1 and 48 characters.");
 		}
-		return new BalanceSettings(bool(section, "enabled", false), startingPoints, coinValue, name.strip());
+		int maxPoints = positiveInteger(section, "max-points", DEFAULT_RECOVERY.maxPoints());
+		int intervalSeconds = DEFAULT_RECOVERY.intervalSeconds();
+		int pointsPerInterval = DEFAULT_RECOVERY.pointsPerInterval();
+		if (section.contains("recovery")) {
+			ConfigurationSection recovery = requiredSection(section, "recovery");
+			intervalSeconds = positiveInteger(recovery, "interval-seconds", intervalSeconds);
+			pointsPerInterval = positiveInteger(recovery, "points-per-interval", pointsPerInterval);
+		}
+		return new BalanceSettings(bool(section, "enabled", false), startingPoints, coinValue, name.strip(),
+				new Recovery(maxPoints, intervalSeconds, pointsPerInterval));
 	}
 
 	public BalanceSettings getBalanceSettings() {
 		return balanceSettings;
 	}
 
-	public record BalanceSettings(boolean enabled, int startingPoints, BigDecimal coinValue, String displayName) {
+	public record BalanceSettings(boolean enabled, int startingPoints, BigDecimal coinValue, String displayName,
+			Recovery recovery) {
 	}
 
 	private List<PricingGroup> readPricingGroups(ConfigurationSection candidate) {
@@ -142,6 +154,14 @@ public class ConfigService {
 			}
 		}
 		throw new IllegalArgumentException(section.getCurrentPath() + "." + key + " must be a 32-bit integer.");
+	}
+
+	private int positiveInteger(ConfigurationSection section, String key, int fallback) {
+		int value = integer(section, key, fallback);
+		if (value <= 0) {
+			throw new IllegalArgumentException(section.getCurrentPath() + "." + key + " must be greater than zero.");
+		}
+		return value;
 	}
 
 	private void registerGroupPermissions(List<PricingGroup> groups) {

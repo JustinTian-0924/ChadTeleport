@@ -1,5 +1,6 @@
 package basementhost.randomchad.service;
 
+import basementhost.randomchad.model.TeleportBalance;
 import basementhost.randomchad.model.TeleportPayment;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -34,12 +35,12 @@ public class TeleportPaymentService {
 		if (price == 0.0 || !settings.enabled()) {
 			return TeleportPayment.coinsOnly(price);
 		}
-		int points = balanceService.getOrCreate(player, settings.startingPoints());
+		int points = balanceService.getOrCreate(player, System.currentTimeMillis()).points();
 		return TeleportPayment.split(price, points, settings.coinValue(), settings.displayName());
 	}
 
 	public boolean checkCanAfford(Player player, TeleportPayment payment) {
-		if (payment.points() > 0 && balanceService.getSavedPoints(player) < payment.points()) {
+		if (payment.points() > 0 && balanceService.getAvailablePoints(player) < payment.points()) {
 			langService.send(player, "balance.quote-outdated");
 			return false;
 		}
@@ -88,15 +89,18 @@ public class TeleportPaymentService {
 
 	private boolean executePayment(Player player, Location destination, TeleportPayment payment) {
 		EconomyService.CashDebit debit = null;
-		Integer originalPoints = null;
+		TeleportBalance originalBalance = null;
 		boolean teleported = false;
 		try {
 			if (!checkCanAfford(player, payment)) {
 				return false;
 			}
 			if (payment.points() > 0) {
-				originalPoints = balanceService.getSavedPoints(player);
-				balanceService.setPoints(player, originalPoints - payment.points());
+				originalBalance = balanceService.reserve(player, payment.points());
+				if (originalBalance == null) {
+					langService.send(player, "balance.quote-outdated");
+					return false;
+				}
 			}
 			if (payment.coins() > 0.0) {
 				debit = economyService.withdraw(player, payment.coins());
@@ -117,8 +121,8 @@ public class TeleportPaymentService {
 		} finally {
 			if (!teleported) {
 				try {
-					if (originalPoints != null) {
-						balanceService.setPoints(player, originalPoints);
+					if (originalBalance != null) {
+						balanceService.save(player, originalBalance);
 					}
 				} finally {
 					if (debit != null) {

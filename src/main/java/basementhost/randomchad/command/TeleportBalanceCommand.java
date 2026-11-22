@@ -35,8 +35,17 @@ public class TeleportBalanceCommand implements BasicCommand {
 			plugin.getLangService().send(player, "balance.disabled");
 			return;
 		}
-		int points = balanceService.getOrCreate(player, settings.startingPoints());
+		long now = System.currentTimeMillis();
+		var balance = balanceService.getOrCreate(player, now);
+		var recovery = settings.recovery();
 		plugin.getLangService().send(player, "balance.current", Map.of(
-				"name", settings.displayName(), "points", String.valueOf(points)));
+				"name", settings.displayName(), "points", String.valueOf(balance.points())));
+		String cap = String.valueOf(recovery.maxPoints());
+		if (balance.points() >= recovery.maxPoints()) {
+			plugin.getLangService().send(player, "balance.recovery-full", Map.of("cap", cap));
+		} else {
+			plugin.getLangService().send(player, "balance.recovery-next", Map.of("cap", cap,
+					"seconds", String.valueOf(balance.secondsUntilRecovery(now, recovery))));
+		}
 	}
 }
