@@ -15,6 +15,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ public class ConfigService {
 	private final JavaPlugin plugin;
 	private FileConfiguration activeConfig;
 	private PricingPolicy pricingPolicy;
+	private BalanceSettings balanceSettings;
 	private Map<String, WorldTransferRule> worldTransferRules;
 	private final Map<String, Permission> ownedGroupPermissions = new HashMap<>();
 
@@ -48,6 +50,7 @@ public class ConfigService {
 			newPricingRules.put(feature, readPricingRule(requiredSection(candidate, "features." + feature + ".pricing")));
 		}
 		PricingPolicy newPolicy = new PricingPolicy(newPricingRules, readPricingGroups(candidate));
+		BalanceSettings newBalanceSettings = readBalanceSettings(candidate);
 		ConfigurationSection transfers = requiredSection(candidate, "world-transfers");
 		WorldTransferRule defaults = readWorldTransferRule(requiredSection(transfers, "default"), null);
 		Map<String, WorldTransferRule> newTransferRules = new HashMap<>();
@@ -64,8 +67,37 @@ public class ConfigService {
 		// 所有价格检查通过后才启用新配置，重载失败时继续使用原来的有效配置。
 		registerGroupPermissions(newPolicy.groups());
 		pricingPolicy = newPolicy;
+		balanceSettings = newBalanceSettings;
 		worldTransferRules = Map.copyOf(newTransferRules);
 		activeConfig = candidate;
+	}
+
+	private BalanceSettings readBalanceSettings(ConfigurationSection candidate) {
+		if (!candidate.contains("teleport-balance")) {
+			return new BalanceSettings(false, 30, BigDecimal.ONE, "Teleport Points");
+		}
+		ConfigurationSection section = requiredSection(candidate, "teleport-balance");
+		int startingPoints = integer(section, "starting-points", 30);
+		if (startingPoints < 0) {
+			throw new IllegalArgumentException("teleport-balance.starting-points must be zero or greater.");
+		}
+		BigDecimal coinValue = BigDecimal.valueOf(number(section, "coins-per-point", 1.0)).stripTrailingZeros();
+		if (coinValue.signum() <= 0 || coinValue.scale() > 2) {
+			throw new IllegalArgumentException("teleport-balance.coins-per-point must be positive with at most two decimal places.");
+		}
+		Object rawName = section.get("display-name", "Teleport Points");
+		if (!(rawName instanceof String name) || name.isBlank() || name.length() > 48
+				|| name.chars().anyMatch(c -> Character.isISOControl(c) || "<>{}\\".indexOf(c) >= 0)) {
+			throw new IllegalArgumentException("teleport-balance.display-name must be plain text between 1 and 48 characters.");
+		}
+		return new BalanceSettings(bool(section, "enabled", false), startingPoints, coinValue, name.strip());
+	}
+
+	public BalanceSettings getBalanceSettings() {
+		return balanceSettings;
+	}
+
+	public record BalanceSettings(boolean enabled, int startingPoints, BigDecimal coinValue, String displayName) {
 	}
 
 	private List<PricingGroup> readPricingGroups(ConfigurationSection candidate) {

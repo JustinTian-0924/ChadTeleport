@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'basementhost.randomchad.Chadteleport'
-version = '0.4.6'
+version = '0.5.0'
 
 repositories {
     mavenCentral()

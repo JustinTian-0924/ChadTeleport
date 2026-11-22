@@ -112,7 +112,17 @@ economy:
   insufficient: "<red>You do not have enough money for this teleport.</red>"
   required: "<yellow>Required: <white>{price} coins</white></yellow>"
   charged: "<yellow>Charged: <white>{price} coins</white></yellow>"
-  charge-failed-after-teleport: "<yellow>Teleport succeeded, but charging failed. Please contact an admin.</yellow>"
+  payment-failed: "<red>The economy provider could not charge the quoted amount. Teleport cancelled.</red>"
+  refund-failed: "<red>The coin refund of {price} could not be confirmed. Please contact an admin.</red>"
+
+balance:
+  usage: "<yellow>Usage: /tpbalance</yellow>"
+  disabled: "<red>Teleport balances are disabled.</red>"
+  current: "<yellow>{name}: <white>{points}</white></yellow>"
+  quote: "<yellow>Fee: <white>{points} {name} + {price} coins</white></yellow>"
+  spent: "<yellow>Used <white>{points} {name}</white>.</yellow>"
+  quote-outdated: "<red>You no longer have enough points for this quote. Please request a new one.</red>"
+  payment-in-progress: "<red>A teleport payment is already in progress.</red>"
 
 teleport:
   success: "<green>Teleported successfully.</green>"

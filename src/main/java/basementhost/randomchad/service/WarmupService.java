@@ -38,7 +38,7 @@ public class WarmupService {
 				quote.getFrom().clone(),
 				lockedDestination.clone(),
 				quote.getDistance(),
-				quote.getPrice(),
+				quote.getPayment(),
 				quote.getWarmupSeconds(),
 				quote.getWarmupTicks(),
 				quote.isCrossWorld()
@@ -150,33 +150,7 @@ public class WarmupService {
 			return;
 		}
 
-		// 报价已经包含计价方式和免手续费权限的结果，执行时不再另算价格。
-		double price = offer.getPrice();
-		if (!plugin.getTeleportPaymentService().checkCanAfford(requester, price)) {
-			return;
-		}
-
-		boolean success = requester.teleport(activeTeleport.getDestination().clone());
-
-		if (!success) {
-			plugin.getLangService().send(requester, "teleport.failed");
-			return;
-		}
-
-		if (price > 0.0) {
-			boolean charged = plugin.getTeleportPaymentService().charge(requester, price);
-			if (!charged) {
-				plugin.getLangService().send(requester, "economy.charge-failed-after-teleport");
-				plugin.getLogger().warning("Failed to charge " + requester.getName() + " after successful teleport.");
-				return;
-			}
-
-			plugin.getLangService().send(requester, "teleport.success");
-			plugin.getLangService().send(requester, "economy.charged", Map.of(
-					"price", String.valueOf(price)
-			));
-		} else {
-			plugin.getLangService().send(requester, "teleport.success");
-		}
+		plugin.getTeleportPaymentService().payAndTeleport(requester, activeTeleport.getDestination().clone(),
+				offer.getPayment());
 	}
 }

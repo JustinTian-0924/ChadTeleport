@@ -1,6 +1,7 @@
 package basementhost.randomchad.util;
 
 import basementhost.randomchad.model.TeleportOffer;
+import basementhost.randomchad.model.TeleportPayment;
 import basementhost.randomchad.model.TeleportQuote;
 import basementhost.randomchad.service.LangService;
 import net.kyori.adventure.text.Component;
@@ -29,7 +30,7 @@ public final class QuoteMessageUtil {
 		sendCommonQuoteDetails(
 				player,
 				offer.getDistance(),
-				offer.getPrice(),
+				offer.getPayment(),
 				offer.getWarmupSeconds(),
 				offer.getWarmupTicks(),
 				offer.isCrossWorld(),
@@ -50,7 +51,7 @@ public final class QuoteMessageUtil {
 		sendCommonQuoteDetails(
 				player,
 				quote.getDistance(),
-				quote.getPrice(),
+				quote.getPayment(),
 				quote.getWarmupSeconds(),
 				quote.getWarmupTicks(),
 				quote.isCrossWorld(),
@@ -61,7 +62,7 @@ public final class QuoteMessageUtil {
 	private static void sendCommonQuoteDetails(
 			Player player,
 			double distance,
-			double price,
+			TeleportPayment payment,
 			double warmupSeconds,
 			long warmupTicks,
 			boolean crossWorld,
@@ -71,9 +72,13 @@ public final class QuoteMessageUtil {
 				"distance", String.valueOf(distance)
 		)));
 
-		player.sendMessage(langService.get("quote.fee", Map.of(
-				"price", String.valueOf(price)
-		)));
+		String coins = String.valueOf(payment.coins());
+		if (payment.points() > 0) {
+			langService.send(player, "balance.quote", Map.of(
+					"name", payment.balanceName(), "points", String.valueOf(payment.points()), "price", coins));
+		} else {
+			langService.send(player, "quote.fee", Map.of("price", coins));
+		}
 
 		player.sendMessage(langService.get("quote.warmup", Map.of(
 				"seconds", String.valueOf(warmupSeconds),

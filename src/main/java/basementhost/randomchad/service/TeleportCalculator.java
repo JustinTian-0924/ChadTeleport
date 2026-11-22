@@ -14,16 +14,18 @@ public class TeleportCalculator {
 
 	private final ConfigService configService;
 	private final PricingService pricingService;
+	private final TeleportPaymentService paymentService;
 
-	public TeleportCalculator(ConfigService configService, PricingService pricingService) {
+	public TeleportCalculator(ConfigService configService, PricingService pricingService, TeleportPaymentService paymentService) {
 		this.configService = configService;
 		this.pricingService = pricingService;
+		this.paymentService = paymentService;
 	}
 
 	public TeleportQuote calculateTpaQuote(Player requester, Player target) {
 		TeleportOffer offer = calculateOffer("tpa", requester, target, target.getLocation());
 		return new TeleportQuote(requester, target, offer.getFrom(), offer.getDestination(), offer.getDistance(),
-				offer.getPrice(), offer.getWarmupSeconds(), offer.getWarmupTicks(), offer.isCrossWorld());
+				offer.getPayment(), offer.getWarmupSeconds(), offer.getWarmupTicks(), offer.isCrossWorld());
 	}
 
 	public TeleportOffer calculateLocationOffer(String featureName, Player requester, Location destination) {
@@ -68,7 +70,7 @@ public class TeleportCalculator {
 		warmupSeconds = floor1(warmupSeconds);
 		long warmupTicks = (long) Math.floor(warmupSeconds * 20.0);
 		return new TeleportOffer(featureName, requester, target, from.clone(), to, floor1(route.totalDistance()),
-				price, warmupSeconds, warmupTicks, crossWorld);
+				paymentService.quote(requester, price), warmupSeconds, warmupTicks, crossWorld);
 	}
 
 	private double flatDistanceToOrigin(Location location) {

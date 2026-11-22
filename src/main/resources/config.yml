@@ -96,6 +96,15 @@ pricing-groups:
         mode: fixed
         fixed-price: 3.0
 
+# On first use, each player receives starting-points once. Points are used before coins.
+# Points are whole units. If the final point covers more than the remaining fee, no change is given.
+# Existing balances are kept when the starting amount changes.
+teleport-balance:
+  enabled: true
+  starting-points: 30
+  coins-per-point: 1.0
+  display-name: Teleport Points
+
 quote:
   max-move-distance: 8.0
   expire-seconds: 30

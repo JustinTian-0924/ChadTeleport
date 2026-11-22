@@ -39,11 +39,6 @@ public class EconomyService {
 	public boolean isAvailable() {
 		return economy != null;
 	}
-	// unused yet
-	public Economy getEconomy() {
-		return economy;
-	}
-
 	public boolean has(Player player, double amount) {
 		if (economy == null) {
 			return false;
@@ -51,12 +46,29 @@ public class EconomyService {
 		return economy.has(player, amount);
 	}
 
-	public boolean withdraw(Player player, double amount) {
-		if (economy == null) {
-			return false;
+	public CashDebit withdraw(Player player, double amount) {
+		Economy provider = economy;
+		if (provider == null) {
+			return null;
 		}
 
-		EconomyResponse response = economy.withdrawPlayer(player, amount);
-		return response.transactionSuccess();
+		EconomyResponse response = provider.withdrawPlayer(player, amount);
+		if (!response.transactionSuccess()) {
+			return null;
+		}
+		return new CashDebit(provider, response.amount);
+	}
+
+	public record CashDebit(Economy provider, double amount) {
+		public boolean refund(Player player) {
+			if (!Double.isFinite(amount) || amount < 0.0) {
+				return false;
+			}
+			if (amount == 0.0) {
+				return true;
+			}
+			EconomyResponse response = provider.depositPlayer(player, amount);
+			return response.transactionSuccess() && Double.compare(response.amount, amount) == 0;
+		}
 	}
 }

@@ -12,7 +12,7 @@ public class TeleportOffer {
 	private final Location from;
 	private final Location destination;
 	private final double distance;
-	private final double price;
+	private final TeleportPayment payment;
 	private final double warmupSeconds;
 	private final long warmupTicks;
 	private final boolean crossWorld;
@@ -24,7 +24,7 @@ public class TeleportOffer {
 			Location from,
 			Location destination,
 			double distance,
-			double price,
+			TeleportPayment payment,
 			double warmupSeconds,
 			long warmupTicks,
 			boolean crossWorld
@@ -35,7 +35,7 @@ public class TeleportOffer {
 		this.from = from;
 		this.destination = destination;
 		this.distance = distance;
-		this.price = price;
+		this.payment = payment;
 		this.warmupSeconds = warmupSeconds;
 		this.warmupTicks = warmupTicks;
 		this.crossWorld = crossWorld;
@@ -65,8 +65,8 @@ public class TeleportOffer {
 		return distance;
 	}
 
-	public double getPrice() {
-		return price;
+	public TeleportPayment getPayment() {
+		return payment;
 	}
 
 	public double getWarmupSeconds() {

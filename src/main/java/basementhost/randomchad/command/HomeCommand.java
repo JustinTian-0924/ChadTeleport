@@ -67,7 +67,7 @@ public class HomeCommand implements BasicCommand {
 			TeleportOffer offer = plugin.getTeleportCalculator()
 					.calculateLocationOffer("home", player, home.getLocation());
 
-			if (!plugin.getTeleportPaymentService().checkCanAfford(player, offer.getPrice())) {
+			if (!plugin.getTeleportPaymentService().checkCanAfford(player, offer.getPayment())) {
 				return;
 			}
 

@@ -55,7 +55,7 @@ public class SpawnCommand implements BasicCommand {
 			TeleportOffer offer = plugin.getTeleportCalculator()
 					.calculateLocationOffer("spawn", player, spawnLocation);
 
-			if (!plugin.getTeleportPaymentService().checkCanAfford(player, offer.getPrice())) {
+			if (!plugin.getTeleportPaymentService().checkCanAfford(player, offer.getPayment())) {
 				return;
 			}
 

@@ -112,7 +112,17 @@ economy:
   insufficient: "<red>你的金钱不足，无法进行这次传送。</red>"
   required: "<yellow>需要: <white>{price} 金币</white></yellow>"
   charged: "<yellow>已扣费: <white>{price} 金币</white></yellow>"
-  charge-failed-after-teleport: "<yellow>传送成功，但扣费失败，请联系管理员。</yellow>"
+  payment-failed: "<red>经济插件未能按报价扣费，传送已取消。</red>"
+  refund-failed: "<red>无法确认 {price} 金币的退款，请联系管理员。</red>"
+
+balance:
+  usage: "<yellow>用法：/tpbalance</yellow>"
+  disabled: "<red>传送余额功能已关闭。</red>"
+  current: "<yellow>{name}：<white>{points}</white></yellow>"
+  quote: "<yellow>费用：<white>{points} 点 {name} + {price} 金币</white></yellow>"
+  spent: "<yellow>已使用 <white>{points} 点 {name}</white>。</yellow>"
+  quote-outdated: "<red>点数不足以支付这份报价，请重新获取报价。</red>"
+  payment-in-progress: "<red>已有一笔传送费用正在处理。</red>"
 
 teleport:
   success: "<green>传送成功。</green>"

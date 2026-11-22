@@ -72,7 +72,7 @@ public class WarpCommand implements BasicCommand {
 			TeleportOffer offer = plugin.getTeleportCalculator()
 					.calculateLocationOffer("warp", player, destination);
 
-			if (!plugin.getTeleportPaymentService().checkCanAfford(player, offer.getPrice())) {
+			if (!plugin.getTeleportPaymentService().checkCanAfford(player, offer.getPayment())) {
 				return;
 			}
 

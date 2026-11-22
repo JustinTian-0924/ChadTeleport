@@ -10,20 +10,20 @@ public class TeleportQuote {
 	private final Location from;
 	private final Location to;
 	private final double distance;
-	private final double price;
+	private final TeleportPayment payment;
 	private final double warmupSeconds;
 	private final long warmupTicks;
 	private final boolean crossWorld;
 
 	public TeleportQuote(Player requester, Player target, Location from, Location to,
-						 double distance, double price, double warmupSeconds,
+						 double distance, TeleportPayment payment, double warmupSeconds,
 						 long warmupTicks, boolean crossWorld) {
 		this.requester = requester;
 		this.target = target;
 		this.from = from;
 		this.to = to;
 		this.distance = distance;
-		this.price = price;
+		this.payment = payment;
 		this.warmupSeconds = warmupSeconds;
 		this.warmupTicks = warmupTicks;
 		this.crossWorld = crossWorld;
@@ -49,8 +49,8 @@ public class TeleportQuote {
 		return distance;
 	}
 
-	public double getPrice() {
-		return price;
+	public TeleportPayment getPayment() {
+		return payment;
 	}
 
 	public double getWarmupSeconds() {

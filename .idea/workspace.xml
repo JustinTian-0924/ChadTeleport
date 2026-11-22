@@ -8,9 +8,21 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/ChadteleportPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/ChadteleportPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/command/HomeCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/command/HomeCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/command/SpawnCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/command/SpawnCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/command/TpaCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/command/TpaCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/command/WarpCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/command/WarpCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/model/TeleportOffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/model/TeleportOffer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/model/TeleportQuote.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/model/TeleportQuote.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/ConfigService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/ConfigService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/PricingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/PricingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/EconomyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/EconomyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/TeleportCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/TeleportCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/TeleportPaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/TeleportPaymentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/WarmupService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/service/WarmupService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/util/QuoteMessageUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/basementhost/randomchad/util/QuoteMessageUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/lang/en_us.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/lang/en_us.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/lang/zh_cn.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/lang/zh_cn.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

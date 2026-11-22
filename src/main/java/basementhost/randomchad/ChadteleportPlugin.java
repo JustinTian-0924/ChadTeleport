@@ -21,6 +21,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	private TeleportManager teleportManager;
 	private ConfigService configService;
 	private TeleportPaymentService teleportPaymentService;
+	private TeleportBalanceService teleportBalanceService;
 	private TeleportCalculator teleportCalculator;
 	private WarmupService warmupService;
 	private ExpirationService expirationService;
@@ -37,7 +38,6 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.economyService = new EconomyService(this);
 		this.teleportManager = new TeleportManager(this);
 		this.configService = new ConfigService(this);
-		this.teleportCalculator = new TeleportCalculator(configService, new PricingService(configService));
 		this.warmupService = new WarmupService(this);
 		this.spawnService = new SpawnService(this);
 		this.spawnService.load();
@@ -47,7 +47,10 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.warpService = new WarpService(this);
 		this.langService = new LangService(this, configService);
 		this.langService.load();
-		this.teleportPaymentService = new TeleportPaymentService(economyService, langService);
+		this.teleportBalanceService = new TeleportBalanceService(this);
+		this.teleportPaymentService = new TeleportPaymentService(economyService, langService, configService,
+				teleportBalanceService, getLogger());
+		this.teleportCalculator = new TeleportCalculator(configService, new PricingService(configService), teleportPaymentService);
 
 
 		registerCommands();
@@ -88,6 +91,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 				teleportCommand, teleportCommand::suggest);
 		registerPluginCommand("tpconfirm", "Confirm a teleport quote", null, confirmCommand, confirmCommand::suggest);
 		registerPluginCommand("tpcancel", "Cancel a teleport quote or warmup", null, cancelCommand, cancelCommand::suggest);
+		registerPluginCommand("tpbalance", "Show your teleport balance", null,
+				new TeleportBalanceCommand(this, teleportBalanceService), (source, args) -> List.of());
 		registerPluginCommand("setspawn", "Set the server spawn location", "chadteleport.setspawn",
 				new SetSpawnCommand(this), null);
 		registerPluginCommand("spawn", "Teleport to the server spawn", "chadteleport.spawn",

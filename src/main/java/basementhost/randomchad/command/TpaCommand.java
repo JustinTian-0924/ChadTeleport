@@ -51,7 +51,7 @@ public class TpaCommand implements BasicCommand {
 		try {
 			TeleportQuote quote = plugin.getTeleportCalculator().calculateTpaQuote(player, target);
 
-			if (!plugin.getTeleportPaymentService().checkCanAfford(player, quote.getPrice())) {
+			if (!plugin.getTeleportPaymentService().checkCanAfford(player, quote.getPayment())) {
 				return;
 			}
 
