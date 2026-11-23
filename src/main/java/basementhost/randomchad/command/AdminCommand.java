@@ -4,11 +4,14 @@ import basementhost.randomchad.ChadteleportPlugin;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class AdminCommand implements BasicCommand {
+
+	private static final String RELOAD_PERMISSION = "chadteleport.admin";
 
 	private final ChadteleportPlugin plugin;
 
@@ -19,18 +22,20 @@ public class AdminCommand implements BasicCommand {
 	@Override
 	public void execute(CommandSourceStack source, String[] args) {
 		CommandSender sender = source.getSender();
-		if (!sender.hasPermission("chadteleport.admin")) {
+		if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help"))) {
+			sendHelp(sender);
+			return;
+		}
+		if (args.length != 1 || !args[0].equalsIgnoreCase("reload")) {
+			plugin.getLangService().send(sender, sender.hasPermission(RELOAD_PERMISSION) ? "admin.usage" : "help.usage");
+			return;
+		}
+		if (!sender.hasPermission(RELOAD_PERMISSION)) {
 			plugin.getLangService().send(sender, "general.no-permission");
 			return;
 		}
 
-		if (args.length != 1 || !args[0].equalsIgnoreCase("reload")) {
-			plugin.getLangService().send(sender, "admin.usage");
-			return;
-		}
-
 		plugin.getLangService().send(sender, "admin.reloading");
-
 		try {
 			plugin.reloadPluginResources();
 			plugin.getLangService().send(sender, "admin.reload-success");
@@ -39,26 +44,67 @@ public class AdminCommand implements BasicCommand {
 			e.printStackTrace();
 			plugin.getLangService().send(sender, "admin.reload-failed");
 		}
+	}
 
+	private void sendHelp(CommandSender sender) {
+		var messages = plugin.getLangService();
+		messages.send(sender, "help.header");
+		messages.send(sender, "help.usage");
+		if (sender instanceof Player) {
+			sendPlayerHelp(sender);
+		}
+		if (sender.hasPermission("chadteleport.admin.tp")) {
+			messages.send(sender, sender instanceof Player ? "help.tp" : "help.tp-console");
+		}
+		sendHelpIfAllowed(sender, RELOAD_PERMISSION, "help.reload");
+	}
+
+	private void sendPlayerHelp(CommandSender sender) {
+		var messages = plugin.getLangService();
+		var config = plugin.getConfigService();
+		if (config.isFeatureEnabled("tpa")) {
+			messages.send(sender, "help.tpa");
+		}
+		messages.send(sender, "help.requests");
+		messages.send(sender, "help.confirm");
+		String spawnPermission = config.getSpawnPermission();
+		if (config.isSpawnEnabled() && sender.hasPermission("chadteleport.spawn")
+				&& (!config.isSpawnPermissionRequired() || spawnPermission == null || spawnPermission.isBlank()
+				|| sender.hasPermission(spawnPermission))) {
+			messages.send(sender, "help.spawn");
+		}
+		if (config.isHomeEnabled()) {
+			messages.send(sender, "help.home");
+		}
+		messages.send(sender, "help.manage-homes");
+		if (config.isWarpEnabled()) {
+			sendHelpIfAllowed(sender, "chadteleport.warp", "help.warp");
+		}
+		if (config.getBalanceSettings().enabled()) {
+			messages.send(sender, "help.balance");
+		}
+		sendHelpIfAllowed(sender, "chadteleport.admin.tppos", "help.tppos");
+		sendHelpIfAllowed(sender, "chadteleport.admin.tphere", "help.tphere");
+		sendHelpIfAllowed(sender, "chadteleport.admin.tpall", "help.tpall");
+		sendHelpIfAllowed(sender, "chadteleport.setspawn", "help.setspawn");
+		sendHelpIfAllowed(sender, "chadteleport.setwarp", "help.setwarp");
+		sendHelpIfAllowed(sender, "chadteleport.delwarp", "help.delwarp");
+	}
+
+	private void sendHelpIfAllowed(CommandSender sender, String permission, String key) {
+		if (sender.hasPermission(permission)) {
+			plugin.getLangService().send(sender, key);
+		}
 	}
 
 	@Override
 	public List<String> suggest(CommandSourceStack source, String[] args) {
-		CommandSender sender = source.getSender();
-		if (!sender.hasPermission("chadteleport.admin")) {
-			return Collections.emptyList();
+		if (args.length > 1) {
+			return List.of();
 		}
-
-		if (args.length == 1) {
-			String input = args[0].toLowerCase();
-
-			if ("reload".startsWith(input)) {
-				return List.of("reload");
-			}
-
-			return Collections.emptyList();
-		}
-
-		return Collections.emptyList();
+		String input = args.length == 0 ? "" : args[0].toLowerCase(Locale.ROOT);
+		List<String> commands = source.getSender().hasPermission(RELOAD_PERMISSION)
+				? List.of("help", "reload") : List.of("help");
+		return commands.stream().filter(command -> command.startsWith(input)).toList();
 	}
 }

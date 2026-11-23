@@ -147,10 +147,31 @@ buttons:
   deny: "[拒绝]"
 
 admin:
-  usage: "<yellow>用法: <white>/chadteleport reload</white></yellow>"
+  usage: "<yellow>用法：<white>/chadteleport help</white> 或 <white>/chadteleport reload</white></yellow>"
   reloading: "<gray>正在重载配置与语言文件...</gray>"
   reload-success: "<green>Chadteleport 配置与语言文件已成功重载。</green>"
   reload-failed: "<red>重载失败，请查看控制台日志。</red>"
+
+help:
+  header: "<gold><bold>ChadTeleport 帮助</bold></gold>"
+  usage: "<yellow>/chadteleport help</yellow> <gray>· 缩写：/ctp、/ct</gray>"
+  tpa: "<yellow>/tpa 玩家名</yellow> <gray>— 请求传送到指定玩家的位置。</gray>"
+  requests: "<yellow>/tpaccept [玩家名]</yellow> <gray>或</gray> <yellow>/tpdeny [玩家名]</yellow> <gray>— 接受或拒绝传送请求。</gray>"
+  confirm: "<yellow>/tpconfirm</yellow> <gray>或</gray> <yellow>/tpcancel</yellow> <gray>— 确认报价或取消待执行的传送。</gray>"
+  spawn: "<yellow>/spawn</yellow> <gray>— 请求传送到服务器出生点。</gray>"
+  home: "<yellow>/home [名称]</yellow> <gray>— 请求传送到家。</gray>"
+  manage-homes: "<yellow>/sethome [名称]</yellow><gray>、</gray><yellow>/homes</yellow><gray>、</gray><yellow>/delhome 名称</yellow> <gray>— 管理你的家。</gray>"
+  warp: "<yellow>/warps</yellow> <gray>或</gray> <yellow>/warp 名称</yellow> <gray>— 查看公共传送点或请求前往。</gray>"
+  balance: "<yellow>/tpbalance</yellow> <gray>— 查看传送点数和恢复时间。</gray>"
+  tp: "<yellow>/tp 目标</yellow> <gray>或</gray> <yellow>/tp 玩家 目标</yellow> <gray>— 将自己或指定玩家传送到目标的位置。</gray>"
+  tp-console: "<yellow>/tp 玩家 目标</yellow> <gray>— 将指定玩家传送到目标的位置。</gray>"
+  tppos: "<yellow>/tppos X Y Z</yellow> <gray>— 传送到当前世界的指定坐标。</gray>"
+  tphere: "<yellow>/tphere 玩家名</yellow> <gray>— 将指定玩家传送到你的位置。</gray>"
+  tpall: "<yellow>/tpall [目标]</yellow> <gray>— 将其他玩家传送到你或指定目标的位置。</gray>"
+  setspawn: "<yellow>/setspawn</yellow> <gray>— 将你当前的位置设为插件出生点。</gray>"
+  setwarp: "<yellow>/setwarp 名称</yellow> <gray>— 在当前位置设置公共传送点。</gray>"
+  delwarp: "<yellow>/delwarp 名称</yellow> <gray>— 删除一个公共传送点。</gray>"
+  reload: "<yellow>/chadteleport reload</yellow> <gray>— 重载插件配置和语言文件。</gray>"
 
 spawn:
   not-set: "<red>服务器出生点尚未设置。</red>"

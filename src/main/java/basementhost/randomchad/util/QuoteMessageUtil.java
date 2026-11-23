@@ -97,21 +97,18 @@ public final class QuoteMessageUtil {
 	}
 
 	public static void sendConfirmCancelButtons(Player player, LangService langService) {
-		Component confirmButton = Component.text(
-						langService.getRaw("buttons.confirm"),
-						NamedTextColor.GREEN
-				)
+		Component confirmButton = langService.get("buttons.confirm")
+				.colorIfAbsent(NamedTextColor.GREEN)
 				.clickEvent(ClickEvent.runCommand("/teleport confirm"))
 				.hoverEvent(HoverEvent.showText(langService.get("quote.confirm-hover")));
 
-		Component cancelButton = Component.text(
-						langService.getRaw("buttons.cancel"),
-						NamedTextColor.RED
-				)
+		Component cancelButton = langService.get("buttons.cancel")
+				.colorIfAbsent(NamedTextColor.RED)
 				.clickEvent(ClickEvent.runCommand("/teleport cancel"))
 				.hoverEvent(HoverEvent.showText(langService.get("quote.cancel-hover")));
 
-		Component buttonsLine = confirmButton
+		Component buttonsLine = Component.empty()
+				.append(confirmButton)
 				.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 				.append(cancelButton);
 

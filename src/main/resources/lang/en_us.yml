@@ -147,10 +147,31 @@ buttons:
   deny: "[Deny]"
 
 admin:
-  usage: "<yellow>Usage: <white>/chadteleport reload</white></yellow>"
+  usage: "<yellow>Usage: <white>/chadteleport help</white> or <white>/chadteleport reload</white></yellow>"
   reloading: "<gray>Reloading config and language files...</gray>"
   reload-success: "<green>Chadteleport config and language files have been reloaded successfully.</green>"
   reload-failed: "<red>Reload failed. Please check the console log.</red>"
+
+help:
+  header: "<gold><bold>ChadTeleport Help</bold></gold>"
+  usage: "<yellow>/chadteleport help</yellow> <gray>· Aliases: /ctp, /ct</gray>"
+  tpa: "<yellow>/tpa PLAYER</yellow> <gray>— Request to teleport to a player.</gray>"
+  requests: "<yellow>/tpaccept [PLAYER]</yellow> <gray>or</gray> <yellow>/tpdeny [PLAYER]</yellow> <gray>— Respond to a request.</gray>"
+  confirm: "<yellow>/tpconfirm</yellow> <gray>or</gray> <yellow>/tpcancel</yellow> <gray>— Confirm a quote or cancel a pending teleport.</gray>"
+  spawn: "<yellow>/spawn</yellow> <gray>— Request to teleport to the server spawn.</gray>"
+  home: "<yellow>/home [NAME]</yellow> <gray>— Request to teleport to a home.</gray>"
+  manage-homes: "<yellow>/sethome [NAME]</yellow><gray>,</gray> <yellow>/homes</yellow><gray>,</gray> <yellow>/delhome NAME</yellow> <gray>— Manage your homes.</gray>"
+  warp: "<yellow>/warps</yellow> <gray>or</gray> <yellow>/warp NAME</yellow> <gray>— List warps or request to visit one.</gray>"
+  balance: "<yellow>/tpbalance</yellow> <gray>— View your teleport points and recovery time.</gray>"
+  tp: "<yellow>/tp TARGET</yellow> <gray>or</gray> <yellow>/tp PLAYER TARGET</yellow> <gray>— Teleport yourself, or move PLAYER to TARGET.</gray>"
+  tp-console: "<yellow>/tp PLAYER TARGET</yellow> <gray>— Move PLAYER to TARGET.</gray>"
+  tppos: "<yellow>/tppos X Y Z</yellow> <gray>— Teleport to coordinates in your current world.</gray>"
+  tphere: "<yellow>/tphere PLAYER</yellow> <gray>— Bring a player to you.</gray>"
+  tpall: "<yellow>/tpall [TARGET]</yellow> <gray>— Bring players to you or to the specified target.</gray>"
+  setspawn: "<yellow>/setspawn</yellow> <gray>— Set the plugin spawn to your location.</gray>"
+  setwarp: "<yellow>/setwarp NAME</yellow> <gray>— Set a warp at your location.</gray>"
+  delwarp: "<yellow>/delwarp NAME</yellow> <gray>— Delete a warp.</gray>"
+  reload: "<yellow>/chadteleport reload</yellow> <gray>— Reload plugin configuration and messages.</gray>"
 
 spawn:
   not-set: "<red>Server spawn has not been set yet.</red>"

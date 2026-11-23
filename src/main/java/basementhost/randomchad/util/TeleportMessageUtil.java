@@ -39,25 +39,22 @@ public final class TeleportMessageUtil {
 				"seconds", String.valueOf(requestWindowSeconds)
 		)));
 
-		Component acceptButton = Component.text(
-						langService.getRaw("buttons.accept"),
-						NamedTextColor.GREEN
-				)
+		Component acceptButton = langService.get("buttons.accept")
+				.colorIfAbsent(NamedTextColor.GREEN)
 				.clickEvent(ClickEvent.runCommand("/tpaccept " + requesterName))
 				.hoverEvent(HoverEvent.showText(
 						langService.get("request.accept-hover", Map.of("requester", requesterName))
 				));
 
-		Component denyButton = Component.text(
-						langService.getRaw("buttons.deny"),
-						NamedTextColor.RED
-				)
+		Component denyButton = langService.get("buttons.deny")
+				.colorIfAbsent(NamedTextColor.RED)
 				.clickEvent(ClickEvent.runCommand("/tpdeny " + requesterName))
 				.hoverEvent(HoverEvent.showText(
 						langService.get("request.deny-hover", Map.of("requester", requesterName))
 				));
 
-		Component buttonsLine = acceptButton
+		Component buttonsLine = Component.empty()
+				.append(acceptButton)
 				.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 				.append(denyButton);
 

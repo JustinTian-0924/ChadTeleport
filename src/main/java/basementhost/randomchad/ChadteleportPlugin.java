@@ -118,8 +118,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 				tpPosCommand, tpPosCommand::suggest);
 
 		AdminCommand adminCommand = new AdminCommand(this);
-		registerPluginCommand("chadteleport", "Chadteleport admin command", "chadteleport.admin",
-				adminCommand, adminCommand::suggest, "ct");
+		registerPluginCommand("chadteleport", "Show ChadTeleport help or reload its configuration", null,
+				adminCommand, adminCommand::suggest, "ct", "ctp");
 	}
 
 	private void registerListeners() {
