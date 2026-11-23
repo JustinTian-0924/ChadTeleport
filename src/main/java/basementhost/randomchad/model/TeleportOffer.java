@@ -11,11 +11,10 @@ public class TeleportOffer {
 	private final Player target;
 	private final Location from;
 	private final Location destination;
-	private final double distance;
+	private final TeleportRoute route;
 	private final TeleportPayment payment;
 	private final double warmupSeconds;
 	private final long warmupTicks;
-	private final boolean crossWorld;
 
 	public TeleportOffer(
 			String featureName,
@@ -23,22 +22,20 @@ public class TeleportOffer {
 			Player target,
 			Location from,
 			Location destination,
-			double distance,
+			TeleportRoute route,
 			TeleportPayment payment,
 			double warmupSeconds,
-			long warmupTicks,
-			boolean crossWorld
+			long warmupTicks
 	) {
 		this.featureName = featureName;
 		this.requester = requester;
 		this.target = target;
 		this.from = from;
 		this.destination = destination;
-		this.distance = distance;
+		this.route = route;
 		this.payment = payment;
 		this.warmupSeconds = warmupSeconds;
 		this.warmupTicks = warmupTicks;
-		this.crossWorld = crossWorld;
 	}
 
 	public String getFeatureName() {
@@ -61,8 +58,8 @@ public class TeleportOffer {
 		return destination == null ? null : destination.clone();
 	}
 
-	public double getDistance() {
-		return distance;
+	public TeleportRoute getRoute() {
+		return route;
 	}
 
 	public TeleportPayment getPayment() {
@@ -75,9 +72,5 @@ public class TeleportOffer {
 
 	public long getWarmupTicks() {
 		return warmupTicks;
-	}
-
-	public boolean isCrossWorld() {
-		return crossWorld;
 	}
 }

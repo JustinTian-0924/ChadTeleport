@@ -2,6 +2,7 @@ package basementhost.randomchad.service;
 
 import basementhost.randomchad.exception.LocalizedException;
 import basementhost.randomchad.model.TeleportBalance;
+import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.model.TeleportPayment;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -67,7 +68,9 @@ public class TeleportPaymentService {
 		return true;
 	}
 
-	public void payAndTeleport(Player player, Location destination, TeleportPayment payment) {
+	public void payAndTeleport(TeleportOffer offer, Location destination) {
+		Player player = offer.getRequester();
+		TeleportPayment payment = offer.getPayment();
 		// Other plugins may call a command while handling the payment or teleport event.
 		UUID playerId = player.getUniqueId();
 		if (!paying.add(playerId)) {
@@ -79,7 +82,7 @@ public class TeleportPaymentService {
 			if (!executePayment(player, destination, payment)) {
 				return;
 			}
-			heatService.recordSuccessfulTeleport(player);
+			heatService.recordSuccessfulTeleport(offer);
 			langService.send(player, "teleport.success");
 			if (payment.points() > 0) {
 				langService.send(player, "balance.spent", Map.of(

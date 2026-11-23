@@ -1,5 +1,6 @@
 package basementhost.randomchad.service;
 
+import basementhost.randomchad.model.HeatRule;
 import basementhost.randomchad.model.PricingMode;
 import basementhost.randomchad.model.PricingGroup;
 import basementhost.randomchad.model.PricingPolicy;
@@ -21,13 +22,15 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 
 public class ConfigService {
 
 	private static final Recovery DEFAULT_RECOVERY = new Recovery(50, 3600, 10);
-	private static final TeleportHeat.Settings DEFAULT_HEAT = new TeleportHeat.Settings(false, 25, 60, 1);
+	private static final TeleportHeat.Settings DEFAULT_HEAT = new TeleportHeat.Settings(
+			false, new HeatRule.Fixed(25), 60, 1, Map.of());
 	private final JavaPlugin plugin;
 	private FileConfiguration activeConfig;
 	private PricingPolicy pricingPolicy;
@@ -126,9 +129,42 @@ public class ConfigService {
 		if (threshold < 0) {
 			throw new IllegalArgumentException("overheat.threshold must be zero or greater.");
 		}
-		return new TeleportHeat.Settings(bool(overheat, "enabled", DEFAULT_HEAT.enabled()),
-				positiveInteger(overheat, "heat-per-teleport", DEFAULT_HEAT.heatPerTeleport()),
-				threshold, positiveInteger(overheat, "cooling-per-second", DEFAULT_HEAT.coolingPerSecond()));
+		Map<String, HeatRule> heatPerCommand = new HashMap<>();
+		if (overheat.contains("heat-per-command")) {
+			ConfigurationSection commands = requiredSection(overheat, "heat-per-command");
+			for (String command : commands.getKeys(false)) {
+				if (!PricingPolicy.COMMANDS.contains(command)) {
+					throw new IllegalArgumentException("Unsupported command in overheat.heat-per-command: " + command);
+				}
+				heatPerCommand.put(command, readHeatRule(commands, command));
+			}
+		}
+		HeatRule defaultRule = overheat.contains("heat-per-teleport")
+				? readHeatRule(overheat, "heat-per-teleport") : DEFAULT_HEAT.defaultRule();
+		return new TeleportHeat.Settings(bool(overheat, "enabled", DEFAULT_HEAT.enabled()), defaultRule,
+				threshold, positiveInteger(overheat, "cooling-per-second", DEFAULT_HEAT.coolingPerSecond()),
+				heatPerCommand);
+	}
+
+	private HeatRule readHeatRule(ConfigurationSection parent, String key) {
+		Object raw = parent.get(key);
+		if (raw instanceof Number) {
+			return new HeatRule.Fixed(number(parent, key, null));
+		}
+		if (!(raw instanceof ConfigurationSection rule)) {
+			throw new IllegalArgumentException(parent.getCurrentPath() + "." + key + " must be a number or a heat rule.");
+		}
+		String mode = rule.getString("mode", "").strip().toLowerCase(Locale.ROOT);
+		return switch (mode) {
+			case "fixed" -> new HeatRule.Fixed(number(rule, "heat", null));
+			case "distance" -> new HeatRule.Distance(number(rule, "base-heat", 0.0),
+					number(rule, "heat-per-1000-blocks", null));
+			case "cross-world" -> new HeatRule.CrossWorld(number(rule, "same-world-heat", null),
+					number(rule, "cross-world-heat", null));
+			case "price" -> new HeatRule.Price(number(rule, "heat-per-coin", null));
+			default -> throw new IllegalArgumentException(rule.getCurrentPath()
+					+ ".mode must be fixed, distance, cross-world or price.");
+		};
 	}
 
 	public TeleportHeat.Settings getHeatSettings() {

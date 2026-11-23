@@ -1,5 +1,7 @@
 package basementhost.randomchad.model;
 
+import java.util.Map;
+
 public record TeleportHeat(long milliHeat, long measuredAtMillis) {
 
 	private static final long MILLI_PER_POINT = 1000L;
@@ -23,10 +25,24 @@ public record TeleportHeat(long milliHeat, long measuredAtMillis) {
 		return Math.ceilDiv(clockDelay + coolingMillis, MILLI_PER_POINT);
 	}
 
-	public TeleportHeat afterTeleport(long now, Settings settings) {
-		return new TeleportHeat(heatAt(now, settings) + settings.heatPerTeleport() * MILLI_PER_POINT, now);
+	public TeleportHeat afterTeleport(long now, Settings settings, String featureName,
+			TeleportRoute route, double quotedPrice) {
+		long heatGain = settings.ruleForCommand(featureName).gainMilliHeat(route, quotedPrice);
+		if (heatGain == 0) {
+			return this;
+		}
+		return new TeleportHeat(heatAt(now, settings) + heatGain, now);
 	}
 
-	public record Settings(boolean enabled, int heatPerTeleport, int threshold, int coolingPerSecond) {
+	public record Settings(boolean enabled, HeatRule defaultRule, int threshold, int coolingPerSecond,
+			Map<String, HeatRule> heatPerCommand) {
+
+		public Settings {
+			heatPerCommand = Map.copyOf(heatPerCommand);
+		}
+
+		public HeatRule ruleForCommand(String featureName) {
+			return heatPerCommand.getOrDefault(featureName, defaultRule);
+		}
 	}
 }

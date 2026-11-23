@@ -37,11 +37,10 @@ public class WarmupService {
 				target,
 				quote.getFrom().clone(),
 				lockedDestination.clone(),
-				quote.getDistance(),
+				quote.getRoute(),
 				quote.getPayment(),
 				quote.getWarmupSeconds(),
-				quote.getWarmupTicks(),
-				quote.isCrossWorld()
+				quote.getWarmupTicks()
 		);
 
 		startOfferWarmup(offer);
@@ -150,7 +149,6 @@ public class WarmupService {
 			return;
 		}
 
-		plugin.getTeleportPaymentService().payAndTeleport(requester, activeTeleport.getDestination().clone(),
-				offer.getPayment());
+		plugin.getTeleportPaymentService().payAndTeleport(offer, activeTeleport.getDestination().clone());
 	}
 }

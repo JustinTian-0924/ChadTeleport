@@ -115,7 +115,18 @@ teleport-balance:
 # Cooling uses real elapsed time, including time offline. Administrative teleports do not add heat.
 overheat:
   enabled: true
+  # Use a fixed number or a rule with mode: fixed, distance, cross-world, or price.
   heat-per-teleport: 25
+  # Optional overrides for tpa, spawn, home, or warp. Omitted commands use the rule above.
+  # Example: home: {mode: distance, base-heat: 5, heat-per-1000-blocks: 10}
+  # Example: warp: {mode: cross-world, same-world-heat: 10, cross-world-heat: 35}
+  # Example: tpa: {mode: price, heat-per-coin: 0.5}
+  # A value of 0 adds no heat. The shared threshold still applies.
+  heat-per-command:
+    spawn: 5
+    home: {mode: distance, base-heat: 5, heat-per-1000-blocks: 10}
+    warp: {mode: cross-world, same-world-heat: 10, cross-world-heat: 35}
+    tpa: {mode: price, heat-per-coin: 0.5}
   threshold: 60
   cooling-per-second: 1
 

@@ -2,6 +2,7 @@ package basementhost.randomchad.service;
 
 import basementhost.randomchad.exception.LocalizedException;
 import basementhost.randomchad.model.TeleportHeat;
+import basementhost.randomchad.model.TeleportOffer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
@@ -31,12 +32,18 @@ public class TeleportHeatService {
 		}
 	}
 
-	public void recordSuccessfulTeleport(Player player) {
+	public void recordSuccessfulTeleport(TeleportOffer offer) {
 		var settings = configService.getHeatSettings();
 		if (!settings.enabled()) {
 			return;
 		}
-		var updated = read(player).afterTeleport(System.currentTimeMillis(), settings);
+		Player player = offer.getRequester();
+		var before = read(player);
+		var updated = before.afterTeleport(System.currentTimeMillis(), settings, offer.getFeatureName(),
+				offer.getRoute(), offer.getPayment().quotedPrice());
+		if (updated.equals(before)) {
+			return;
+		}
 		// Store heat and its timestamp together so the next read uses a matching pair.
 		player.getPersistentDataContainer().set(heatKey, PersistentDataType.LONG_ARRAY,
 				new long[]{updated.milliHeat(), updated.measuredAtMillis()});

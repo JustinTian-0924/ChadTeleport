@@ -3,6 +3,7 @@ package basementhost.randomchad.util;
 import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.model.TeleportPayment;
 import basementhost.randomchad.model.TeleportQuote;
+import basementhost.randomchad.model.TeleportRoute;
 import basementhost.randomchad.service.LangService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -29,11 +30,10 @@ public final class QuoteMessageUtil {
 
 		sendCommonQuoteDetails(
 				player,
-				offer.getDistance(),
+				offer.getRoute(),
 				offer.getPayment(),
 				offer.getWarmupSeconds(),
 				offer.getWarmupTicks(),
-				offer.isCrossWorld(),
 				langService
 		);
 	}
@@ -50,26 +50,24 @@ public final class QuoteMessageUtil {
 
 		sendCommonQuoteDetails(
 				player,
-				quote.getDistance(),
+				quote.getRoute(),
 				quote.getPayment(),
 				quote.getWarmupSeconds(),
 				quote.getWarmupTicks(),
-				quote.isCrossWorld(),
 				langService
 		);
 	}
 
 	private static void sendCommonQuoteDetails(
 			Player player,
-			double distance,
+			TeleportRoute route,
 			TeleportPayment payment,
 			double warmupSeconds,
 			long warmupTicks,
-			boolean crossWorld,
 			LangService langService
 	) {
 		player.sendMessage(langService.get("quote.distance", Map.of(
-				"distance", String.valueOf(distance)
+				"distance", String.valueOf(Math.floor(route.totalDistance() * 10.0) / 10.0)
 		)));
 
 		String coins = String.valueOf(payment.coins());
@@ -85,7 +83,7 @@ public final class QuoteMessageUtil {
 				"ticks", String.valueOf(warmupTicks)
 		)));
 
-		String crossWorldText = crossWorld
+		String crossWorldText = route.isCrossWorld()
 				? langService.getRaw("general.text-yes")
 				: langService.getRaw("general.text-no");
 
