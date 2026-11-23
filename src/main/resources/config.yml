@@ -111,6 +111,14 @@ teleport-balance:
     interval-seconds: 3600
     points-per-interval: 10
 
+# Successful player teleports add heat. Current heat above the threshold blocks another teleport.
+# Cooling uses real elapsed time, including time offline. Administrative teleports do not add heat.
+overheat:
+  enabled: true
+  heat-per-teleport: 25
+  threshold: 60
+  cooling-per-second: 1
+
 quote:
   max-move-distance: 8.0
   expire-seconds: 30

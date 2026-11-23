@@ -83,6 +83,9 @@ public class AdminCommand implements BasicCommand {
 		if (config.getBalanceSettings().enabled()) {
 			messages.send(sender, "help.balance");
 		}
+		if (config.getHeatSettings().enabled()) {
+			messages.send(sender, "help.overheat");
+		}
 		sendHelpIfAllowed(sender, "chadteleport.admin.tppos", "help.tppos");
 		sendHelpIfAllowed(sender, "chadteleport.admin.tphere", "help.tphere");
 		sendHelpIfAllowed(sender, "chadteleport.admin.tpall", "help.tpall");

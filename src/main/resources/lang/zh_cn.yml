@@ -126,6 +126,13 @@ balance:
   quote-outdated: "<red>点数不足以支付这份报价，请重新获取报价。</red>"
   payment-in-progress: "<red>已有一笔传送费用正在处理。</red>"
 
+overheat:
+  usage: "<yellow>用法：/tpoverheat</yellow>"
+  disabled: "<gray>传送过热功能已关闭。</gray>"
+  current: "<yellow>传送热量：<white>{heat}</white>（阈值：<white>{threshold}</white>）</yellow>"
+  ready: "<green>当前热量允许传送。</green>"
+  blocked: "<red>传送已过热，请等待约 <white>{seconds} 秒</white>后重试。</red>"
+
 teleport:
   success: "<green>传送成功。</green>"
   failed: "<red>传送失败。</red>"
@@ -163,6 +170,7 @@ help:
   manage-homes: "<yellow>/sethome [名称]</yellow><gray>、</gray><yellow>/homes</yellow><gray>、</gray><yellow>/delhome 名称</yellow> <gray>— 管理你的家。</gray>"
   warp: "<yellow>/warps</yellow> <gray>或</gray> <yellow>/warp 名称</yellow> <gray>— 查看公共传送点或请求前往。</gray>"
   balance: "<yellow>/tpbalance</yellow> <gray>— 查看传送点数和恢复时间。</gray>"
+  overheat: "<yellow>/tpoverheat</yellow> <gray>— 查看传送热量和冷却时间。</gray>"
   tp: "<yellow>/tp 目标</yellow> <gray>或</gray> <yellow>/tp 玩家 目标</yellow> <gray>— 将自己或指定玩家传送到目标的位置。</gray>"
   tp-console: "<yellow>/tp 玩家 目标</yellow> <gray>— 将指定玩家传送到目标的位置。</gray>"
   tppos: "<yellow>/tppos X Y Z</yellow> <gray>— 传送到当前世界的指定坐标。</gray>"

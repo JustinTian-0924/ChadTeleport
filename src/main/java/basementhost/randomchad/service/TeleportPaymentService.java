@@ -1,5 +1,6 @@
 package basementhost.randomchad.service;
 
+import basementhost.randomchad.exception.LocalizedException;
 import basementhost.randomchad.model.TeleportBalance;
 import basementhost.randomchad.model.TeleportPayment;
 import org.bukkit.Location;
@@ -18,15 +19,18 @@ public class TeleportPaymentService {
 	private final LangService langService;
 	private final ConfigService configService;
 	private final TeleportBalanceService balanceService;
+	private final TeleportHeatService heatService;
 	private final Logger logger;
 	private final Set<UUID> paying = new HashSet<>();
 
 	public TeleportPaymentService(EconomyService economyService, LangService langService,
-			ConfigService configService, TeleportBalanceService balanceService, Logger logger) {
+			ConfigService configService, TeleportBalanceService balanceService, TeleportHeatService heatService,
+			Logger logger) {
 		this.economyService = economyService;
 		this.langService = langService;
 		this.configService = configService;
 		this.balanceService = balanceService;
+		this.heatService = heatService;
 		this.logger = logger;
 	}
 
@@ -71,9 +75,11 @@ public class TeleportPaymentService {
 			return;
 		}
 		try {
+			heatService.requireCoolEnough(player);
 			if (!executePayment(player, destination, payment)) {
 				return;
 			}
+			heatService.recordSuccessfulTeleport(player);
 			langService.send(player, "teleport.success");
 			if (payment.points() > 0) {
 				langService.send(player, "balance.spent", Map.of(
@@ -82,6 +88,8 @@ public class TeleportPaymentService {
 			if (payment.coins() > 0.0) {
 				langService.send(player, "economy.charged", Map.of("price", String.valueOf(payment.coins())));
 			}
+		} catch (LocalizedException e) {
+			langService.send(player, e.getMessageKey(), e.getPlaceholders());
 		} finally {
 			paying.remove(playerId);
 		}

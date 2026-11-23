@@ -126,6 +126,13 @@ balance:
   quote-outdated: "<red>You no longer have enough points for this quote. Please request a new one.</red>"
   payment-in-progress: "<red>A teleport payment is already in progress.</red>"
 
+overheat:
+  usage: "<yellow>Usage: /tpoverheat</yellow>"
+  disabled: "<gray>Teleport overheating is disabled.</gray>"
+  current: "<yellow>Teleport heat: <white>{heat}</white> (threshold: <white>{threshold}</white>)</yellow>"
+  ready: "<green>Heat is within the teleport limit.</green>"
+  blocked: "<red>Teleport is overheated. Wait about <white>{seconds}s</white> before trying again.</red>"
+
 teleport:
   success: "<green>Teleported successfully.</green>"
   failed: "<red>Teleport failed.</red>"
@@ -163,6 +170,7 @@ help:
   manage-homes: "<yellow>/sethome [NAME]</yellow><gray>,</gray> <yellow>/homes</yellow><gray>,</gray> <yellow>/delhome NAME</yellow> <gray>— Manage your homes.</gray>"
   warp: "<yellow>/warps</yellow> <gray>or</gray> <yellow>/warp NAME</yellow> <gray>— List warps or request to visit one.</gray>"
   balance: "<yellow>/tpbalance</yellow> <gray>— View your teleport points and recovery time.</gray>"
+  overheat: "<yellow>/tpoverheat</yellow> <gray>— View your heat and cooling time.</gray>"
   tp: "<yellow>/tp TARGET</yellow> <gray>or</gray> <yellow>/tp PLAYER TARGET</yellow> <gray>— Teleport yourself, or move PLAYER to TARGET.</gray>"
   tp-console: "<yellow>/tp PLAYER TARGET</yellow> <gray>— Move PLAYER to TARGET.</gray>"
   tppos: "<yellow>/tppos X Y Z</yellow> <gray>— Teleport to coordinates in your current world.</gray>"

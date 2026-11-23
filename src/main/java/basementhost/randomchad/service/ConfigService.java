@@ -6,6 +6,7 @@ import basementhost.randomchad.model.PricingPolicy;
 import basementhost.randomchad.model.PricingRule;
 import basementhost.randomchad.model.PricingRule.DistanceRate;
 import basementhost.randomchad.model.TeleportBalance.Recovery;
+import basementhost.randomchad.model.TeleportHeat;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,10 +27,12 @@ import java.util.function.Predicate;
 public class ConfigService {
 
 	private static final Recovery DEFAULT_RECOVERY = new Recovery(50, 3600, 10);
+	private static final TeleportHeat.Settings DEFAULT_HEAT = new TeleportHeat.Settings(false, 25, 60, 1);
 	private final JavaPlugin plugin;
 	private FileConfiguration activeConfig;
 	private PricingPolicy pricingPolicy;
 	private BalanceSettings balanceSettings;
+	private TeleportHeat.Settings heatSettings;
 	private Map<String, WorldTransferRule> worldTransferRules;
 	private final Map<String, Permission> ownedGroupPermissions = new HashMap<>();
 
@@ -53,6 +56,7 @@ public class ConfigService {
 		}
 		PricingPolicy newPolicy = new PricingPolicy(newPricingRules, readPricingGroups(candidate));
 		BalanceSettings newBalanceSettings = readBalanceSettings(candidate);
+		TeleportHeat.Settings newHeatSettings = readHeatSettings(candidate);
 		ConfigurationSection transfers = requiredSection(candidate, "world-transfers");
 		WorldTransferRule defaults = readWorldTransferRule(requiredSection(transfers, "default"), null);
 		Map<String, WorldTransferRule> newTransferRules = new HashMap<>();
@@ -70,6 +74,7 @@ public class ConfigService {
 		registerGroupPermissions(newPolicy.groups());
 		pricingPolicy = newPolicy;
 		balanceSettings = newBalanceSettings;
+		heatSettings = newHeatSettings;
 		worldTransferRules = Map.copyOf(newTransferRules);
 		activeConfig = candidate;
 	}
@@ -110,6 +115,24 @@ public class ConfigService {
 
 	public record BalanceSettings(boolean enabled, int startingPoints, BigDecimal coinValue, String displayName,
 			Recovery recovery) {
+	}
+
+	private TeleportHeat.Settings readHeatSettings(ConfigurationSection candidate) {
+		if (!candidate.contains("overheat")) {
+			return DEFAULT_HEAT;
+		}
+		ConfigurationSection overheat = requiredSection(candidate, "overheat");
+		int threshold = integer(overheat, "threshold", DEFAULT_HEAT.threshold());
+		if (threshold < 0) {
+			throw new IllegalArgumentException("overheat.threshold must be zero or greater.");
+		}
+		return new TeleportHeat.Settings(bool(overheat, "enabled", DEFAULT_HEAT.enabled()),
+				positiveInteger(overheat, "heat-per-teleport", DEFAULT_HEAT.heatPerTeleport()),
+				threshold, positiveInteger(overheat, "cooling-per-second", DEFAULT_HEAT.coolingPerSecond()));
+	}
+
+	public TeleportHeat.Settings getHeatSettings() {
+		return heatSettings;
 	}
 
 	private List<PricingGroup> readPricingGroups(ConfigurationSection candidate) {

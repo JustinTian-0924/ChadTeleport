@@ -22,6 +22,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	private ConfigService configService;
 	private TeleportPaymentService teleportPaymentService;
 	private TeleportBalanceService teleportBalanceService;
+	private TeleportHeatService teleportHeatService;
 	private TeleportCalculator teleportCalculator;
 	private WarmupService warmupService;
 	private ExpirationService expirationService;
@@ -48,9 +49,11 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.langService = new LangService(this, configService);
 		this.langService.load();
 		this.teleportBalanceService = new TeleportBalanceService(this, configService);
+		this.teleportHeatService = new TeleportHeatService(this, configService);
 		this.teleportPaymentService = new TeleportPaymentService(economyService, langService, configService,
-				teleportBalanceService, getLogger());
-		this.teleportCalculator = new TeleportCalculator(configService, new PricingService(configService), teleportPaymentService);
+				teleportBalanceService, teleportHeatService, getLogger());
+		this.teleportCalculator = new TeleportCalculator(configService, new PricingService(configService),
+				teleportPaymentService, teleportHeatService);
 
 
 		registerCommands();
@@ -93,6 +96,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerPluginCommand("tpcancel", "Cancel a teleport quote or warmup", null, cancelCommand, cancelCommand::suggest);
 		registerPluginCommand("tpbalance", "Show your teleport balance", null,
 				new TeleportBalanceCommand(this, teleportBalanceService), (source, args) -> List.of());
+		registerPluginCommand("tpoverheat", "Show your teleport heat and cooling time", null,
+				new TeleportHeatCommand(teleportHeatService, langService), (source, args) -> List.of());
 		registerPluginCommand("setspawn", "Set the server spawn location", "chadteleport.setspawn",
 				new SetSpawnCommand(this), null);
 		registerPluginCommand("spawn", "Teleport to the server spawn", "chadteleport.spawn",

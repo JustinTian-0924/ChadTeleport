@@ -15,11 +15,14 @@ public class TeleportCalculator {
 	private final ConfigService configService;
 	private final PricingService pricingService;
 	private final TeleportPaymentService paymentService;
+	private final TeleportHeatService heatService;
 
-	public TeleportCalculator(ConfigService configService, PricingService pricingService, TeleportPaymentService paymentService) {
+	public TeleportCalculator(ConfigService configService, PricingService pricingService,
+			TeleportPaymentService paymentService, TeleportHeatService heatService) {
 		this.configService = configService;
 		this.pricingService = pricingService;
 		this.paymentService = paymentService;
+		this.heatService = heatService;
 	}
 
 	public TeleportQuote calculateTpaQuote(Player requester, Player target) {
@@ -50,6 +53,7 @@ public class TeleportCalculator {
 		if (crossWorld && !configService.isWorldEnterAllowed(toKey)) {
 			throw new LocalizedException("calculator.world-enter-denied", Map.of("world", toKey));
 		}
+		heatService.requireCoolEnough(requester);
 		TeleportRoute route = crossWorld
 				? new TeleportRoute(fromKey, toKey, flatDistanceToOrigin(from), flatDistanceToOrigin(to))
 				: new TeleportRoute(fromKey, toKey, Math.hypot(from.getX() - to.getX(), from.getZ() - to.getZ()), 0.0);
