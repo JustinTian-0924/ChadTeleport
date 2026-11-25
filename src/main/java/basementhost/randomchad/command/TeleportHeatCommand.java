@@ -27,6 +27,6 @@ public class TeleportHeatCommand implements BasicCommand {
 			langService.send(player, "overheat.usage");
 			return;
 		}
-		heatService.sendStatus(player, langService);
+		heatService.sendStatus(player, player, langService);
 	}
 }

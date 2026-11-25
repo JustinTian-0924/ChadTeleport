@@ -96,8 +96,9 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerPluginCommand("tpcancel", "Cancel a teleport quote or warmup", null, cancelCommand, cancelCommand::suggest);
 		registerPluginCommand("tpbalance", "Show your teleport balance", null,
 				new TeleportBalanceCommand(this, teleportBalanceService), (source, args) -> List.of());
+		TeleportHeatCommand heatStatusCommand = new TeleportHeatCommand(teleportHeatService, langService);
 		registerPluginCommand("tpoverheat", "Show your teleport heat and cooling time", null,
-				new TeleportHeatCommand(teleportHeatService, langService), (source, args) -> List.of());
+				heatStatusCommand, (source, args) -> List.of());
 		registerPluginCommand("setspawn", "Set the server spawn location", "chadteleport.setspawn",
 				new SetSpawnCommand(this), null);
 		registerPluginCommand("spawn", "Teleport to the server spawn", "chadteleport.spawn",
@@ -122,8 +123,9 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		registerPluginCommand("tppos", "Teleport to coordinates in your current world", "chadteleport.admin.tppos",
 				tpPosCommand, tpPosCommand::suggest);
 
-		AdminCommand adminCommand = new AdminCommand(this);
-		registerPluginCommand("chadteleport", "Show ChadTeleport help or reload its configuration", null,
+		AdminCommand adminCommand = new AdminCommand(this, heatStatusCommand,
+				new AdminOverheatCommand(this, teleportHeatService));
+		registerPluginCommand("chadteleport", "Show help, reload configuration, or manage teleport heat", null,
 				adminCommand, adminCommand::suggest, "ct", "ctp");
 	}
 

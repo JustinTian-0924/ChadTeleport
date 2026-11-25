@@ -127,6 +127,9 @@ balance:
   payment-in-progress: "<red>A teleport payment is already in progress.</red>"
 
 overheat:
+  bypassed: "<gray>Overheat bypass is active.</gray>"
+  admin-check: "<gold>Teleport heat for <white>{player}</white></gold>"
+  admin-reset: "<green>Reset teleport heat for <white>{player}</white>.</green>"
   usage: "<yellow>Usage: /tpoverheat</yellow>"
   disabled: "<gray>Teleport overheating is disabled.</gray>"
   current: "<yellow>Teleport heat: <white>{heat}</white> (threshold: <white>{threshold}</white>)</yellow>"
@@ -160,6 +163,8 @@ admin:
   reload-failed: "<red>Reload failed. Please check the console log.</red>"
 
 help:
+  overheat-check: "<yellow>/ctp overheat check PLAYER</yellow> <gray>— View an online player's teleport heat.</gray>"
+  overheat-reset: "<yellow>/ctp overheat reset PLAYER</yellow> <gray>— Reset an online player's teleport heat.</gray>"
   header: "<gold><bold>ChadTeleport Help</bold></gold>"
   usage: "<yellow>/chadteleport help</yellow> <gray>· Aliases: /ctp, /ct</gray>"
   tpa: "<yellow>/tpa PLAYER</yellow> <gray>— Request to teleport to a player.</gray>"
@@ -170,7 +175,7 @@ help:
   manage-homes: "<yellow>/sethome [NAME]</yellow><gray>,</gray> <yellow>/homes</yellow><gray>,</gray> <yellow>/delhome NAME</yellow> <gray>— Manage your homes.</gray>"
   warp: "<yellow>/warps</yellow> <gray>or</gray> <yellow>/warp NAME</yellow> <gray>— List warps or request to visit one.</gray>"
   balance: "<yellow>/tpbalance</yellow> <gray>— View your teleport points and recovery time.</gray>"
-  overheat: "<yellow>/tpoverheat</yellow> <gray>— View your heat and cooling time.</gray>"
+  overheat: "<yellow>/tpoverheat</yellow> <gray>or</gray> <yellow>/ctp overheat</yellow> <gray>— View your own heat and cooling time.</gray>"
   tp: "<yellow>/tp TARGET</yellow> <gray>or</gray> <yellow>/tp PLAYER TARGET</yellow> <gray>— Teleport yourself, or move PLAYER to TARGET.</gray>"
   tp-console: "<yellow>/tp PLAYER TARGET</yellow> <gray>— Move PLAYER to TARGET.</gray>"
   tppos: "<yellow>/tppos X Y Z</yellow> <gray>— Teleport to coordinates in your current world.</gray>"

@@ -4,6 +4,7 @@ import basementhost.randomchad.exception.LocalizedException;
 import basementhost.randomchad.model.TeleportHeat;
 import basementhost.randomchad.model.TeleportOffer;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,6 +13,8 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public class TeleportHeatService {
+
+	private static final String BYPASS_PERMISSION = "chadteleport.bypass.overheat";
 
 	private final NamespacedKey heatKey;
 	private final ConfigService configService;
@@ -23,7 +26,7 @@ public class TeleportHeatService {
 
 	public void requireCoolEnough(Player player) {
 		var settings = configService.getHeatSettings();
-		if (!settings.enabled()) {
+		if (!settings.enabled() || player.hasPermission(BYPASS_PERMISSION)) {
 			return;
 		}
 		long seconds = read(player).secondsUntilAllowed(System.currentTimeMillis(), settings);
@@ -34,10 +37,10 @@ public class TeleportHeatService {
 
 	public void recordSuccessfulTeleport(TeleportOffer offer) {
 		var settings = configService.getHeatSettings();
-		if (!settings.enabled()) {
+		Player player = offer.getRequester();
+		if (!settings.enabled() || player.hasPermission(BYPASS_PERMISSION)) {
 			return;
 		}
-		Player player = offer.getRequester();
 		var before = read(player);
 		var updated = before.afterTeleport(System.currentTimeMillis(), settings, offer.getFeatureName(),
 				offer.getRoute(), offer.getPayment().quotedPrice());
@@ -49,22 +52,30 @@ public class TeleportHeatService {
 				new long[]{updated.milliHeat(), updated.measuredAtMillis()});
 	}
 
-	public void sendStatus(Player player, LangService messages) {
+	public void reset(Player player) {
+		player.getPersistentDataContainer().remove(heatKey);
+	}
+
+	public void sendStatus(CommandSender recipient, Player player, LangService messages) {
 		var settings = configService.getHeatSettings();
-		if (!settings.enabled()) {
-			messages.send(player, "overheat.disabled");
-			return;
-		}
 		long now = System.currentTimeMillis();
 		var heat = read(player);
 		String current = BigDecimal.valueOf(heat.heatAt(now, settings), 3).stripTrailingZeros().toPlainString();
-		messages.send(player, "overheat.current", Map.of(
+		messages.send(recipient, "overheat.current", Map.of(
 				"heat", current, "threshold", String.valueOf(settings.threshold())));
+		if (!settings.enabled()) {
+			messages.send(recipient, "overheat.disabled");
+			return;
+		}
+		if (player.hasPermission(BYPASS_PERMISSION)) {
+			messages.send(recipient, "overheat.bypassed");
+			return;
+		}
 		long seconds = heat.secondsUntilAllowed(now, settings);
 		if (seconds > 0) {
-			messages.send(player, "overheat.blocked", Map.of("seconds", String.valueOf(seconds)));
+			messages.send(recipient, "overheat.blocked", Map.of("seconds", String.valueOf(seconds)));
 		} else {
-			messages.send(player, "overheat.ready");
+			messages.send(recipient, "overheat.ready");
 		}
 	}
 

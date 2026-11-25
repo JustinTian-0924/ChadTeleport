@@ -1,5 +1,5 @@
 name: Chadteleport
-version: 0.6.1
+version: 0.6.2
 main: basementhost.randomchad.ChadteleportPlugin
 api-version: '26.1.2'
 description: Teleportation Plugin with few tweak
@@ -22,12 +22,20 @@ permissions:
     description: Allows teleporting to coordinates with /tppos
     default: op
 
+  chadteleport.admin.overheat.check:
+    description: Allows inspecting another player's teleport heat
+    default: op
+
+  chadteleport.admin.overheat.reset:
+    description: Allows resetting a player's teleport heat
+    default: op
+
   chadteleport.setspawn:
     description: Allows setting the server spawn
     default: op
 
   chadteleport.bypass.*:
-    description: Bypass all ChadTeleport restrictions
+    description: Bypass teleport fees and warmup
     default: op
     children:
       chadteleport.bypass.fee: true
@@ -40,6 +48,10 @@ permissions:
   chadteleport.bypass.warmup:
     description: Bypass teleport warmup
     default: op
+
+  chadteleport.bypass.overheat:
+    description: Bypass the teleport heat threshold and heat gain
+    default: false
 
   chadteleport.spawn:
     description: Allows using /spawn

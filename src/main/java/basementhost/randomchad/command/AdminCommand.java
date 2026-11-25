@@ -6,6 +6,8 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -14,9 +16,14 @@ public class AdminCommand implements BasicCommand {
 	private static final String RELOAD_PERMISSION = "chadteleport.admin";
 
 	private final ChadteleportPlugin plugin;
+	private final TeleportHeatCommand heatStatusCommand;
+	private final AdminOverheatCommand overheatCommand;
 
-	public AdminCommand(ChadteleportPlugin plugin) {
+	public AdminCommand(ChadteleportPlugin plugin, TeleportHeatCommand heatStatusCommand,
+			AdminOverheatCommand overheatCommand) {
 		this.plugin = plugin;
+		this.heatStatusCommand = heatStatusCommand;
+		this.overheatCommand = overheatCommand;
 	}
 
 	@Override
@@ -24,6 +31,15 @@ public class AdminCommand implements BasicCommand {
 		CommandSender sender = source.getSender();
 		if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help"))) {
 			sendHelp(sender);
+			return;
+		}
+		if (args[0].equalsIgnoreCase("overheat")) {
+			String[] overheatArgs = Arrays.copyOfRange(args, 1, args.length);
+			if (overheatArgs.length == 0 && sender instanceof Player) {
+				heatStatusCommand.execute(source, overheatArgs);
+			} else {
+				overheatCommand.execute(source, overheatArgs);
+			}
 			return;
 		}
 		if (args.length != 1 || !args[0].equalsIgnoreCase("reload")) {
@@ -57,6 +73,7 @@ public class AdminCommand implements BasicCommand {
 			messages.send(sender, sender instanceof Player ? "help.tp" : "help.tp-console");
 		}
 		sendHelpIfAllowed(sender, RELOAD_PERMISSION, "help.reload");
+		overheatCommand.sendHelp(sender);
 	}
 
 	private void sendPlayerHelp(CommandSender sender) {
@@ -83,9 +100,7 @@ public class AdminCommand implements BasicCommand {
 		if (config.getBalanceSettings().enabled()) {
 			messages.send(sender, "help.balance");
 		}
-		if (config.getHeatSettings().enabled()) {
-			messages.send(sender, "help.overheat");
-		}
+		messages.send(sender, "help.overheat");
 		sendHelpIfAllowed(sender, "chadteleport.admin.tppos", "help.tppos");
 		sendHelpIfAllowed(sender, "chadteleport.admin.tphere", "help.tphere");
 		sendHelpIfAllowed(sender, "chadteleport.admin.tpall", "help.tpall");
@@ -103,11 +118,21 @@ public class AdminCommand implements BasicCommand {
 	@Override
 	public List<String> suggest(CommandSourceStack source, String[] args) {
 		if (args.length > 1) {
+			if (args[0].equalsIgnoreCase("overheat")) {
+				return overheatCommand.suggest(source, Arrays.copyOfRange(args, 1, args.length));
+			}
 			return List.of();
 		}
 		String input = args.length == 0 ? "" : args[0].toLowerCase(Locale.ROOT);
-		List<String> commands = source.getSender().hasPermission(RELOAD_PERMISSION)
-				? List.of("help", "reload") : List.of("help");
+		CommandSender sender = source.getSender();
+		List<String> commands = new ArrayList<>();
+		commands.add("help");
+		if (sender.hasPermission(RELOAD_PERMISSION)) {
+			commands.add("reload");
+		}
+		if (sender instanceof Player || overheatCommand.canUse(sender)) {
+			commands.add("overheat");
+		}
 		return commands.stream().filter(command -> command.startsWith(input)).toList();
 	}
 }
