@@ -1,14 +1,13 @@
 package basementhost.randomchad.model;
 
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitTask;
 
 public class ActiveTeleport {
 
 	private final String featureName;
 	private final TeleportOffer offer;
 	private final Location destination;
-	private BukkitTask task;
+	private Runnable cancelTask;
 
 	public ActiveTeleport(String featureName, TeleportOffer offer, Location destination) {
 		this.featureName = featureName;
@@ -28,11 +27,13 @@ public class ActiveTeleport {
 		return destination == null ? null : destination.clone();
 	}
 
-	public BukkitTask getTask() {
-		return task;
+	public void setCancelTask(Runnable cancelTask) {
+		this.cancelTask = cancelTask;
 	}
 
-	public void setTask(BukkitTask task) {
-		this.task = task;
+	public void cancelTask() {
+		if (cancelTask != null) {
+			cancelTask.run();
+		}
 	}
 }

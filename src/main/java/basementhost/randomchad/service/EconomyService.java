@@ -9,14 +9,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class EconomyService {
 
 	private final JavaPlugin plugin;
-	private Economy economy;
+	private volatile Economy economy;
 
 	public EconomyService(JavaPlugin plugin) {
 		this.plugin = plugin;
 		tryHook();
 	}
 
-	public boolean tryHook() {
+	public synchronized boolean tryHook() {
 		if (plugin.getServer().getPluginManager().getPlugin("Vault") == null) {
 			plugin.getLogger().warning("Vault not found. Economy features will be unavailable.");
 			this.economy = null;
@@ -40,10 +40,8 @@ public class EconomyService {
 		return economy != null;
 	}
 	public boolean has(Player player, double amount) {
-		if (economy == null) {
-			return false;
-		}
-		return economy.has(player, amount);
+		Economy provider = economy;
+		return provider != null && provider.has(player, amount);
 	}
 
 	public CashDebit withdraw(Player player, double amount) {

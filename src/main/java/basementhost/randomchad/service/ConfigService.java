@@ -32,11 +32,12 @@ public class ConfigService {
 	private static final TeleportHeat.Settings DEFAULT_HEAT = new TeleportHeat.Settings(
 			false, new HeatRule.Fixed(25), 60, 1, Map.of());
 	private final JavaPlugin plugin;
-	private FileConfiguration activeConfig;
-	private PricingPolicy pricingPolicy;
-	private BalanceSettings balanceSettings;
-	private TeleportHeat.Settings heatSettings;
-	private Map<String, WorldTransferRule> worldTransferRules;
+	private volatile FileConfiguration activeConfig;
+	private volatile PricingPolicy pricingPolicy;
+	private volatile BalanceSettings balanceSettings;
+	private volatile TeleportHeat.Settings heatSettings;
+	private volatile Map<String, WorldTransferRule> worldTransferRules;
+	private volatile TeleportMode teleportMode;
 	private final Map<String, Permission> ownedGroupPermissions = new HashMap<>();
 
 	public ConfigService(JavaPlugin plugin) {
@@ -44,7 +45,7 @@ public class ConfigService {
 		reload();
 	}
 
-	public void reload() {
+	public synchronized void reload() {
 		YamlConfiguration candidate = new YamlConfiguration();
 		// 世界键允许包含小数点，因此内部路径使用世界键中不会出现的分隔符。
 		candidate.options().pathSeparator('|');
@@ -60,6 +61,7 @@ public class ConfigService {
 		PricingPolicy newPolicy = new PricingPolicy(newPricingRules, readPricingGroups(candidate));
 		BalanceSettings newBalanceSettings = readBalanceSettings(candidate);
 		TeleportHeat.Settings newHeatSettings = readHeatSettings(candidate);
+		TeleportMode newTeleportMode = readTeleportMode(candidate);
 		ConfigurationSection transfers = requiredSection(candidate, "world-transfers");
 		WorldTransferRule defaults = readWorldTransferRule(requiredSection(transfers, "default"), null);
 		Map<String, WorldTransferRule> newTransferRules = new HashMap<>();
@@ -80,6 +82,28 @@ public class ConfigService {
 		heatSettings = newHeatSettings;
 		worldTransferRules = Map.copyOf(newTransferRules);
 		activeConfig = candidate;
+		teleportMode = newTeleportMode;
+	}
+
+	private TeleportMode readTeleportMode(ConfigurationSection candidate) {
+		if (!candidate.contains("compatibility")) {
+			return TeleportMode.VANILLA;
+		}
+		ConfigurationSection compatibility = requiredSection(candidate, "compatibility");
+		String mode = compatibility.getString("tp-mode", "VANILLA").strip().toUpperCase(Locale.ROOT);
+		return switch (mode) {
+			case "VANILLA", "PAPER" -> TeleportMode.VANILLA;
+			case "FLAMEMC" -> TeleportMode.FLAMEMC;
+			default -> throw new IllegalArgumentException("compatibility.tp-mode must be FLAMEMC or VANILLA.");
+		};
+	}
+
+	public boolean usesRegionThreading() {
+		return teleportMode == TeleportMode.FLAMEMC;
+	}
+
+	private enum TeleportMode {
+		VANILLA, FLAMEMC
 	}
 
 	private BalanceSettings readBalanceSettings(ConfigurationSection candidate) {

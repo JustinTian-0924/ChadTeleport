@@ -1,6 +1,11 @@
 language:
   default-locale: en_us
 
+compatibility:
+  # Applies to all ChadTeleport teleports. Use VANILLA for the standard Paper implementation.
+  # Use FLAMEMC on FlameMC/Canvas with region threading enabled. Restart after changing modes.
+  tp-mode: VANILLA
+
 # Each command independently selects 'free', 'fixed', or 'distance' pricing.
 # fixed-price is used only in fixed mode. base-price, distance-price-1k, and world-overrides apply only to distance mode.
 # The final total is rounded to two decimal places. Fee bypass permissions make the quoted price 0.

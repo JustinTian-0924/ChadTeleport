@@ -14,14 +14,14 @@ public class PendingTeleportRequest {
 	private final String targetName;
 	private final Location targetAnchorLocation;
 
-	public PendingTeleportRequest(TeleportQuote quote) {
+	public PendingTeleportRequest(TeleportQuote quote, Location targetLocation) {
 		this.quote = quote;
 		this.createdAt = System.currentTimeMillis();
 		this.requesterId = quote.getRequester().getUniqueId();
 		this.requesterName = quote.getRequester().getName();
 		this.targetId = quote.getTarget().getUniqueId();
 		this.targetName = quote.getTarget().getName();
-		this.targetAnchorLocation = quote.getTarget().getLocation().clone();
+		this.targetAnchorLocation = targetLocation.clone();
 	}
 
 	public TeleportQuote getQuote() {

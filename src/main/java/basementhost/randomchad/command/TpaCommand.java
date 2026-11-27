@@ -8,8 +8,13 @@ import basementhost.randomchad.util.TeleportMessageUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 public class TpaCommand implements BasicCommand {
 
@@ -48,8 +53,30 @@ public class TpaCommand implements BasicCommand {
 			return;
 		}
 
+		if (plugin.getConfigService().usesRegionThreading()) {
+			var regions = plugin.getRegionTeleportService();
+			regions.onPlayerRegion(target, target::getLocation).thenCompose(destination -> {
+				if (destination == null) {
+					regions.notify(player, "general.target-offline", Map.of());
+					return CompletableFuture.completedFuture(null);
+				}
+				return regions.onPlayerRegion(player, () -> {
+					sendQuote(player, target, destination);
+					return null;
+				});
+			}).exceptionally(error -> {
+				plugin.getLogger().log(Level.WARNING, "Failed to read the TPA destination.", error);
+				regions.notify(player, "quote.calculate-failed", Map.of());
+				return null;
+			});
+		} else {
+			sendQuote(player, target, target.getLocation());
+		}
+	}
+
+	private void sendQuote(Player player, Player target, Location destination) {
 		try {
-			TeleportQuote quote = plugin.getTeleportCalculator().calculateTpaQuote(player, target);
+			TeleportQuote quote = plugin.getTeleportCalculator().calculateTpaQuote(player, target, destination);
 
 			if (!plugin.getTeleportPaymentService().checkCanAfford(player, quote.getPayment())) {
 				return;

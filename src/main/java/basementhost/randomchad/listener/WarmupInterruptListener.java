@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -54,9 +55,15 @@ public class WarmupInterruptListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		plugin.getTeleportPaymentService().settleCompletedPayment(event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player quittingPlayer = event.getPlayer();
 
+		plugin.getTeleportPaymentService().settleCompletedPayment(quittingPlayer);
 		plugin.getWarmupService().cancelWarmup(quittingPlayer, "warmup.cancelled-left");
 
 		for (ActiveTeleport activeTeleport : plugin.getTeleportManager().getActiveTeleports()) {
@@ -64,8 +71,11 @@ public class WarmupInterruptListener implements Listener {
 			Player requester = activeTeleport.getOffer().getRequester();
 
 			if (target != null && target.getUniqueId().equals(quittingPlayer.getUniqueId())) {
-				if (requester != null) {
-					plugin.getWarmupService().cancelWarmup(requester, "warmup.cancelled-target-left");
+				if (requester != null && plugin.getConfigService().usesRegionThreading()) {
+					requester.getScheduler().run(plugin, task -> plugin.getWarmupService()
+							.cancelWarmup(requester, activeTeleport, "warmup.cancelled-target-left"), null);
+				} else if (requester != null) {
+					plugin.getWarmupService().cancelWarmup(requester, activeTeleport, "warmup.cancelled-target-left");
 				}
 			}
 		}

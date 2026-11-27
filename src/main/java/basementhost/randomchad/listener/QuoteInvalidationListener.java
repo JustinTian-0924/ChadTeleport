@@ -96,14 +96,20 @@ public class QuoteInvalidationListener implements Listener {
 				continue;
 			}
 
-			plugin.getTeleportManager().removePendingQuote(requester);
+			if (!plugin.getTeleportManager().removePendingQuote(requesterId, pendingQuote)) {
+				continue;
+			}
 
 			Map<String, String> placeholders = Map.of(
 					"requester", requester.getName(),
 					"target", pendingQuote.getTargetName()
 			);
 
-			plugin.getLangService().send(requester, key, placeholders);
+			if (plugin.getConfigService().usesRegionThreading()) {
+				plugin.getRegionTeleportService().notify(requester, key, placeholders);
+			} else {
+				plugin.getLangService().send(requester, key, placeholders);
+			}
 			plugin.getLangService().send(movedPlayer, key, placeholders);
 		}
 	}

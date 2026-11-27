@@ -68,16 +68,21 @@ public class AdminTpCommand implements BasicCommand {
 				"target", target.getName(),
 				"sender", sender.getName()
 		);
+		String successKey = args.length == 1 ? "admin-tp.teleported-to-player" : "admin-tp.forced-teleport-success";
+		if (plugin.getConfigService().usesRegionThreading()) {
+			plugin.getRegionTeleportService().teleportToPlayer(movedPlayer, target, TeleportCause.COMMAND)
+					.whenComplete((success, error) ->
+							finishFlameMcTeleport(sender, movedPlayer, successKey, placeholders, success, error));
+			return;
+		}
 
 		boolean success;
 		try {
 			// 目标玩家所在区域已经加载，直接执行，不经过请求、收费或预热流程。
 			success = movedPlayer.teleport(target.getLocation(), TeleportCause.COMMAND);
 		} catch (RuntimeException e) {
-			plugin.getLogger().log(Level.WARNING,
-					"Failed to teleport " + movedPlayer.getName() + " to " + target.getName() + " with /tp.", e);
-			plugin.getLangService().send(sender, "admin-tp.forced-teleport-failed", placeholders);
-			return;
+			logTeleportError(placeholders, e);
+			success = false;
 		}
 
 		if (!success) {
@@ -87,12 +92,38 @@ public class AdminTpCommand implements BasicCommand {
 
 		// 强制传送成功后取消旧预热，避免旧计时结束时把玩家再次传走。
 		plugin.getWarmupService().cancelWarmup(movedPlayer, "warmup.cancelled-admin");
-		plugin.getLangService().send(sender,
-				args.length == 1 ? "admin-tp.teleported-to-player" : "admin-tp.forced-teleport-success",
-				placeholders);
+		plugin.getLangService().send(sender, successKey, placeholders);
 		if (!movedPlayer.equals(sender)) {
 			plugin.getLangService().send(movedPlayer, "admin-tp.forced-teleport-notice", placeholders);
 		}
+	}
+
+	private void finishFlameMcTeleport(CommandSender sender, Player movedPlayer, String successKey,
+			Map<String, String> placeholders, Boolean success, Throwable error) {
+		if (error != null) {
+			logTeleportError(placeholders, error);
+		}
+		if (!Boolean.TRUE.equals(success)) {
+			plugin.getRegionTeleportService().notify(sender, "admin-tp.forced-teleport-failed", placeholders);
+			return;
+		}
+
+		boolean movedIsSender = movedPlayer.equals(sender);
+		var warmup = plugin.getTeleportManager().getActiveTeleport(movedPlayer);
+		movedPlayer.getScheduler().run(plugin, task -> {
+			plugin.getWarmupService().cancelWarmup(movedPlayer, warmup, "warmup.cancelled-admin");
+			plugin.getLangService().send(movedPlayer,
+					movedIsSender ? successKey : "admin-tp.forced-teleport-notice", placeholders);
+		}, null);
+		if (!movedIsSender) {
+			plugin.getRegionTeleportService().notify(sender, successKey, placeholders);
+		}
+	}
+
+	private void logTeleportError(Map<String, String> placeholders, Throwable error) {
+		plugin.getLogger().log(Level.WARNING,
+				"Failed to teleport " + placeholders.get("source") + " to " + placeholders.get("target") + " with /tp.",
+				error);
 	}
 
 	@Override

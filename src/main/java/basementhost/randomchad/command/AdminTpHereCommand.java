@@ -5,8 +5,10 @@ import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 public class AdminTpHereCommand implements BasicCommand {
 
@@ -44,6 +46,23 @@ public class AdminTpHereCommand implements BasicCommand {
 
 		if (target.getUniqueId().equals(player.getUniqueId())) {
 			plugin.getLangService().send(player, "admin-tp.self-tphere");
+			return;
+		}
+
+		if (plugin.getConfigService().usesRegionThreading()) {
+			var regions = plugin.getRegionTeleportService();
+			regions.teleportToPlayer(target, player, TeleportCause.PLUGIN).whenComplete((success, error) -> {
+				if (error != null) {
+					plugin.getLogger().log(Level.WARNING, "Teleport failed for " + target.getName() + " with /tphere.", error);
+				}
+				if (!Boolean.TRUE.equals(success)) {
+					regions.notify(player, "admin-tp.forced-teleport-failed",
+							Map.of("source", target.getName(), "target", player.getName()));
+					return;
+				}
+				regions.notify(player, "admin-tp.brought-player", Map.of("target", target.getName()));
+				regions.notify(target, "admin-tp.brought-to-player", Map.of("target", player.getName()));
+			});
 			return;
 		}
 

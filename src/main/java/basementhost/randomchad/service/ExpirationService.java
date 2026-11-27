@@ -5,7 +5,6 @@ import basementhost.randomchad.model.PendingTeleportOffer;
 import basementhost.randomchad.model.PendingTeleportQuote;
 import basementhost.randomchad.model.PendingTeleportRequest;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Map;
 import java.util.UUID;
@@ -13,24 +12,28 @@ import java.util.UUID;
 public class ExpirationService {
 
 	private final ChadteleportPlugin plugin;
-	private BukkitTask task;
+	private Runnable cancelTask;
 
 	public ExpirationService(ChadteleportPlugin plugin) {
 		this.plugin = plugin;
 	}
 
 	public void start() {
-		if (task != null) {
-			task.cancel();
+		stop();
+		if (plugin.getConfigService().usesRegionThreading()) {
+			var task = plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin,
+					scheduled -> cleanupExpiredData(), 20L, 20L);
+			cancelTask = task::cancel;
+		} else {
+			var task = plugin.getServer().getScheduler().runTaskTimer(plugin, this::cleanupExpiredData, 20L, 20L);
+			cancelTask = task::cancel;
 		}
-
-		task = plugin.getServer().getScheduler().runTaskTimer(plugin, this::cleanupExpiredData, 20L, 20L);
 	}
 
 	public void stop() {
-		if (task != null) {
-			task.cancel();
-			task = null;
+		if (cancelTask != null) {
+			cancelTask.run();
+			cancelTask = null;
 		}
 	}
 
@@ -48,11 +51,11 @@ public class ExpirationService {
 			UUID playerId = entry.getKey();
 			PendingTeleportQuote pendingQuote = entry.getValue();
 
-			if (now - pendingQuote.getCreatedAt() > maxAgeMillis) {
-				plugin.getTeleportManager().removePendingQuote(playerId);
+			if (now - pendingQuote.getCreatedAt() > maxAgeMillis
+					&& plugin.getTeleportManager().removePendingQuote(playerId, pendingQuote)) {
 				Player player = plugin.getServer().getPlayer(playerId);
 				if (player != null && player.isOnline()) {
-					plugin.getLangService().send(player, "quote.expired");
+					notifyPlayer(player, "quote.expired", Map.of());
 				}
 			}
 		}
@@ -63,13 +66,12 @@ public class ExpirationService {
 		long maxAgeMillis = plugin.getConfigService().getQuoteExpireSeconds() * 1000L;
 
 		for (Map.Entry<UUID, PendingTeleportOffer> entry : plugin.getTeleportManager().getAllPendingOffers()) {
-			if (now - entry.getValue().getCreatedAt() > maxAgeMillis) {
-				UUID playerId = entry.getKey();
-				// Clear based on player's UUID to support offline quota removal
-				plugin.getTeleportManager().removePendingOffer(playerId);
+			UUID playerId = entry.getKey();
+			if (now - entry.getValue().getCreatedAt() > maxAgeMillis
+					&& plugin.getTeleportManager().removePendingOffer(playerId, entry.getValue())) {
 				Player player = plugin.getServer().getPlayer(playerId);
 				if (player != null && player.isOnline()) {
-					plugin.getLangService().send(player, "quote.expired");
+					notifyPlayer(player, "quote.expired", Map.of());
 				}
 			}
 		}
@@ -80,8 +82,7 @@ public class ExpirationService {
 		long maxAgeMillis = plugin.getConfigService().getRequestExpireSeconds() * 1000L;
 
 		for (PendingTeleportRequest request : plugin.getTeleportManager().getAllPendingRequests()) {
-			if (now - request.getCreatedAt() > maxAgeMillis) {
-				plugin.getTeleportManager().removePendingRequest(request.getTargetId(), request.getRequesterId());
+			if (now - request.getCreatedAt() > maxAgeMillis && plugin.getTeleportManager().removePendingRequest(request)) {
 				Player target = plugin.getServer().getPlayer(request.getTargetId());
 
 				Map<String, String> placeholders = Map.of(
@@ -91,13 +92,21 @@ public class ExpirationService {
 
 				Player requester = plugin.getServer().getPlayer(request.getRequesterId());
 				if (requester != null && requester.isOnline()) {
-					plugin.getLangService().send(requester, "request.expired", placeholders);
+					notifyPlayer(requester, "request.expired", placeholders);
 				}
 
 				if (target != null && target.isOnline()) {
-					plugin.getLangService().send(target, "request.expired", placeholders);
+					notifyPlayer(target, "request.expired", placeholders);
 				}
 			}
+		}
+	}
+
+	private void notifyPlayer(Player player, String key, Map<String, String> placeholders) {
+		if (plugin.getConfigService().usesRegionThreading()) {
+			plugin.getRegionTeleportService().notify(player, key, placeholders);
+		} else {
+			plugin.getLangService().send(player, key, placeholders);
 		}
 	}
 }

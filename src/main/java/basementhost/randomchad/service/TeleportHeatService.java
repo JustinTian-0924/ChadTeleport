@@ -35,9 +35,8 @@ public class TeleportHeatService {
 		}
 	}
 
-	public void recordSuccessfulTeleport(TeleportOffer offer) {
+	public void recordSuccessfulTeleport(Player player, TeleportOffer offer) {
 		var settings = configService.getHeatSettings();
-		Player player = offer.getRequester();
 		if (!settings.enabled() || player.hasPermission(BYPASS_PERMISSION)) {
 			return;
 		}

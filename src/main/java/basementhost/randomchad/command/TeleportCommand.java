@@ -9,12 +9,14 @@ import basementhost.randomchad.model.TeleportQuote;
 import basementhost.randomchad.util.TeleportMessageUtil;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class TeleportCommand implements BasicCommand {
 
@@ -59,14 +61,13 @@ public class TeleportCommand implements BasicCommand {
 				long ageMillis = System.currentTimeMillis() - pendingOffer.getCreatedAt();
 				long maxAgeMillis = plugin.getConfigService().getQuoteExpireSeconds() * 1000L;
 
-				if (ageMillis > maxAgeMillis) {
-					plugin.getTeleportManager().removePendingOffer(player);
+				if (!plugin.getTeleportManager().removePendingOffer(player.getUniqueId(), pendingOffer)
+						|| ageMillis > maxAgeMillis) {
 					plugin.getLangService().send(player, "quote.expired");
 					return;
 				}
 
 				TeleportOffer offer = pendingOffer.getOffer();
-				plugin.getTeleportManager().removePendingOffer(player);
 				plugin.getWarmupService().startOfferWarmup(offer);
 				return;
 			}
@@ -79,8 +80,8 @@ public class TeleportCommand implements BasicCommand {
 
 			long ageMillis = System.currentTimeMillis() - pending.getCreatedAt();
 			long maxAgeMillis = plugin.getConfigService().getQuoteExpireSeconds() * 1000L;
-			if (ageMillis > maxAgeMillis) {
-				plugin.getTeleportManager().removePendingQuote(player);
+			if (!plugin.getTeleportManager().removePendingQuote(player.getUniqueId(), pending)
+					|| ageMillis > maxAgeMillis) {
 				plugin.getLangService().send(player, "quote.expired");
 				return;
 			}
@@ -89,36 +90,27 @@ public class TeleportCommand implements BasicCommand {
 			Player target = quote.getTarget();
 
 			if (target == null || !target.isOnline()) {
-				plugin.getTeleportManager().removePendingQuote(player);
 				plugin.getLangService().send(player, "general.target-offline");
 				return;
 			}
 
-			plugin.getTeleportManager().removePendingQuote(player);
-
-			PendingTeleportRequest request = new PendingTeleportRequest(quote);
-			plugin.getTeleportManager().setPendingRequest(target, request);
-
-			int requestWindow = plugin.getConfigService().getRequestExpireSeconds();
-
-			plugin.getLangService().send(player, "request.sent", Map.of(
-					"target", target.getName()
-			));
-			plugin.getLangService().send(player, "request.waiting");
-
-			TeleportMessageUtil.sendIncomingRequestMessage(
-					target,
-					player.getName(),
-					requestWindow,
-					plugin.getLangService()
-			);
-
-			int count = plugin.getTeleportManager().getPendingRequestCount(target);
-			if (count > 1) {
-				plugin.getLangService().send(target, "request.multiple-hint-count", Map.of(
-						"count", String.valueOf(count)
-				));
-				plugin.getLangService().send(target, "request.multiple-hint-usage");
+			if (plugin.getConfigService().usesRegionThreading()) {
+				var regions = plugin.getRegionTeleportService();
+				regions.onPlayerRegion(target, () -> {
+					if (player.isOnline()) {
+						sendRequest(quote, target.getLocation(), true);
+					}
+					return true;
+				}).whenComplete((delivered, error) -> {
+					if (error != null) {
+						plugin.getLogger().log(Level.WARNING, "Failed to send a teleport request.", error);
+						regions.notify(player, "teleport.failed", Map.of());
+					} else if (delivered == null) {
+						regions.notify(player, "general.target-offline", Map.of());
+					}
+				});
+			} else {
+				sendRequest(quote, target.getLocation(), false);
 			}
 
 			return;
@@ -146,6 +138,30 @@ public class TeleportCommand implements BasicCommand {
 		}
 
 		plugin.getLangService().send(player, "general.usage.teleport");
+	}
+
+	private void sendRequest(TeleportQuote quote, Location targetLocation, boolean regionThreading) {
+		Player requester = quote.getRequester();
+		Player target = quote.getTarget();
+		plugin.getTeleportManager().setPendingRequest(target, new PendingTeleportRequest(quote, targetLocation));
+
+		Runnable notifyRequester = () -> {
+			plugin.getLangService().send(requester, "request.sent", Map.of("target", target.getName()));
+			plugin.getLangService().send(requester, "request.waiting");
+		};
+		if (regionThreading) {
+			requester.getScheduler().run(plugin, task -> notifyRequester.run(), null);
+		} else {
+			notifyRequester.run();
+		}
+
+		TeleportMessageUtil.sendIncomingRequestMessage(target, requester.getName(),
+				plugin.getConfigService().getRequestExpireSeconds(), plugin.getLangService());
+		int count = plugin.getTeleportManager().getPendingRequestCount(target);
+		if (count > 1) {
+			plugin.getLangService().send(target, "request.multiple-hint-count", Map.of("count", String.valueOf(count)));
+			plugin.getLangService().send(target, "request.multiple-hint-usage");
+		}
 	}
 
 	@Override

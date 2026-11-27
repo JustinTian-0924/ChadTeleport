@@ -5,18 +5,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TeleportManager {
 
 	private final JavaPlugin plugin;
-	private final Map<UUID, PendingTeleportQuote> pendingQuotes = new HashMap<>();
+	private final Map<UUID, PendingTeleportQuote> pendingQuotes = new ConcurrentHashMap<>();
 
 	// target UUID -> (requester UUID -> request), @_@
 	private final Map<UUID, Map<UUID, PendingTeleportRequest>> pendingRequestsByTarget = new HashMap<>();
 
-	private final Map<UUID, ActiveTeleport> activeTeleportsByRequester = new HashMap<>();
+	private final Map<UUID, ActiveTeleport> activeTeleportsByRequester = new ConcurrentHashMap<>();
 
-	private final Map<UUID, PendingTeleportOffer> pendingOffers = new HashMap<>();
+	private final Map<UUID, PendingTeleportOffer> pendingOffers = new ConcurrentHashMap<>();
 
 	public TeleportManager(JavaPlugin plugin) {
 		this.plugin = plugin;
@@ -42,6 +43,10 @@ public class TeleportManager {
 		return pendingQuotes.remove(playerId);
 	}
 
+	public boolean removePendingQuote(UUID playerId, PendingTeleportQuote expected) {
+		return pendingQuotes.remove(playerId, expected);
+	}
+
 	public boolean hasPendingQuote(Player player) {
 		return pendingQuotes.containsKey(player.getUniqueId());
 	}
@@ -50,13 +55,13 @@ public class TeleportManager {
 		return new ArrayList<>(pendingQuotes.entrySet());
 	}
 
-	public void setPendingRequest(Player target, PendingTeleportRequest request) {
+	public synchronized void setPendingRequest(Player target, PendingTeleportRequest request) {
 		pendingRequestsByTarget
 				.computeIfAbsent(target.getUniqueId(), k -> new LinkedHashMap<>())
 				.put(request.getRequesterId(), request);
 	}
 
-	public PendingTeleportRequest getPendingRequest(Player target, UUID requesterId) {
+	public synchronized PendingTeleportRequest getPendingRequest(Player target, UUID requesterId) {
 		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(target.getUniqueId());
 		if (requests == null) {
 			return null;
@@ -64,7 +69,7 @@ public class TeleportManager {
 		return requests.get(requesterId);
 	}
 
-	public PendingTeleportRequest getPendingRequestByRequesterName(Player target, String requesterName) {
+	public synchronized PendingTeleportRequest getPendingRequestByRequesterName(Player target, String requesterName) {
 		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(target.getUniqueId());
 		if (requests == null) {
 			return null;
@@ -78,7 +83,7 @@ public class TeleportManager {
 		return null;
 	}
 
-	public PendingTeleportRequest getLatestPendingRequest(Player target) {
+	public synchronized PendingTeleportRequest getLatestPendingRequest(Player target) {
 		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(target.getUniqueId());
 		if (requests == null || requests.isEmpty()) {
 			return null;
@@ -93,11 +98,11 @@ public class TeleportManager {
 		return latest;
 	}
 
-	public PendingTeleportRequest removePendingRequest(Player target, UUID requesterId) {
+	public synchronized PendingTeleportRequest removePendingRequest(Player target, UUID requesterId) {
 		return removePendingRequest(target.getUniqueId(), requesterId);
 	}
 
-	public PendingTeleportRequest removePendingRequest(UUID targetId, UUID requesterId) {
+	public synchronized PendingTeleportRequest removePendingRequest(UUID targetId, UUID requesterId) {
 		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(targetId);
 		if (requests == null) {
 			return null;
@@ -110,7 +115,18 @@ public class TeleportManager {
 		return removed;
 	}
 
-	public PendingTeleportRequest removePendingRequestByRequesterName(Player target, String requesterName) {
+	public synchronized boolean removePendingRequest(PendingTeleportRequest expected) {
+		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(expected.getTargetId());
+		if (requests == null || !requests.remove(expected.getRequesterId(), expected)) {
+			return false;
+		}
+		if (requests.isEmpty()) {
+			pendingRequestsByTarget.remove(expected.getTargetId());
+		}
+		return true;
+	}
+
+	public synchronized PendingTeleportRequest removePendingRequestByRequesterName(Player target, String requesterName) {
 		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(target.getUniqueId());
 		if (requests == null) {
 			return null;
@@ -135,12 +151,12 @@ public class TeleportManager {
 		return removed;
 	}
 
-	public int getPendingRequestCount(Player target) {
+	public synchronized int getPendingRequestCount(Player target) {
 		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(target.getUniqueId());
 		return requests == null ? 0 : requests.size();
 	}
 
-	public Collection<PendingTeleportRequest> getPendingRequests(Player target) {
+	public synchronized Collection<PendingTeleportRequest> getPendingRequests(Player target) {
 		Map<UUID, PendingTeleportRequest> requests = pendingRequestsByTarget.get(target.getUniqueId());
 		if (requests == null) {
 			return Collections.emptyList();
@@ -148,7 +164,7 @@ public class TeleportManager {
 		return new ArrayList<>(requests.values());
 	}
 
-	public Collection<PendingTeleportRequest> getAllPendingRequests() {
+	public synchronized Collection<PendingTeleportRequest> getAllPendingRequests() {
 		List<PendingTeleportRequest> all = new ArrayList<>();
 		for (Map<UUID, PendingTeleportRequest> map : pendingRequestsByTarget.values()) {
 			all.addAll(map.values());
@@ -164,8 +180,8 @@ public class TeleportManager {
 		return activeTeleportsByRequester.get(requester.getUniqueId());
 	}
 
-	public ActiveTeleport removeActiveTeleport(Player requester) {
-		return activeTeleportsByRequester.remove(requester.getUniqueId());
+	public boolean removeActiveTeleport(Player requester, ActiveTeleport expected) {
+		return activeTeleportsByRequester.remove(requester.getUniqueId(), expected);
 	}
 
 	public boolean hasActiveTeleport(Player requester) {
@@ -190,6 +206,10 @@ public class TeleportManager {
 
 	public PendingTeleportOffer removePendingOffer(UUID playerId) {
 		return pendingOffers.remove(playerId);
+	}
+
+	public boolean removePendingOffer(UUID playerId, PendingTeleportOffer expected) {
+		return pendingOffers.remove(playerId, expected);
 	}
 
 	public Collection<Map.Entry<UUID, PendingTeleportOffer>> getAllPendingOffers() {

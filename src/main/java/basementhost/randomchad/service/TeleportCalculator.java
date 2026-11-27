@@ -25,8 +25,8 @@ public class TeleportCalculator {
 		this.heatService = heatService;
 	}
 
-	public TeleportQuote calculateTpaQuote(Player requester, Player target) {
-		TeleportOffer offer = calculateOffer("tpa", requester, target, target.getLocation());
+	public TeleportQuote calculateTpaQuote(Player requester, Player target, Location destination) {
+		TeleportOffer offer = calculateOffer("tpa", requester, target, destination);
 		return new TeleportQuote(requester, target, offer.getFrom(), offer.getDestination(), offer.getRoute(),
 				offer.getPayment(), offer.getWarmupSeconds(), offer.getWarmupTicks());
 	}

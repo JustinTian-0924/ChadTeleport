@@ -38,7 +38,7 @@ public class TpAcceptCommand implements BasicCommand {
 			return;
 		}
 
-		if (request == null) {
+		if (request == null || !plugin.getTeleportManager().removePendingRequest(request)) {
 			plugin.getLangService().send(player, "request.none-matching");
 			return;
 		}
@@ -46,8 +46,6 @@ public class TpAcceptCommand implements BasicCommand {
 		long ageMillis = System.currentTimeMillis() - request.getCreatedAt();
 		long maxAgeMillis = plugin.getConfigService().getRequestExpireSeconds() * 1000L;
 		if (ageMillis > maxAgeMillis) {
-			plugin.getTeleportManager().removePendingRequest(player, request.getRequesterId());
-
 			Map<String, String> placeholders = Map.of(
 					"requester", request.getRequesterName(),
 					"target", request.getTargetName()
@@ -57,7 +55,7 @@ public class TpAcceptCommand implements BasicCommand {
 
 			Player requesterPlayer = plugin.getServer().getPlayer(request.getRequesterId());
 			if (requesterPlayer != null && requesterPlayer.isOnline()) {
-				plugin.getLangService().send(requesterPlayer, "request.expired", placeholders);
+				notifyRequester(requesterPlayer, "request.expired", placeholders);
 			}
 			return;
 		}
@@ -66,22 +64,27 @@ public class TpAcceptCommand implements BasicCommand {
 		Player requester = quote.getRequester();
 
 		if (requester == null || !requester.isOnline()) {
-			plugin.getTeleportManager().removePendingRequest(player, request.getRequesterId());
 			plugin.getLangService().send(player, "general.requester-offline");
 			return;
 		}
-
-		plugin.getTeleportManager().removePendingRequest(player, request.getRequesterId());
 
 		Location lockedDestination = player.getLocation().clone();
 
 		plugin.getLangService().send(player, "request.accepted-target", Map.of(
 				"requester", requester.getName()
 		));
-		plugin.getLangService().send(requester, "request.accepted-requester", Map.of(
+		notifyRequester(requester, "request.accepted-requester", Map.of(
 				"target", player.getName()
 		));
 
 		plugin.getWarmupService().startTpaWarmup(quote, lockedDestination);
+	}
+
+	private void notifyRequester(Player requester, String key, Map<String, String> placeholders) {
+		if (plugin.getConfigService().usesRegionThreading()) {
+			plugin.getRegionTeleportService().notify(requester, key, placeholders);
+		} else {
+			plugin.getLangService().send(requester, key, placeholders);
+		}
 	}
 }

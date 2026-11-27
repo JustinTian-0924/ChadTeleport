@@ -37,12 +37,10 @@ public class TpDenyCommand implements BasicCommand {
 			return;
 		}
 
-		if (request == null) {
+		if (request == null || !plugin.getTeleportManager().removePendingRequest(request)) {
 			plugin.getLangService().send(player, "request.none-matching");
 			return;
 		}
-
-		plugin.getTeleportManager().removePendingRequest(player, request.getRequesterId());
 
 		TeleportQuote quote = request.getQuote();
 		Player requester = quote.getRequester();
@@ -52,9 +50,12 @@ public class TpDenyCommand implements BasicCommand {
 		));
 
 		if (requester != null && requester.isOnline()) {
-			plugin.getLangService().send(requester, "request.denied-requester", Map.of(
-					"target", player.getName()
-			));
+			Map<String, String> placeholders = Map.of("target", player.getName());
+			if (plugin.getConfigService().usesRegionThreading()) {
+				plugin.getRegionTeleportService().notify(requester, "request.denied-requester", placeholders);
+			} else {
+				plugin.getLangService().send(requester, "request.denied-requester", placeholders);
+			}
 		}
 
 	}

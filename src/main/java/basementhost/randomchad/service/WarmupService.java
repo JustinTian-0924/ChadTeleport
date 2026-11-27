@@ -6,7 +6,6 @@ import basementhost.randomchad.model.TeleportOffer;
 import basementhost.randomchad.model.TeleportQuote;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Map;
 
@@ -43,7 +42,11 @@ public class WarmupService {
 				quote.getWarmupTicks()
 		);
 
-		startOfferWarmup(offer);
+		if (plugin.getConfigService().usesRegionThreading()) {
+			requester.getScheduler().run(plugin, task -> startOfferWarmup(offer), null);
+		} else {
+			startOfferWarmup(offer);
+		}
 	}
 
 	public void startOfferWarmup(TeleportOffer offer) {
@@ -75,19 +78,34 @@ public class WarmupService {
 				offer.getDestination().clone()
 		);
 
+		boolean regionThreading = plugin.getConfigService().usesRegionThreading();
 		if (warmupTicks <= 0L) {
-			finishTeleport(activeTeleport);
+			if (regionThreading) {
+				requester.getScheduler().run(plugin, task -> finishTeleport(activeTeleport), null);
+			} else {
+				finishTeleport(activeTeleport);
+			}
 			return;
 		}
 
-		BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-			Player onlineRequester = offer.getRequester();
-			if (onlineRequester != null) {
-				completeWarmup(onlineRequester);
+		Runnable complete = () -> {
+			if (plugin.getTeleportManager().removeActiveTeleport(requester, activeTeleport)) {
+				finishTeleport(activeTeleport);
 			}
-		}, warmupTicks);
+		};
+		if (regionThreading) {
+			var task = requester.getScheduler().runDelayed(plugin, scheduled -> complete.run(),
+					() -> plugin.getTeleportManager().removeActiveTeleport(requester, activeTeleport),
+					warmupTicks);
+			if (task == null) {
+				return;
+			}
+			activeTeleport.setCancelTask(task::cancel);
+		} else {
+			var task = plugin.getServer().getScheduler().runTaskLater(plugin, complete, warmupTicks);
+			activeTeleport.setCancelTask(task::cancel);
+		}
 
-		activeTeleport.setTask(task);
 		plugin.getTeleportManager().setActiveTeleport(requester, activeTeleport);
 
 		plugin.getLangService().send(requester, "warmup.started", Map.of(
@@ -96,30 +114,22 @@ public class WarmupService {
 		plugin.getLangService().send(requester, "warmup.dont-move");
 
 		if (target != null && target.isOnline()) {
-			plugin.getLangService().send(target, "warmup.target-notified", Map.of(
+			notifyTarget(target, "warmup.target-notified", Map.of(
 					"requester", requester.getName()
 			));
 		}
 	}
 
-	public void completeWarmup(Player requester) {
-		ActiveTeleport activeTeleport = plugin.getTeleportManager().removeActiveTeleport(requester);
-		if (activeTeleport == null) {
-			return;
-		}
-
-		finishTeleport(activeTeleport);
+	public boolean cancelWarmup(Player requester, String reasonKey) {
+		return cancelWarmup(requester, plugin.getTeleportManager().getActiveTeleport(requester), reasonKey);
 	}
 
-	public boolean cancelWarmup(Player requester, String reasonKey) {
-		ActiveTeleport activeTeleport = plugin.getTeleportManager().removeActiveTeleport(requester);
-		if (activeTeleport == null) {
+	public boolean cancelWarmup(Player requester, ActiveTeleport activeTeleport, String reasonKey) {
+		if (activeTeleport == null || !plugin.getTeleportManager().removeActiveTeleport(requester, activeTeleport)) {
 			return false;
 		}
 
-		if (activeTeleport.getTask() != null) {
-			activeTeleport.getTask().cancel();
-		}
+		activeTeleport.cancelTask();
 
 		if (requester.isOnline()) {
 			plugin.getLangService().send(requester, reasonKey);
@@ -127,12 +137,20 @@ public class WarmupService {
 
 		Player target = activeTeleport.getOffer().getTarget();
 		if (target != null && target.isOnline()) {
-			plugin.getLangService().send(target, "warmup.target-cancelled", Map.of(
+			notifyTarget(target, "warmup.target-cancelled", Map.of(
 					"requester", requester.getName()
 			));
 		}
 
 		return true;
+	}
+
+	private void notifyTarget(Player target, String key, Map<String, String> placeholders) {
+		if (plugin.getConfigService().usesRegionThreading()) {
+			plugin.getRegionTeleportService().notify(target, key, placeholders);
+		} else {
+			plugin.getLangService().send(target, key, placeholders);
+		}
 	}
 
 	private void finishTeleport(ActiveTeleport activeTeleport) {

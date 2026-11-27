@@ -19,7 +19,7 @@ public class SpawnService {
 		this.plugin = plugin;
 	}
 
-	public void load() {
+	public synchronized void load() {
 		if (!plugin.getDataFolder().exists()) {
 			plugin.getDataFolder().mkdirs();
 		}
@@ -33,7 +33,7 @@ public class SpawnService {
 		config = YamlConfiguration.loadConfiguration(file);
 	}
 
-	public void save() {
+	public synchronized void save() {
 		if (config == null || file == null) {
 			return;
 		}
@@ -46,11 +46,11 @@ public class SpawnService {
 		}
 	}
 
-	public boolean isSpawnSet() {
+	public synchronized boolean isSpawnSet() {
 		return config != null && config.getBoolean("spawn.set", false);
 	}
 
-	public Location getSpawnLocation() {
+	public synchronized Location getSpawnLocation() {
 		if (!isSpawnSet()) {
 			return null;
 		}
@@ -74,7 +74,7 @@ public class SpawnService {
 		return new Location(world, x, y, z, yaw, pitch);
 	}
 
-	public boolean setSpawnLocation(Location location) {
+	public synchronized boolean setSpawnLocation(Location location) {
 		if (location == null || location.getWorld() == null || config == null) {
 			return false;
 		}

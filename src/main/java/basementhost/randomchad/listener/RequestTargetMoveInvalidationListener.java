@@ -59,10 +59,7 @@ public class RequestTargetMoveInvalidationListener implements Listener {
 	}
 
 	private void expireRequest(Player target, PendingTeleportRequest request, String key) {
-		PendingTeleportRequest removed = plugin.getTeleportManager()
-				.removePendingRequest(target, request.getRequesterId());
-
-		if (removed == null) {
+		if (!plugin.getTeleportManager().removePendingRequest(request)) {
 			return;
 		}
 
@@ -75,7 +72,11 @@ public class RequestTargetMoveInvalidationListener implements Listener {
 
 		Player requester = plugin.getServer().getPlayer(request.getRequesterId());
 		if (requester != null && requester.isOnline()) {
-			plugin.getLangService().send(requester, key, placeholders);
+			if (plugin.getConfigService().usesRegionThreading()) {
+				plugin.getRegionTeleportService().notify(requester, key, placeholders);
+			} else {
+				plugin.getLangService().send(requester, key, placeholders);
+			}
 		}
 	}
 

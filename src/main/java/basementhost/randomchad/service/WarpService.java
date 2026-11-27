@@ -26,7 +26,7 @@ public class WarpService {
 		load();
 	}
 
-	public void load() {
+	public synchronized void load() {
 		if (!warpsFile.exists()) {
 			try {
 				if (warpsFile.getParentFile() != null) {
@@ -41,7 +41,7 @@ public class WarpService {
 		this.config = YamlConfiguration.loadConfiguration(warpsFile);
 	}
 
-	public boolean setWarp(String name, Location location) {
+	public synchronized boolean setWarp(String name, Location location) {
 		if (location == null || location.getWorld() == null) {
 			return false;
 		}
@@ -59,7 +59,7 @@ public class WarpService {
 		return save();
 	}
 
-	public boolean deleteWarp(String name) {
+	public synchronized boolean deleteWarp(String name) {
 		String normalizedName = normalizeWarpName(name);
 		String basePath = "warps." + normalizedName;
 
@@ -71,12 +71,12 @@ public class WarpService {
 		return save();
 	}
 
-	public boolean hasWarp(String name) {
+	public synchronized boolean hasWarp(String name) {
 		String normalizedName = normalizeWarpName(name);
 		return config.contains("warps." + normalizedName);
 	}
 
-	public WarpEntry getWarp(String name) {
+	public synchronized WarpEntry getWarp(String name) {
 		String normalizedName = normalizeWarpName(name);
 		String basePath = "warps." + normalizedName;
 
@@ -104,7 +104,7 @@ public class WarpService {
 		return new WarpEntry(normalizedName, location);
 	}
 
-	public Map<String, WarpEntry> getWarps() {
+	public synchronized Map<String, WarpEntry> getWarps() {
 		Map<String, WarpEntry> result = new LinkedHashMap<>();
 
 		if (!config.contains("warps")) {

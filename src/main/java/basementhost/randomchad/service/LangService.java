@@ -19,8 +19,7 @@ public class LangService {
 	private final JavaPlugin plugin;
 	private final ConfigService configService;
 	private final MiniMessage miniMessage = MiniMessage.miniMessage();
-	private final Map<String, YamlConfiguration> loadedLocales = new HashMap<>();
-	private String defaultLocale;
+	private volatile Locales locales = new Locales("en_us", Map.of());
 
 	public LangService(JavaPlugin plugin, ConfigService configService) {
 		this.plugin = plugin;
@@ -28,19 +27,20 @@ public class LangService {
 	}
 
 	public void load() {
-		defaultLocale = configService.getDefaultLocale();
+		String defaultLocale = configService.getDefaultLocale();
 
 		saveLocaleIfMissing("en_us");
 		saveLocaleIfMissing("zh_cn");
 
-		loadedLocales.clear();
-		loadLocale("en_us");
-		loadLocale("zh_cn");
+		Map<String, YamlConfiguration> loadedLocales = new HashMap<>();
+		loadLocale(loadedLocales, "en_us");
+		loadLocale(loadedLocales, "zh_cn");
 
 		if (!loadedLocales.containsKey(defaultLocale)) {
 			plugin.getLogger().warning("Locale '" + defaultLocale + "' not found, falling back to en_us.");
 			defaultLocale = "en_us";
 		}
+		locales = new Locales(defaultLocale, Map.copyOf(loadedLocales));
 	}
 
 	private void saveLocaleIfMissing(String locale) {
@@ -50,7 +50,7 @@ public class LangService {
 		}
 	}
 
-	private void loadLocale(String locale) {
+	private void loadLocale(Map<String, YamlConfiguration> loadedLocales, String locale) {
 		File file = new File(plugin.getDataFolder(), "lang/" + locale + ".yml");
 		if (!file.exists()) {
 			return;
@@ -70,17 +70,19 @@ public class LangService {
 	}
 
 	public String getDefaultLocale() {
-		return defaultLocale;
+		return locales.defaultLocale();
 	}
 
 	public String getRaw(String key) {
-		return getRaw(defaultLocale, key);
+		return getRaw(getDefaultLocale(), key);
 	}
 
 	public String getRaw(String locale, String key) {
+		Locales current = locales;
+		Map<String, YamlConfiguration> loadedLocales = current.loadedLocales();
 		YamlConfiguration yaml = loadedLocales.get(locale);
 		if (yaml == null) {
-			yaml = loadedLocales.get(defaultLocale);
+			yaml = loadedLocales.get(current.defaultLocale());
 		}
 		if (yaml == null) {
 			return key;
@@ -103,11 +105,11 @@ public class LangService {
 	}
 
 	public Component get(String key) {
-		return get(defaultLocale, key, Map.of());
+		return get(getDefaultLocale(), key, Map.of());
 	}
 
 	public Component get(String key, Map<String, String> placeholders) {
-		return get(defaultLocale, key, placeholders);
+		return get(getDefaultLocale(), key, placeholders);
 	}
 
 	public Component get(String locale, String key, Map<String, String> placeholders) {
@@ -130,5 +132,8 @@ public class LangService {
 			result = result.replace("{" + entry.getKey() + "}", entry.getValue());
 		}
 		return result;
+	}
+
+	private record Locales(String defaultLocale, Map<String, YamlConfiguration> loadedLocales) {
 	}
 }

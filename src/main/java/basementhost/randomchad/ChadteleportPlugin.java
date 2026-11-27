@@ -21,6 +21,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	private TeleportManager teleportManager;
 	private ConfigService configService;
 	private TeleportPaymentService teleportPaymentService;
+	private RegionTeleportService regionTeleportService;
 	private TeleportBalanceService teleportBalanceService;
 	private TeleportHeatService teleportHeatService;
 	private TeleportCalculator teleportCalculator;
@@ -39,6 +40,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.economyService = new EconomyService(this);
 		this.teleportManager = new TeleportManager(this);
 		this.configService = new ConfigService(this);
+		this.regionTeleportService = new RegionTeleportService(this);
 		this.warmupService = new WarmupService(this);
 		this.spawnService = new SpawnService(this);
 		this.spawnService.load();
@@ -50,8 +52,8 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		this.langService.load();
 		this.teleportBalanceService = new TeleportBalanceService(this, configService);
 		this.teleportHeatService = new TeleportHeatService(this, configService);
-		this.teleportPaymentService = new TeleportPaymentService(economyService, langService, configService,
-				teleportBalanceService, teleportHeatService, getLogger());
+		this.teleportPaymentService = new TeleportPaymentService(this, economyService, langService, configService,
+				teleportBalanceService, teleportHeatService);
 		this.teleportCalculator = new TeleportCalculator(configService, new PricingService(configService),
 				teleportPaymentService, teleportHeatService);
 
@@ -159,7 +161,7 @@ public final class ChadteleportPlugin extends JavaPlugin {
 	}
 
 	private void scheduleEconomyRetry() {
-		getServer().getScheduler().runTaskLater(this, () -> {
+		getServer().getGlobalRegionScheduler().runDelayed(this, task -> {
 			if (!economyService.isAvailable()) {
 				boolean hooked = economyService.tryHook();
 				if (!hooked) {
@@ -169,8 +171,12 @@ public final class ChadteleportPlugin extends JavaPlugin {
 		}, 40L);
 	}
 
-	public void reloadPluginResources() {
+	public synchronized void reloadPluginResources() {
+		boolean usedRegionThreading = configService.usesRegionThreading();
 		configService.reload();
+		if (usedRegionThreading != configService.usesRegionThreading()) {
+			expirationService.start();
+		}
 		if (langService != null) {
 			langService.load();
 		}
@@ -196,6 +202,10 @@ public final class ChadteleportPlugin extends JavaPlugin {
 
 	public TeleportPaymentService getTeleportPaymentService() {
 		return teleportPaymentService;
+	}
+
+	public RegionTeleportService getRegionTeleportService() {
+		return regionTeleportService;
 	}
 
 	public TeleportCalculator getTeleportCalculator() {

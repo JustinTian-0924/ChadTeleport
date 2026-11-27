@@ -21,7 +21,7 @@ public class PendingTeleportQuote {
 
 		this.targetId = quote.getTarget().getUniqueId();
 		this.targetName = quote.getTarget().getName();
-		this.targetAnchorLocation = quote.getTarget().getLocation().clone();
+		this.targetAnchorLocation = quote.getTo();
 	}
 
 	public TeleportQuote getQuote() {

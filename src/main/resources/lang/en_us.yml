@@ -46,6 +46,7 @@ admin-tp:
   brought-player: "<green>You have teleported <white>{target}</white><green> to your location.</green>"
   brought-to-player: "<yellow>You have been teleported to <white>{target}</white><yellow>.</yellow>"
   tpall-success: "<green>Teleported <white>{count}</white><green> player(s) to <white>{target}</white><green>.</green>"
+  tpall-partial: "<yellow>Teleported <white>{count}</white> player(s) to <white>{target}</white>. <white>{failed}</white> could not be moved.</yellow>"
   tpall-target-notice: "<yellow>You have been teleported by <white>{sender}</white><yellow> to <white>{target}</white><yellow>.</yellow>"
 
 calculator:

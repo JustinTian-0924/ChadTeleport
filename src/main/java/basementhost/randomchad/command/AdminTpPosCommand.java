@@ -83,6 +83,17 @@ public class AdminTpPosCommand implements BasicCommand {
 			return;
 		}
 
+		if (plugin.getConfigService().usesRegionThreading()) {
+			plugin.getRegionTeleportService().teleport(player, destination, TeleportCause.COMMAND)
+					.whenComplete((success, error) -> {
+						if (error != null) {
+							plugin.getLogger().log(Level.WARNING, "Failed to teleport " + player.getName() + " with /tppos.", error);
+						}
+						player.getScheduler().run(plugin, task -> sendResult(player, Boolean.TRUE.equals(success)), null);
+					});
+			return;
+		}
+
 		// 先异步加载目标地图区域，成功传送后才提示完成；保留玩家原本的朝向。
 		String playerName = player.getName();
 		try {
